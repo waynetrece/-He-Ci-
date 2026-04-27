@@ -135,9 +135,6 @@ export default function ProductsModulePage() {
               </span>
               標註於上方畫面對應的元件上，您可以直接點畫面上的紅圈留言；下方為對照表，方便整體檢視。
             </p>
-            <p className="mt-2 max-w-3xl text-sm text-zinc-500">
-              註：與「結帳流程」「購物車」「商品詳情頁」「商品後台」相關的問題會釘到對應的 mockup 頁，不在本頁列出。
-            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">

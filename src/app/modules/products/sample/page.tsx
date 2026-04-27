@@ -124,11 +124,10 @@ export default function ProductsSamplePage() {
         <div className="mx-auto max-w-[1760px]">
           <div className="mb-8">
             <h2 className="text-3xl font-bold tracking-tight text-amber-900">
-              樣品申請待釐清項目（共 {QUESTIONS.length} 題）
+              本頁待確認的項目（共 {QUESTIONS.length} 題）
             </h2>
             <p className="mt-3 max-w-3xl text-base text-zinc-700">
-              客戶 PDF 只說「公版每個商品頁要加申請樣品按鈕」，沒提供表單細節。為避免我們憑空想像表單，這頁先做流程圖 + 在每個決策點放問題。
-              客戶在這些問題給答覆後，我們再做正式表單 mockup。
+              以下 {QUESTIONS.length} 題對應上方流程圖中的紅圈決策點，請逐項確認貴司期望的做法。
             </p>
           </div>
 

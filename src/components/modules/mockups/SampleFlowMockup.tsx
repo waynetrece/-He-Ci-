@@ -155,34 +155,30 @@ export function SampleFlowMockup({
           </span>
         </span>
         <span className="text-zinc-500">／</span>
-        <span className="text-zinc-300">
-          樣品申請操作流程圖（**這不是實際畫面**，是用來跟客戶確認流程與規則的討論文件）
-        </span>
+        <span className="text-zinc-300">樣品申請操作流程</span>
       </div>
 
       <div className="bg-zinc-50/40 px-6 py-10">
-        {/* Header info */}
-        <div className="mx-auto mb-8 max-w-2xl rounded-xl border border-zinc-200 bg-white p-5 text-sm text-zinc-700 leading-relaxed">
-          <p className="font-bold text-zinc-900">關於這頁</p>
-          <p className="mt-2">
-            客戶 PDF 只提到「公版每個商品頁要加樣品申請按鈕」，**沒提供表單細節與流程規則**。
+        {/* Title + legend — 只留專業介紹，不寫內部對話 */}
+        <div className="mx-auto mb-8 max-w-2xl text-center">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900">
+            樣品申請操作流程
+          </h2>
+          <p className="mt-2 text-sm text-zinc-600">
+            客戶從商品頁申請樣品到收到的完整動線
           </p>
-          <p className="mt-2">
-            為避免我們憑空想像表單長相，這頁先用流程圖呈現「客戶按下申請樣品按鈕後會經歷什麼」，並在每個決策點放置紅圈問題。
-            等客戶在每個決策點給我們答案，我們再做正式表單 mockup。
-          </p>
-          <div className="mt-3 flex items-center gap-3 text-xs">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs">
             <span className="flex items-center gap-1.5">
               <span className="size-3 rounded-full bg-amber-500" />
-              前台（客戶看得到的步驟）
+              前台
             </span>
             <span className="flex items-center gap-1.5">
               <span className="size-3 rounded-full bg-indigo-500" />
-              後台（業務／系統的動作）
+              後台
             </span>
             <span className="flex items-center gap-1.5">
               <span className="size-3 rounded-full bg-rose-500" />
-              決策點（要問客戶的問題）
+              決策點
             </span>
           </div>
         </div>
@@ -285,15 +281,6 @@ export function SampleFlowMockup({
           />
         </div>
 
-        {/* Bottom note */}
-        <div className="mx-auto mt-10 max-w-2xl rounded-xl border-2 border-amber-400 bg-amber-50 p-5">
-          <p className="text-sm font-bold text-amber-900">
-            下一步：等客戶在每個決策點留答覆，我們再依答案做正式表單 mockup。
-          </p>
-          <p className="mt-2 text-sm text-amber-800 leading-relaxed">
-            例如客戶答「樣品免費 / 限會員 / 不需審核」，正式 mockup 就是：登入後直接帶到表單、送出立即顯示「已申請」，無需結帳、無審核中狀態。
-          </p>
-        </div>
       </div>
     </div>
   );
