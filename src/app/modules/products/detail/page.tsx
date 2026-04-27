@@ -71,7 +71,8 @@ const QUESTIONS = [
 ];
 
 export default function ProductsDetailPage() {
-  const [annotations, setAnnotations] = useState(false);
+  // 預設開啟標註模式，讓客戶開頁直接看到問題與我們建議
+  const [annotations, setAnnotations] = useState(true);
 
   return (
     <main className="min-h-dvh bg-zinc-50 text-zinc-900">
