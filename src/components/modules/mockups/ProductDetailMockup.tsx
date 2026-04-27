@@ -316,12 +316,46 @@ export function ProductDetailMockup({
               </p>
             </div>
 
-            {/* Action buttons — 對齊 HJ 真實做法（追蹤、貨到通知） */}
+            {/* Action buttons — 對齊 HJ 真實做法（追蹤、貨到通知）+ 申請樣品（客戶 PDF 要求新增） */}
             <div className="space-y-2">
               <button className="flex w-full items-center justify-center gap-2 rounded-md bg-amber-700 px-4 py-3.5 text-base font-bold text-white shadow-sm hover:bg-amber-800">
                 <PlusIcon />
                 加入購物車
               </button>
+
+              {/* 申請樣品按鈕 — 客戶 PDF 明確要求新增（HJ 現網站沒這功能） */}
+              {annotations ? (
+                <Annotated
+                  show
+                  source="ours"
+                  label="客戶 PDF 要求"
+                  title="申請樣品按鈕"
+                  rationale={
+                    "客戶 PDF 明確要求：「公版每個商品頁要加申請樣品按鈕」，列為特殊功能。\n\n" +
+                    "HJ 現網站還沒有這功能，新平台要新增。\n\n" +
+                    "點擊後跳轉到「樣品申請流程」頁。實際表單內容會等客戶確認流程細節後再做（收費規則、是否限會員、是否需審核 等）。"
+                  }
+                  pageId={pageId}
+                  elementId="sample-cta"
+                  elementLabel="申請樣品按鈕"
+                  position="top-right"
+                >
+                  <a
+                    href="/modules/products/sample"
+                    className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-emerald-500 bg-emerald-50 py-2.5 text-sm font-bold text-emerald-700 hover:bg-emerald-100"
+                  >
+                    申請樣品（先寄樣再下單）
+                  </a>
+                </Annotated>
+              ) : (
+                <a
+                  href="/modules/products/sample"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-emerald-500 bg-emerald-50 py-2.5 text-sm font-bold text-emerald-700 hover:bg-emerald-100"
+                >
+                  申請樣品（先寄樣再下單）
+                </a>
+              )}
+
               <div className="grid grid-cols-2 gap-2">
                 <button className="flex items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white py-2.5 text-sm text-zinc-700 hover:border-zinc-700">
                   <HeartOutlineIcon />
