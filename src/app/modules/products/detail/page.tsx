@@ -8,62 +8,77 @@ import {
 } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { ModuleHero } from "@/components/modules/ModuleHero";
-import { ProductListMockup } from "@/components/modules/mockups/ProductListMockup";
+import { ProductDetailMockup } from "@/components/modules/mockups/ProductDetailMockup";
 import { PRODUCTS_MOCKUPS } from "@/lib/products-mockups";
 
-const PAGE_ID = "products-list";
-const PAGE_LABEL = "公版商品系統";
-const ACTIVE_TAB = "list";
+const PAGE_ID = "products-detail";
+const PAGE_LABEL = "公版商品系統 — 商品詳情頁";
+const ACTIVE_TAB = "detail";
 
-// 本頁（列表頁）相關的問題 — 全部都已釘到畫面上對應位置（紅圈標記）
 const QUESTIONS = [
   {
     no: "Q1",
     question: "多層規格選項要支援幾層？",
-    context: "例：紙杯 → 容量（8oz/12oz）→ 材質（PE/PLA）→ 印刷（單面/雙面）= 3 層",
-    pinnedAt: "左欄『材質』篩選區",
+    context: "例：紙杯 → 容量 → 顏色 → 印刷 = 3 層",
+    pinnedAt: "規格選擇器",
     importance: "high" as const,
   },
   {
-    no: "Q2",
-    question: "規格組合是否要獨立 SKU、獨立庫存？",
-    context: "獨立 SKU 表示「8oz 白色紙杯」與「12oz 白色紙杯」分別計算庫存與銷售。",
-    pinnedAt: "左欄『材質』篩選區",
+    no: "Q10",
+    question: "商品影片來源？",
+    context: "選項：後台直接上傳影片檔 / 嵌入 YouTube、Vimeo 連結",
+    pinnedAt: "圖片區下方「商品影片」按鈕",
     importance: "high" as const,
   },
   {
-    no: "Q3",
-    question: "商品列表頁是否顯示價格？",
-    context: "B2B 電商常選擇隱藏價格，需登入才看得到。或一律顯示「請洽詢」字樣。",
-    pinnedAt: "第 1 張卡『請洽詢』價格區",
+    no: "Q11",
+    question: "商品 3D 圖整合方式？",
+    context:
+      "Pacdora Editor API（月費）／自製 Three.js（一次性）／360° 旋轉拍照／暫不做。詳見 obs 文件 10。",
+    pinnedAt: "圖片區下方「3D 預覽」按鈕",
     importance: "high" as const,
   },
   {
-    no: "Q4",
-    question: "分級會員看到的價格如何呈現？",
-    context: "選項：只顯示該等級價、原價劃掉+會員價、原價+折扣 % 等。",
-    pinnedAt: "第 1 張卡『請洽詢』價格區",
+    no: "Q13",
+    question: "規格切換要切到不同 URL 還是同頁切？",
+    context: "影響 SEO、書籤、分享。B2B 客戶常重複下單，獨立 URL 較佳。",
+    pinnedAt: "規格選擇器",
+  },
+  {
+    no: "Q14",
+    question: "詳情頁是否顯示真實庫存量？",
+    context: "選項：顯示精確數字 / 顯示分級（現貨/缺貨）/ 不顯示。",
+    pinnedAt: "數量輸入區",
+  },
+  {
+    no: "Q15",
+    question: "數量輸入支援整箱訂購？MOQ 怎麼顯示？",
+    context: "B2B 包材常以箱為單位，建議整箱模式 + MOQ 提示。",
+    pinnedAt: "數量輸入區",
+  },
+  {
+    no: "Q16",
+    question: "詳情頁是否顯示「會員專屬價」？非會員看到什麼？",
+    context: "選項：一律「請洽詢」/ 非會員看零售價、會員看折扣 / 全會員同一價。",
+    pinnedAt: "價格區",
     importance: "high" as const,
   },
   {
-    no: "Q6",
-    question: "樣品申請是否要收費？",
-    context: "選項：完全免費 / 樣品免費但運費自付 / 限金額或會員等級",
-    pinnedAt: "第 3 張卡『申請樣品』按鈕",
+    no: "Q17",
+    question: "是否要「請業務聯繫」按鈕？走 LINE@ 還是表單？",
+    context: "B2B 大宗訂購常需先談條件再下單。建議：表單為主、LINE@ 備援。",
+    pinnedAt: "加入購物車區",
   },
   {
-    no: "Q7",
-    question: "樣品申請是否限會員才能申請？",
-    pinnedAt: "第 3 張卡『申請樣品』按鈕",
-  },
-  {
-    no: "Q8",
-    question: "樣品申請是否要後台審核才寄出？",
-    pinnedAt: "第 3 張卡『申請樣品』按鈕",
+    no: "Q18",
+    question: "商品說明分頁要支援哪些欄位？需要可後台維護嗎？",
+    context:
+      "標配：商品說明 / 規格表 / 印刷規範 / 運送資訊。可選：常見問答、案例、評論、檢驗報告。",
+    pinnedAt: "下方分頁區（商品說明 / 規格表 ...）",
   },
 ];
 
-export default function ProductsModulePage() {
+export default function ProductsDetailPage() {
   const [annotations, setAnnotations] = useState(false);
 
   return (
@@ -78,7 +93,7 @@ export default function ProductsModulePage() {
       <ModuleHero
         no="01"
         title="公版商品系統"
-        subtitle="新平台「公版商品」相關頁面預覽"
+        subtitle="商品詳情頁預覽"
         tone="amber"
         right={
           <>
@@ -117,11 +132,11 @@ export default function ProductsModulePage() {
       {/* Current mockup */}
       <section className="bg-zinc-200/70 px-6 py-10">
         <div className="mx-auto max-w-[1760px]">
-          <ProductListMockup annotations={annotations} pageId={PAGE_ID} />
+          <ProductDetailMockup annotations={annotations} pageId={PAGE_ID} />
         </div>
       </section>
 
-      {/* Confirmation section — 對照表，列出本頁所有已釘到畫面上的問題 */}
+      {/* Confirmation section */}
       <section className="border-t-2 border-zinc-400 bg-amber-50/40 px-6 py-16">
         <div className="mx-auto max-w-[1760px]">
           <div className="mb-8">
@@ -138,9 +153,6 @@ export default function ProductsModulePage() {
               </span>
               標註於上方畫面對應的元件上，您可以直接點畫面上的紅圈留言；下方為對照表，方便整體檢視。
             </p>
-            <p className="mt-2 max-w-3xl text-sm text-zinc-500">
-              註：與「結帳流程」「購物車」「商品詳情頁」「商品後台」相關的問題會釘到對應的 mockup 頁，不在本頁列出。
-            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -148,7 +160,9 @@ export default function ProductsModulePage() {
               <article
                 key={q.no}
                 className={`relative flex gap-4 rounded-lg border bg-white p-5 ${
-                  q.importance === "high" ? "border-rose-300" : "border-amber-200"
+                  q.importance === "high"
+                    ? "border-rose-300"
+                    : "border-amber-200"
                 }`}
               >
                 <span
@@ -191,7 +205,7 @@ export default function ProductsModulePage() {
       </section>
 
       <ModuleFooterNav
-        prev={undefined}
+        prev={{ title: "公版商品列表頁", href: "/modules/products" }}
         next={{ title: "私版商品報價系統", href: "/modules/private-quote" }}
       />
     </main>
