@@ -29,17 +29,17 @@ const Q4 = {
   question: "分級會員看到的價格如何呈現？",
   context: "選項：只顯示該等級價、原價劃掉+會員價、原價+折扣 % 等。",
 };
-const Q6 = {
-  no: "Q6",
+const Q5 = {
+  no: "Q5",
   question: "樣品申請是否要收費？",
   context: "選項：完全免費 / 樣品免費但運費自付 / 限金額或會員等級",
 };
-const Q7 = {
-  no: "Q7",
+const Q6 = {
+  no: "Q6",
   question: "樣品申請是否限會員才能申請？",
 };
-const Q8 = {
-  no: "Q8",
+const Q7 = {
+  no: "Q7",
   question: "樣品申請是否要後台審核才寄出？",
   context: "選項：客戶送出即自動寄出 / 業務後台審核通過才寄出。後者可避免濫用，但會增加處理時間。",
 };
@@ -49,7 +49,7 @@ type QItem = { no: string; question: string; context?: string };
 // 同主題的問題合併到同一個 pin，分散到不同卡片
 const CARD_PINS: Record<number, { price?: QItem[]; sample?: QItem[] }> = {
   0: { price: [Q3, Q4] },        // 第 1 張：價格區 Q3+Q4
-  2: { sample: [Q6, Q7, Q8] },   // 第 3 張：樣品按鈕 Q6+Q7+Q8
+  2: { sample: [Q5, Q6, Q7] },   // 第 3 張：樣品按鈕 Q5+Q6+Q7
 };
 
 /* ============== Icons ============== */

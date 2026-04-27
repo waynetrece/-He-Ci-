@@ -14,49 +14,44 @@ const PAGE_ID = "products-list";
 const PAGE_LABEL = "公版商品系統";
 const ACTIVE_TAB = "list";
 
-// 本頁（列表頁）相關的問題 — 全部都已釘到畫面上對應位置（紅圈標記）
 const QUESTIONS = [
   {
     no: "Q1",
     question: "多層規格選項要支援幾層？",
     context: "例：紙杯 → 容量（8oz/12oz）→ 材質（PE/PLA）→ 印刷（單面/雙面）= 3 層",
     pinnedAt: "左欄『材質』篩選區",
-    importance: "high" as const,
   },
   {
     no: "Q2",
     question: "規格組合是否要獨立 SKU、獨立庫存？",
     context: "獨立 SKU 表示「8oz 白色紙杯」與「12oz 白色紙杯」分別計算庫存與銷售。",
     pinnedAt: "左欄『材質』篩選區",
-    importance: "high" as const,
   },
   {
     no: "Q3",
     question: "商品列表頁是否顯示價格？",
     context: "B2B 電商常選擇隱藏價格，需登入才看得到。或一律顯示「請洽詢」字樣。",
     pinnedAt: "第 1 張卡『請洽詢』價格區",
-    importance: "high" as const,
   },
   {
     no: "Q4",
     question: "分級會員看到的價格如何呈現？",
     context: "選項：只顯示該等級價、原價劃掉+會員價、原價+折扣 % 等。",
     pinnedAt: "第 1 張卡『請洽詢』價格區",
-    importance: "high" as const,
   },
   {
-    no: "Q6",
+    no: "Q5",
     question: "樣品申請是否要收費？",
     context: "選項：完全免費 / 樣品免費但運費自付 / 限金額或會員等級",
     pinnedAt: "第 3 張卡『申請樣品』按鈕",
   },
   {
-    no: "Q7",
+    no: "Q6",
     question: "樣品申請是否限會員才能申請？",
     pinnedAt: "第 3 張卡『申請樣品』按鈕",
   },
   {
-    no: "Q8",
+    no: "Q7",
     question: "樣品申請是否要後台審核才寄出？",
     pinnedAt: "第 3 張卡『申請樣品』按鈕",
   },
@@ -141,17 +136,9 @@ export default function ProductsModulePage() {
             {QUESTIONS.map((q) => (
               <article
                 key={q.no}
-                className={`relative flex gap-4 rounded-lg border bg-white p-5 ${
-                  q.importance === "high" ? "border-rose-300" : "border-amber-200"
-                }`}
+                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
               >
-                <span
-                  className={`flex size-8 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold ${
-                    q.importance === "high"
-                      ? "bg-rose-500 text-white"
-                      : "bg-amber-100 text-amber-800"
-                  }`}
-                >
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
                   {q.no}
                 </span>
                 <div className="flex-1">

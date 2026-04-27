@@ -6,14 +6,14 @@ import {
 } from "../MockupShell";
 
 /* ============== Questions ============== */
-const Q10 = {
-  no: "Q10",
+const Q1 = {
+  no: "Q1",
   question: "商品影片來源？",
   context:
     "選項：後台直接上傳影片檔 / 嵌入 YouTube、Vimeo 連結。前者佔伺服器空間，後者較省。",
 };
-const Q16 = {
-  no: "Q16",
+const Q2 = {
+  no: "Q2",
   question: "詳情頁是否顯示「會員專屬價」？非會員看到什麼？",
   context:
     "HJ 現網站做法：未登入只看到「立即登入/註冊」，登入後才看到價格。要保留這做法、還是改成「非會員看零售價、會員看折扣價」？",
@@ -228,10 +228,10 @@ export function ProductDetailMockup({
               ))}
             </div>
 
-            {/* 商品影片入口 — Q10 釘這（HJ 現網站沒有，計畫新增的功能） */}
+            {/* 商品影片入口 — Q1 釘這（HJ 現網站沒有，計畫新增的功能） */}
             <div className="mt-5">
               {wrapQ(
-                [Q10],
+                [Q1],
                 <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3.5 py-2 text-sm text-zinc-700 hover:border-zinc-700">
                   <PlayIcon />
                   商品影片
@@ -280,9 +280,9 @@ export function ProductDetailMockup({
               <SpecBlock />
             )}
 
-            {/* Price — Q16 */}
+            {/* Price — Q2 */}
             {wrapQ(
-              [Q16],
+              [Q2],
               <div className="rounded-xl border border-zinc-200 bg-white p-5">
                 <div className="text-2xl font-bold text-zinc-900">請洽詢</div>
                 <a className="mt-1 inline-block text-sm font-medium text-amber-700 hover:underline">

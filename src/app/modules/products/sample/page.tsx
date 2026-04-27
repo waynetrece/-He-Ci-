@@ -16,51 +16,47 @@ const ACTIVE_TAB = "sample";
 
 const QUESTIONS = [
   {
-    no: "Q6",
+    no: "Q1",
     question: "樣品申請是否要收費？運費誰付？",
     context: "選項：完全免費 / 樣品免費但運費自付 / 限金額或會員等級",
     pinnedAt: "決策點：收費 / 運費規則？",
-    importance: "high" as const,
   },
   {
-    no: "Q7",
+    no: "Q2",
     question: "樣品申請是否限會員才能申請？",
     context: "選項：任何人皆可申請 / 必須登入會員 / 須註冊但不需審核",
     pinnedAt: "決策點：要登入嗎？",
-    importance: "high" as const,
   },
   {
-    no: "Q8",
+    no: "Q3",
     question: "是否需要後台人工審核才寄出？",
     context: "選項：自動寄出 / 業務審核通過後才寄出。後者較安全但增加處理時間。",
     pinnedAt: "決策點：後台是否要審核？",
-    importance: "high" as const,
   },
   {
-    no: "Q19",
+    no: "Q4",
     question: "一次最多可以申請幾件樣品？",
     context: "範例：1 件 / 3 件 / 不限。影響表單的商品選擇器 UI。",
     pinnedAt: "決策點：表單欄位／件數／寄送方式",
   },
   {
-    no: "Q20",
+    no: "Q5",
     question: "樣品寄送方式有哪些？",
     context: "選項：超商取貨 / 宅配到府 / 自取。影響表單收件資訊欄位。",
     pinnedAt: "決策點：表單欄位／件數／寄送方式",
   },
   {
-    no: "Q21",
+    no: "Q6",
     question: "客戶是否能在會員中心查申請狀態？",
     context: "若要做：會員中心多一個「樣品申請紀錄」頁，可看狀態（申請中／審核中／已寄出／已收到）。",
     pinnedAt: "決策點：查詢狀態頁要做嗎？",
   },
   {
-    no: "Q22",
+    no: "Q7",
     question: "樣品申請的必填欄位有哪些？",
     context:
       "標配：姓名 / 公司名 / 電話 / 收件地址。可選：統編、用途說明、希望寄達日。每個欄位都要客戶確認是必填還是選填。",
     pinnedAt: "決策點：表單欄位／件數／寄送方式",
-    importance: "high" as const,
   },
 ];
 
@@ -135,19 +131,9 @@ export default function ProductsSamplePage() {
             {QUESTIONS.map((q) => (
               <article
                 key={q.no}
-                className={`relative flex gap-4 rounded-lg border bg-white p-5 ${
-                  q.importance === "high"
-                    ? "border-rose-300"
-                    : "border-amber-200"
-                }`}
+                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
               >
-                <span
-                  className={`flex size-8 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold ${
-                    q.importance === "high"
-                      ? "bg-rose-500 text-white"
-                      : "bg-amber-100 text-amber-800"
-                  }`}
-                >
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
                   {q.no}
                 </span>
                 <div className="flex-1">

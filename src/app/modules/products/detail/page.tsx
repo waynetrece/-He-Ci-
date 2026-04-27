@@ -14,24 +14,19 @@ const PAGE_ID = "products-detail";
 const PAGE_LABEL = "公版商品系統 — 商品詳情頁";
 const ACTIVE_TAB = "detail";
 
-// 詳情頁重做版本 — 對齊 HJ 真實結構（公版冷熱共用杯 12oz 白色 為樣本）
-// 拿掉所有憑空假設的問題（多層規格選擇器、整箱訂購、業務聯繫、tabs、加購區）
-// 只留客戶 PDF 明確提到 + 跟 HJ 現有概念有關的兩題
 const QUESTIONS = [
   {
-    no: "Q10",
+    no: "Q1",
     question: "商品影片來源？",
     context: "選項：後台直接上傳影片檔 / 嵌入 YouTube、Vimeo 連結",
     pinnedAt: "圖片區下方「商品影片」按鈕",
-    importance: "high" as const,
   },
   {
-    no: "Q16",
+    no: "Q2",
     question: "詳情頁是否顯示「會員專屬價」？非會員看到什麼？",
     context:
       "HJ 現網站做法：未登入只看到「立即登入/註冊」，登入後才看到價格。要保留這做法、還是改成「非會員看零售價、會員看折扣價」？",
     pinnedAt: "價格區",
-    importance: "high" as const,
   },
 ];
 
@@ -114,19 +109,9 @@ export default function ProductsDetailPage() {
             {QUESTIONS.map((q) => (
               <article
                 key={q.no}
-                className={`relative flex gap-4 rounded-lg border bg-white p-5 ${
-                  q.importance === "high"
-                    ? "border-rose-300"
-                    : "border-amber-200"
-                }`}
+                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
               >
-                <span
-                  className={`flex size-8 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold ${
-                    q.importance === "high"
-                      ? "bg-rose-500 text-white"
-                      : "bg-amber-100 text-amber-800"
-                  }`}
-                >
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
                   {q.no}
                 </span>
                 <div className="flex-1">

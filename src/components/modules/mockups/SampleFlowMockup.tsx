@@ -1,40 +1,40 @@
 import { QuestionPin } from "../CommentSystem";
 
-const Q6 = {
-  no: "Q6",
+const Q1 = {
+  no: "Q1",
   question: "樣品申請是否要收費？運費誰付？",
   context:
     "選項：① 完全免費 ② 樣品免費但運費自付 ③ 限金額或會員等級。影響表單後是否有結帳流程。",
 };
-const Q7 = {
-  no: "Q7",
+const Q2 = {
+  no: "Q2",
   question: "樣品申請是否限會員才能申請？",
   context:
     "選項：① 任何人皆可申請（要填收件資料）② 必須登入會員 ③ 須註冊但不需審核。影響流程入口。",
 };
-const Q8 = {
-  no: "Q8",
+const Q3 = {
+  no: "Q3",
   question: "是否需要後台人工審核才寄出？",
   context:
     "選項：① 自動寄出（送出表單立即進出貨流程）② 業務審核通過後才寄出（可避免濫用）。後者增加處理時間但較安全。",
 };
-const Q19 = {
-  no: "Q19",
+const Q4 = {
+  no: "Q4",
   question: "一次最多可以申請幾件樣品？",
   context: "範例：1 件 / 3 件 / 不限。影響表單的商品選擇器 UI。",
 };
-const Q20 = {
-  no: "Q20",
+const Q5 = {
+  no: "Q5",
   question: "樣品寄送方式有哪些？",
   context: "選項：超商取貨 / 宅配到府 / 自取。影響表單收件資訊欄位。",
 };
-const Q21 = {
-  no: "Q21",
+const Q6 = {
+  no: "Q6",
   question: "客戶是否能在會員中心查申請狀態？",
   context: "若要做：需要會員中心多一個「樣品申請紀錄」頁，可看狀態（申請中／審核中／已寄出／已收到）。",
 };
-const Q22 = {
-  no: "Q22",
+const Q7 = {
+  no: "Q7",
   question: "樣品申請的必填欄位有哪些？",
   context:
     "標配：姓名／公司名／電話／收件地址。可選：統編、用途說明、希望寄達日。每個欄位都要客戶確認是必填還是選填。",
@@ -205,7 +205,7 @@ export function SampleFlowMockup({
             show={annotations}
             pageId={pageId}
             label="要登入嗎？"
-            questions={[Q7]}
+            questions={[Q2]}
           />
           <Arrow />
 
@@ -221,7 +221,7 @@ export function SampleFlowMockup({
             show={annotations}
             pageId={pageId}
             label="表單欄位／件數／寄送方式"
-            questions={[Q22, Q19, Q20]}
+            questions={[Q7, Q4, Q5]}
           />
           <Arrow />
 
@@ -237,7 +237,7 @@ export function SampleFlowMockup({
             show={annotations}
             pageId={pageId}
             label="後台是否要審核？"
-            questions={[Q8]}
+            questions={[Q3]}
           />
           <Arrow />
 
@@ -253,7 +253,7 @@ export function SampleFlowMockup({
             show={annotations}
             pageId={pageId}
             label="收費 / 運費規則？"
-            questions={[Q6]}
+            questions={[Q1]}
           />
           <Arrow />
 
@@ -277,7 +277,7 @@ export function SampleFlowMockup({
             show={annotations}
             pageId={pageId}
             label="查詢狀態頁要做嗎？"
-            questions={[Q21]}
+            questions={[Q6]}
           />
         </div>
 
