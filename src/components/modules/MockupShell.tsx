@@ -1,21 +1,3 @@
-function LockIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
 function SearchIcon({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -74,14 +56,55 @@ function UserIcon({ className = "" }: { className?: string }) {
   );
 }
 
+function MonitorIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+      <line x1="8" y1="21" x2="16" y2="21" />
+      <line x1="12" y1="17" x2="12" y2="21" />
+    </svg>
+  );
+}
+
 export function MockupShell({
-  url: _url,
+  url,
   children,
 }: {
   url?: string;
   children: React.ReactNode;
 }) {
-  return <div className="bg-white">{children}</div>;
+  return (
+    <div className="overflow-hidden rounded-2xl border-2 border-zinc-400 bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]">
+      {/* 預覽框上方的 label bar — 讓客戶清楚這是「新網站的實際畫面」 */}
+      <div className="flex items-center gap-2 border-b-2 border-zinc-400 bg-zinc-900 px-4 py-2 text-xs text-zinc-300">
+        <span className="flex items-center gap-1.5 text-amber-300">
+          <MonitorIcon />
+          <span className="font-mono uppercase tracking-widest">
+            Live Preview
+          </span>
+        </span>
+        <span className="text-zinc-500">／</span>
+        <span className="text-zinc-300">新網站客戶端實際畫面（非提案介面）</span>
+        {url && (
+          <span className="ml-auto truncate font-mono text-zinc-500">
+            {url}
+          </span>
+        )}
+      </div>
+
+      {/* 實際 mockup 內容 */}
+      <div className="bg-white">{children}</div>
+    </div>
+  );
 }
 
 export function MockupSiteHeader() {

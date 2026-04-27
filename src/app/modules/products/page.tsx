@@ -109,7 +109,7 @@ export default function ProductsModulePage() {
       />
 
       {/* Current mockup */}
-      <section className="bg-zinc-50 px-6 py-10">
+      <section className="bg-zinc-200/70 px-6 py-10">
         <div className="mx-auto max-w-[1760px]">
           <ProductListMockup annotations={annotations} pageId={PAGE_ID} />
         </div>
