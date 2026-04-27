@@ -1,4 +1,4 @@
-import { Questioned } from "../CommentSystem";
+import { QuestionPin } from "../CommentSystem";
 
 const Q6 = {
   no: "Q6",
@@ -123,25 +123,12 @@ function DecisionPoint({
   show: boolean;
   label: string;
 }) {
-  const inner = (
-    <div className="rounded-full border-2 border-rose-400 bg-rose-50 px-5 py-2 text-center text-sm font-bold text-rose-800 shadow-sm">
-      ❓ 決策點：{label}
-    </div>
-  );
   return (
-    <div className="flex justify-center py-1">
-      {show ? (
-        <Questioned
-          show
-          questions={questions}
-          pageId={pageId}
-          position="top-right"
-        >
-          {inner}
-        </Questioned>
-      ) : (
-        inner
-      )}
+    <div className="flex flex-wrap items-center justify-center gap-3 py-1">
+      <div className="rounded-full border-2 border-rose-400 bg-rose-50 px-5 py-2 text-center text-sm font-bold text-rose-800 shadow-sm">
+        ❓ 決策點：{label}
+      </div>
+      {show && <QuestionPin questions={questions} pageId={pageId} />}
     </div>
   );
 }
