@@ -7,7 +7,6 @@ import {
   CommentTrigger,
 } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
-import { ModuleHero } from "@/components/modules/ModuleHero";
 import { ProductDetailMockup } from "@/components/modules/mockups/ProductDetailMockup";
 import { PRODUCTS_MOCKUPS } from "@/lib/products-mockups";
 
@@ -30,14 +29,7 @@ const QUESTIONS = [
     pinnedAt: "圖片區下方「商品影片」按鈕",
     importance: "high" as const,
   },
-  {
-    no: "Q11",
-    question: "商品 3D 圖整合方式？",
-    context:
-      "Pacdora Editor API（月費）／自製 Three.js（一次性）／360° 旋轉拍照／暫不做。詳見 obs 文件 10。",
-    pinnedAt: "圖片區下方「3D 預覽」按鈕",
-    importance: "high" as const,
-  },
+  // Q11（3D 圖整合）暫時移除 — 待 Pacdora 報價確認後再放回
   {
     no: "Q13",
     question: "規格切換要切到不同 URL 還是同頁切？",
@@ -90,44 +82,41 @@ export default function ProductsDetailPage() {
         setAnnotations={setAnnotations}
       />
 
-      <ModuleHero
-        no="01"
-        title="公版商品系統"
-        subtitle="商品詳情頁預覽"
-        tone="amber"
-        right={
-          <>
-            <span className="text-xs font-medium text-zinc-500">預覽畫面：</span>
-            {PRODUCTS_MOCKUPS.map((m) => {
-              const active = m.id === ACTIVE_TAB;
-              const cls = `rounded-full border px-3 py-1 text-xs transition-colors ${
-                active
-                  ? "border-zinc-900 bg-zinc-900 text-white"
-                  : m.ready
-                    ? "border-zinc-400 bg-white text-zinc-700 hover:border-zinc-700"
-                    : "border-zinc-300 bg-zinc-100 text-zinc-400 cursor-not-allowed"
-              }`;
-              const content = (
-                <>
-                  {m.name}
-                  {!m.ready && (
-                    <span className="ml-1 text-[10px] opacity-60">（製作中）</span>
-                  )}
-                </>
-              );
-              return m.ready && !active ? (
-                <Link key={m.id} href={m.href} className={cls}>
-                  {content}
-                </Link>
-              ) : (
-                <button key={m.id} disabled={!m.ready} className={cls}>
-                  {content}
-                </button>
-              );
-            })}
-          </>
-        }
-      />
+      {/* Mockup tabs — 預覽切換為主角 */}
+      <section className="border-b-2 border-zinc-400 bg-amber-50/60 px-6 py-3">
+        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-2">
+          <span className="mr-2 text-sm font-medium text-amber-900">
+            公版商品 預覽：
+          </span>
+          {PRODUCTS_MOCKUPS.map((m) => {
+            const active = m.id === ACTIVE_TAB;
+            const cls = `rounded-full border-2 px-4 py-1.5 text-sm font-medium transition-colors ${
+              active
+                ? "border-zinc-900 bg-zinc-900 text-white shadow-sm"
+                : m.ready
+                  ? "border-zinc-400 bg-white text-zinc-700 hover:border-zinc-900 hover:bg-amber-100"
+                  : "border-zinc-300 bg-zinc-100 text-zinc-400 cursor-not-allowed"
+            }`;
+            const content = (
+              <>
+                {m.name}
+                {!m.ready && (
+                  <span className="ml-1 text-[10px] opacity-60">（製作中）</span>
+                )}
+              </>
+            );
+            return m.ready && !active ? (
+              <Link key={m.id} href={m.href} className={cls}>
+                {content}
+              </Link>
+            ) : (
+              <button key={m.id} disabled={!m.ready} className={cls}>
+                {content}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Current mockup */}
       <section className="bg-zinc-200/70 px-6 py-10">

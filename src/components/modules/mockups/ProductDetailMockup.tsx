@@ -16,12 +16,7 @@ const Q10 = {
   question: "商品影片來源？",
   context: "選項：後台直接上傳影片檔 / 嵌入 YouTube / Vimeo 連結。前者佔伺服器空間，後者較省。",
 };
-const Q11 = {
-  no: "Q11",
-  question: "商品 3D 圖整合方式？",
-  context:
-    "選項：① Pacdora Editor API（月費，現成模板）② 自製 Three.js（一次性開發）③ 360° 旋轉拍照（無 3D 但有立體感）④ 暫不做。詳見 obs 文件 10。",
-};
+// Q11（3D 圖整合）暫時移除，待 Pacdora 確認可行後再加回對應的「3D 預覽」按鈕
 const Q13 = {
   no: "Q13",
   question: "規格切換要切到不同 URL，還是同頁切？",
@@ -66,24 +61,6 @@ function PlayIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
       <polygon points="5 3 19 12 5 21 5 3" />
-    </svg>
-  );
-}
-function CubeIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-      <line x1="12" y1="22.08" x2="12" y2="12" />
     </svg>
   );
 }
@@ -255,20 +232,13 @@ export function ProductDetailMockup({
               ))}
             </div>
 
-            {/* Media buttons (Q10 / Q11) */}
+            {/* Media buttons (Q10) — 3D 預覽待 Pacdora 確認後再放回 */}
             <div className="mt-5 flex gap-2">
               {wrapQ(
                 [Q10],
                 <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3.5 py-2 text-sm text-zinc-700 hover:border-zinc-700">
                   <PlayIcon />
                   商品影片
-                </button>,
-              )}
-              {wrapQ(
-                [Q11],
-                <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3.5 py-2 text-sm text-zinc-700 hover:border-zinc-700">
-                  <CubeIcon />
-                  3D 預覽
                 </button>,
               )}
 
