@@ -6,52 +6,17 @@ import {
 } from "../MockupShell";
 
 /* ============== Questions ============== */
-const Q1 = {
-  no: "Q1",
-  question: "多層規格選項要支援幾層？",
-  context: "例：紙杯 → 容量（8oz/12oz）→ 材質（PE/PLA）→ 印刷（單面/雙面）= 3 層",
-};
 const Q10 = {
   no: "Q10",
   question: "商品影片來源？",
-  context: "選項：後台直接上傳影片檔 / 嵌入 YouTube / Vimeo 連結。前者佔伺服器空間，後者較省。",
-};
-// Q11（3D 圖整合）暫時移除，待 Pacdora 確認可行後再加回對應的「3D 預覽」按鈕
-const Q13 = {
-  no: "Q13",
-  question: "規格切換要切到不同 URL，還是同頁切？",
   context:
-    "切 URL → 每個規格組合有獨立網址，SEO 加分、可加入書籤；同頁切 → 反應快、共用同一頁，但無法針對特定規格收藏。建議：B2B 客戶常重複下單，獨立 URL 較佳。",
-};
-const Q14 = {
-  no: "Q14",
-  question: "詳情頁是否顯示真實庫存量？",
-  context:
-    "選項：① 顯示精確數字（500 入）② 顯示分級（現貨/僅剩少量/缺貨）③ 不顯示，一律「可下單」由業務協調。B2B 客戶一次下幾百箱，精確數字可能不利商談。",
-};
-const Q15 = {
-  no: "Q15",
-  question: "數量輸入支援整箱訂購？MOQ（最低訂購量）怎麼顯示？",
-  context:
-    "B2B 包材常以箱為單位，建議：① 數量步進器以 50/100 為單位 ② 一鍵切「整箱模式」直接輸入箱數 ③ MOQ 提示 + 自動補足到 MOQ。",
+    "選項：後台直接上傳影片檔 / 嵌入 YouTube、Vimeo 連結。前者佔伺服器空間，後者較省。",
 };
 const Q16 = {
   no: "Q16",
   question: "詳情頁是否顯示「會員專屬價」？非會員看到什麼？",
   context:
-    "選項：① 一律「請洽詢」+ 引導登入 ② 非會員看標準零售價、會員看 X 折 ③ 不分等級，全部會員看同一價。",
-};
-const Q17 = {
-  no: "Q17",
-  question: "是否要「請業務聯繫」按鈕？走 LINE@ 還是表單？",
-  context:
-    "B2B 大宗訂購常需先談條件再下單。LINE@ 對業務最直接，但要培訓客服；表單可結構化收 lead。建議兩者都做：表單為主、附 LINE@ 備援。",
-};
-const Q18 = {
-  no: "Q18",
-  question: "商品說明分頁要支援哪些欄位？需要可後台維護嗎？",
-  context:
-    "標配：商品說明、規格表、印刷規範、運送資訊。可選：常見問答、案例分享、客戶評論、檢驗報告下載。每項都需要後台 CMS 編輯能力。",
+    "HJ 現網站做法：未登入只看到「立即登入/註冊」，登入後才看到價格。要保留這做法、還是改成「非會員看零售價、會員看折扣價」？",
 };
 
 type QItem = { no: string; question: string; context?: string };
@@ -95,7 +60,7 @@ function MinusIcon() {
     </svg>
   );
 }
-function PhoneIcon() {
+function HeartOutlineIcon() {
   return (
     <svg
       width="14"
@@ -107,59 +72,99 @@ function PhoneIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   );
 }
-function CheckCircleIcon() {
+function BellIcon() {
   return (
     <svg
-      width="12"
-      height="12"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  );
+}
+function PencilIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  );
+}
+function ArrowRightIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
+function ChevronDown() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
 
-/* ============== Data ============== */
-const THUMBNAILS = ["主圖", "正面", "側面", "細節", "包裝"];
-
-const SPECS = {
-  capacity: ["8oz", "12oz", "16oz", "22oz"],
-  color: [
-    { v: "白", c: "#fff" },
-    { v: "牛皮", c: "#92400e" },
-    { v: "黑", c: "#1a1a1a" },
-  ],
-  print: [
-    { v: "未印刷", desc: "純色、無印刷" },
-    { v: "單色印刷", desc: "1 個 PMS 色" },
-    { v: "雙色印刷", desc: "2 個 PMS 色" },
-    { v: "全彩印刷", desc: "CMYK 4 色" },
+/* ============== Data — 對齊 HJ 真實商品結構 ============== */
+const PRODUCT = {
+  title: "公版冷熱共用杯 12oz 白色",
+  tagline:
+    "紙杯再升級! 雙面PE淋膜，冷熱共用不受限，紙杯外層可耐水珠濕氣，維持杯身硬挺!",
+  specs: [
+    { label: "容量", value: "12oz（約 360cc）" },
+    { label: "尺寸", value: "口徑 90 × H110 mm" },
+    { label: "材質", value: "單層食品紙 + 雙面 PE 淋膜" },
+    { label: "單位", value: "50 入/條　20 條/箱" },
+    { label: "耐熱", value: "0°C ~ 90°C，冷熱飲皆可" },
   ],
 };
 
-const TABS = ["商品說明", "規格表", "印刷規範", "運送資訊", "常見問答"];
-
-const ADDONS = [
-  { name: "杯蓋 90mm 口徑", note: "適配 8/12oz", price: "+$NT 280/箱" },
-  { name: "杯墊紙 100gsm", note: "桌面防護", price: "+$NT 120/包" },
-  { name: "外帶提袋 1-4 杯", note: "整套外帶", price: "+$NT 350/組" },
-];
+const THUMBNAILS = ["主圖", "正面", "側面", "細節", "包裝"];
 
 const RELATED = [
-  { code: "PC-12-001", name: "12oz 公版瓦楞紙杯", spec: "100% 食品級紙材" },
-  { code: "PC-16-001", name: "16oz 公版瓦楞紙杯", spec: "100% 食品級紙材" },
-  { code: "DC-08-001", name: "8oz 雙層中空紙杯", spec: "雙層隔熱結構" },
-  { code: "PL-08-001", name: "8oz PLA 環保杯", spec: "可生物分解" },
+  { name: "公版冷熱共用杯 8oz 白色", spec: "8oz / 240cc" },
+  { name: "公版冷熱共用杯 16oz 白色", spec: "16oz / 480cc" },
+  { name: "公版瓦楞杯 12oz", spec: "雙層瓦楞防燙" },
+  { name: "公版 PLA 環保杯 12oz", spec: "可生物分解" },
 ];
 
 /* ============== Component ============== */
@@ -180,49 +185,40 @@ export function ProductDetailMockup({
     );
 
   return (
-    <MockupShell url="https://hjhj.com.tw/products/紙杯類/公版瓦楞杯/PC-08-001">
+    <MockupShell url="https://hjhj.com.tw/products/singlewallpapercuphotandcold-12oz-white">
       <MockupSiteHeader />
 
-      {/* Breadcrumb */}
+      {/* Breadcrumb — 對齊 HJ 真實格式 */}
       <div className="border-b border-zinc-100 bg-white px-6 py-3">
         <div className="mx-auto max-w-[1760px] text-xs text-zinc-500">
-          <a className="hover:text-zinc-900">首頁</a>
+          <a className="hover:text-zinc-900">全部商品</a>
           <span className="mx-2 text-zinc-300">/</span>
-          <a className="hover:text-zinc-900">公版商品</a>
-          <span className="mx-2 text-zinc-300">/</span>
-          <a className="hover:text-zinc-900">紙杯／膠杯類</a>
-          <span className="mx-2 text-zinc-300">/</span>
-          <a className="hover:text-zinc-900">公版瓦楞杯</a>
-          <span className="mx-2 text-zinc-300">/</span>
-          <span className="font-semibold text-zinc-900">8oz 公版瓦楞紙杯</span>
+          <span className="text-zinc-900">─ 暢銷精選 ─</span>
         </div>
       </div>
 
-      {/* Main: image gallery (left) + info & CTA (right) */}
+      {/* Main: image left + info right */}
       <div className="bg-zinc-50/50 px-6 py-10">
         <div className="mx-auto grid max-w-[1760px] grid-cols-1 gap-10 lg:grid-cols-2">
-          {/* ===== Left: image gallery + media buttons ===== */}
+          {/* Left: image gallery */}
           <div>
-            {/* Main image */}
             <div className="relative aspect-square overflow-hidden rounded-xl border border-zinc-200 bg-white">
               <div className="absolute inset-0 flex items-center justify-center text-zinc-300">
                 <div className="text-center">
                   <div className="text-base font-medium">主圖</div>
-                  <div className="mt-1 text-xs">8oz 公版瓦楞紙杯</div>
+                  <div className="mt-1 text-xs">{PRODUCT.title}</div>
                 </div>
               </div>
-              <span className="absolute top-4 left-4 rounded bg-white/95 px-2 py-0.5 text-[10px] font-medium text-zinc-700 border border-zinc-300">
-                新品
-              </span>
             </div>
 
-            {/* Thumbnails */}
             <div className="mt-3 grid grid-cols-5 gap-2">
               {THUMBNAILS.map((label, i) => (
                 <button
                   key={i}
                   className={`relative aspect-square overflow-hidden rounded-md border-2 bg-white ${
-                    i === 0 ? "border-zinc-900" : "border-zinc-200 hover:border-zinc-400"
+                    i === 0
+                      ? "border-zinc-900"
+                      : "border-zinc-200 hover:border-zinc-400"
                   }`}
                 >
                   <span className="absolute inset-0 flex items-center justify-center text-[10px] text-zinc-400">
@@ -232,8 +228,8 @@ export function ProductDetailMockup({
               ))}
             </div>
 
-            {/* Media buttons (Q10) — 3D 預覽待 Pacdora 確認後再放回 */}
-            <div className="mt-5 flex gap-2">
+            {/* 商品影片入口 — Q10 釘這（HJ 現網站沒有，計畫新增的功能） */}
+            <div className="mt-5">
               {wrapQ(
                 [Q10],
                 <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3.5 py-2 text-sm text-zinc-700 hover:border-zinc-700">
@@ -241,325 +237,151 @@ export function ProductDetailMockup({
                   商品影片
                 </button>,
               )}
-
-              {annotations && (
-                <Annotated
-                  show
-                  source="ours"
-                  label="加值功能"
-                  title="影片 / 3D 入口位置"
-                  rationale={
-                    "建議把影片與 3D 入口放在主圖下方，而非藏在「商品說明」分頁裡。\n\n" +
-                    "原因：B2B 客戶查看商品時動線是「主圖 → 縮圖 → 規格 → 加入購物車」，影片如果藏在分頁要往下滑很多才看到，多數人會略過。放主圖旁可在 3 秒內被注意到。\n\n" +
-                    "如要省版面可改成主圖右上角的 ▶ icon 浮層，但點擊範圍小，B2B 不建議。"
-                  }
-                  pageId={pageId}
-                  elementId="media-position"
-                  elementLabel="影片 / 3D 入口位置"
-                  position="top-right"
-                >
-                  <span className="ml-2 text-xs text-zinc-400">↑ 位置編排</span>
-                </Annotated>
-              )}
             </div>
           </div>
 
-          {/* ===== Right: info, spec, qty, price, CTA, addon ===== */}
+          {/* Right: info, specs, price, CTA */}
           <div className="space-y-5">
-            {/* Title block */}
+            {/* Title + tagline — 規格直接寫死在標題（對齊 HJ 真實做法） */}
             <div>
-              <div className="text-xs font-mono text-zinc-400">
-                商品編號：PC-08-001
-              </div>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight text-zinc-900">
-                8oz 公版瓦楞紙杯
+              <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+                {PRODUCT.title}
               </h1>
-              <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
-                100% 食品級紙材，雙層瓦楞防燙設計，適用熱飲。FDA 食品接觸認證。
+              <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+                {PRODUCT.tagline}
               </p>
-              <div className="mt-3 flex items-center gap-3 text-xs">
-                <span className="flex items-center gap-1 text-emerald-700">
-                  <CheckCircleIcon />
-                  FDA 認證
-                </span>
-                <span className="text-zinc-300">|</span>
-                <span className="flex items-center gap-1 text-emerald-700">
-                  <CheckCircleIcon />
-                  ISO 22000
-                </span>
-                <span className="text-zinc-300">|</span>
-                <span className="text-zinc-500">分享商品</span>
-              </div>
             </div>
 
-            {/* Spec selectors (Q1 + Q13) */}
-            {wrapQ(
-              [Q1, Q13],
-              <div className="space-y-5 rounded-xl border border-zinc-200 bg-white p-5">
-                {/* 容量 */}
-                <div>
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span className="font-medium text-zinc-900">容量</span>
-                    <span className="text-xs text-zinc-500">單位：oz / ml</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {SPECS.capacity.map((v) => (
-                      <button
-                        key={v}
-                        className={`rounded-md border px-4 py-2 text-sm transition-colors ${
-                          v === "8oz"
-                            ? "border-zinc-900 bg-zinc-900 text-white font-bold"
-                            : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-900"
-                        }`}
-                      >
-                        {v}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 顏色 */}
-                <div className="border-t border-zinc-100 pt-4">
-                  <div className="mb-2 text-sm font-medium text-zinc-900">顏色</div>
-                  <div className="flex items-center gap-3">
-                    {SPECS.color.map((co, i) => (
-                      <button
-                        key={co.v}
-                        className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition-colors ${
-                          i === 0
-                            ? "border-zinc-900 bg-zinc-50 font-bold text-zinc-900"
-                            : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-900"
-                        }`}
-                      >
-                        <span
-                          className="size-4 rounded-full border border-zinc-200 shadow-inner"
-                          style={{ background: co.c }}
-                        />
-                        {co.v}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 印刷選項 */}
-                <div className="border-t border-zinc-100 pt-4">
-                  <div className="mb-2 text-sm font-medium text-zinc-900">
-                    印刷選項
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {SPECS.print.map((p, i) => (
-                      <button
-                        key={p.v}
-                        className={`flex flex-col items-start gap-0.5 rounded-md border p-3 text-left text-sm transition-colors ${
-                          i === 0
-                            ? "border-zinc-900 bg-zinc-50 font-bold text-zinc-900"
-                            : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-900"
-                        }`}
-                      >
-                        <span>{p.v}</span>
-                        <span className="text-xs font-normal text-zinc-500">
-                          {p.desc}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-3 text-xs text-zinc-500">
-                    需要自訂印刷？請走「私版商品報價系統」可上傳設計稿。
-                  </p>
-                </div>
-              </div>,
-            )}
-
-            {/* Quantity (Q14 + Q15) */}
-            {wrapQ(
-              [Q14, Q15],
-              <div className="rounded-xl border border-zinc-200 bg-white p-5">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="text-sm font-medium text-zinc-900">數量</span>
-                  <div className="flex items-center gap-3 text-xs">
-                    <span className="text-zinc-500">
-                      最低訂購量 (MOQ)：<span className="font-bold text-zinc-900">100</span>
-                    </span>
-                    <span className="text-zinc-300">|</span>
-                    <span className="flex items-center gap-1 font-medium text-emerald-700">
-                      <CheckCircleIcon />
-                      現貨可立即出貨
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center rounded-md border border-zinc-300 bg-white">
-                    <button className="flex size-10 items-center justify-center text-zinc-600 hover:bg-zinc-50">
-                      <MinusIcon />
-                    </button>
-                    <input
-                      type="text"
-                      defaultValue="100"
-                      className="w-20 border-x border-zinc-300 px-3 py-2 text-center text-base font-bold text-zinc-900 focus:outline-none"
-                      readOnly
-                    />
-                    <button className="flex size-10 items-center justify-center text-zinc-600 hover:bg-zinc-50">
-                      <PlusIcon />
-                    </button>
-                  </div>
-                  <span className="text-sm text-zinc-500">入</span>
-
-                  <span className="ml-auto text-zinc-300">|</span>
-
-                  <label className="flex items-center gap-1.5 text-sm text-zinc-700 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="size-4 rounded border-zinc-300 accent-amber-700"
-                    />
-                    整箱訂購（1 箱 = 1,000 入）
-                  </label>
-                </div>
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                  <span className="text-zinc-500">快速選量：</span>
-                  {[100, 500, 1000, 5000].map((q) => (
-                    <button
-                      key={q}
-                      className="rounded border border-zinc-300 bg-white px-2 py-0.5 text-zinc-700 hover:border-zinc-700"
-                    >
-                      {q.toLocaleString()}
-                    </button>
-                  ))}
-                </div>
-              </div>,
-            )}
-
-            {/* Price (Q16) */}
-            {wrapQ(
-              [Q16],
-              <div className="rounded-xl border border-zinc-200 bg-white p-5">
-                <div className="text-3xl font-bold text-zinc-900">
-                  請洽詢
-                </div>
-                <p className="mt-1 text-sm text-emerald-700 font-medium">
-                  登入後可查看會員專屬價
-                </p>
-                <p className="mt-2 text-xs text-zinc-500">
-                  訂購量越多單價越優惠，會員等級越高折扣越多。
-                </p>
-              </div>,
-            )}
-
-            {/* CTA buttons (Q17) */}
-            {wrapQ(
-              [Q17],
-              <div className="space-y-2 rounded-xl border border-zinc-200 bg-white p-5">
-                <button className="flex w-full items-center justify-center gap-2 rounded-md bg-amber-700 px-4 py-3.5 text-base font-bold text-white shadow-sm hover:bg-amber-800">
-                  <PlusIcon />
-                  加入購物車
-                </button>
-                <div className="grid grid-cols-2 gap-2">
-                  <button className="flex items-center justify-center gap-1.5 rounded-md border border-emerald-400 bg-emerald-50 py-2.5 text-sm font-bold text-emerald-700 hover:bg-emerald-100">
-                    申請樣品
-                  </button>
-                  <button className="flex items-center justify-center gap-1.5 rounded-md border border-zinc-400 bg-white py-2.5 text-sm font-bold text-zinc-700 hover:bg-zinc-50">
-                    <PhoneIcon />
-                    請業務聯繫
-                  </button>
-                </div>
-              </div>,
-            )}
-
-            {/* 我們建議: 加購配件 */}
+            {/* Specs list — 結構化 5 欄（HJ 現網站是純文字，後台應字典化） */}
             {annotations ? (
               <Annotated
                 show
                 source="ours"
-                label="加值功能"
-                title="加購配件區"
+                label="後台改善"
+                title="規格欄位後台字典化"
                 rationale={
-                  "在加入購物車按鈕下方，列出常被一起買的搭配商品（如 8oz 紙杯 → 90mm 杯蓋、杯墊、外帶提袋）。\n\n" +
-                  "原因：B2B 餐飲客戶買紙杯通常一起買杯蓋，分開找會增加心智負擔。主動推薦可以提升客單價。\n\n" +
-                  "後台可設定每件主商品的「常見搭配」清單。如不需要可以先不做。"
+                  "HJ 現網站每件商品的「容量／尺寸／材質／單位／耐熱」都是後台手打文字。\n\n" +
+                  "建議後台把這些欄位建成結構化字典：\n" +
+                  "・容量、尺寸：填數字 + 單位下拉\n" +
+                  "・材質：從預建材質清單勾選（牛卡紙、PE、PLA、PET、PP …）\n" +
+                  "・單位：填「入/條/箱」三層數字\n" +
+                  "・耐熱：填上下限數字\n\n" +
+                  "好處：① 上架快 5 倍 ② 前端可結構化展示（規格表）③ 可被搜尋／篩選 ④ 報表分析有結構。\n\n" +
+                  "如不需要可以維持現有「自由打字」模式。"
                 }
                 pageId={pageId}
-                elementId="addons"
-                elementLabel="加購配件區"
+                elementId="spec-fields"
+                elementLabel="規格欄位"
                 position="top-right"
               >
-                <AddonsBox />
+                <SpecBlock />
               </Annotated>
             ) : (
-              <AddonsBox />
+              <SpecBlock />
+            )}
+
+            {/* Price — Q16 */}
+            {wrapQ(
+              [Q16],
+              <div className="rounded-xl border border-zinc-200 bg-white p-5">
+                <div className="text-2xl font-bold text-zinc-900">請洽詢</div>
+                <a className="mt-1 inline-block text-sm font-medium text-amber-700 hover:underline">
+                  立即登入 / 註冊　看會員價
+                </a>
+              </div>,
+            )}
+
+            {/* Quantity input — 簡單數字輸入（對齊 HJ 真實做法） */}
+            <div className="rounded-xl border border-zinc-200 bg-white p-5">
+              <div className="mb-3 text-sm font-medium text-zinc-900">數量</div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center rounded-md border border-zinc-300 bg-white">
+                  <button className="flex size-10 items-center justify-center text-zinc-600 hover:bg-zinc-50">
+                    <MinusIcon />
+                  </button>
+                  <input
+                    type="text"
+                    defaultValue="50"
+                    className="w-20 border-x border-zinc-300 px-3 py-2 text-center text-base font-bold text-zinc-900 focus:outline-none"
+                    readOnly
+                  />
+                  <button className="flex size-10 items-center justify-center text-zinc-600 hover:bg-zinc-50">
+                    <PlusIcon />
+                  </button>
+                </div>
+                <span className="text-sm text-zinc-500">入</span>
+              </div>
+              <p className="mt-2 text-xs text-zinc-500">
+                上方規格已說明：50 入/條，20 條/箱
+              </p>
+            </div>
+
+            {/* Action buttons — 對齊 HJ 真實做法（追蹤、貨到通知） */}
+            <div className="space-y-2">
+              <button className="flex w-full items-center justify-center gap-2 rounded-md bg-amber-700 px-4 py-3.5 text-base font-bold text-white shadow-sm hover:bg-amber-800">
+                <PlusIcon />
+                加入購物車
+              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button className="flex items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white py-2.5 text-sm text-zinc-700 hover:border-zinc-700">
+                  <HeartOutlineIcon />
+                  加入追蹤清單
+                </button>
+                <button className="flex items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white py-2.5 text-sm text-zinc-700 hover:border-zinc-700">
+                  <BellIcon />
+                  貨到通知我
+                </button>
+              </div>
+            </div>
+
+            {/* 按需客製入口 — jcolor 啟發的我們建議：公版 → 私版 的橋 */}
+            {annotations ? (
+              <Annotated
+                show
+                source="ours"
+                label="加值功能（jcolor 啟發）"
+                title="按需客製 / 私版報價入口"
+                rationale={
+                  "在公版商品詳情頁加一個明顯的「按需客製 / 私版報價」按鈕，導到「私版客製商品報價系統」。\n\n" +
+                  "原因：B2B 客戶看公版商品時，常會想到「我要印自家 logo / 改尺寸 / 改材質」。如果沒有明確入口，他們只能離開或寄信問業務，轉換率降低。\n\n" +
+                  "範例：[jcolor BC-67](https://www.jcolor.com.tw/product/BC-67) 在公版商品旁就有「按需客製」按鈕，是公版→客製的橋。\n\n" +
+                  "如不需要可以等私版系統完成後再加。"
+                }
+                pageId={pageId}
+                elementId="custom-cta"
+                elementLabel="按需客製入口"
+                position="top-right"
+              >
+                <CustomCtaButton />
+              </Annotated>
+            ) : (
+              <CustomCtaButton />
             )}
           </div>
         </div>
       </div>
 
-      {/* Tabbed content (Q18) */}
+      {/* Description sections — 簡單 expand 區塊（不是 5 個 tabs） */}
       <div className="border-t border-zinc-200 bg-white px-6 py-12">
-        <div className="mx-auto max-w-[1760px]">
-          {wrapQ(
-            [Q18],
-            <div>
-              {/* Tabs */}
-              <div className="flex border-b border-zinc-200">
-                {TABS.map((t, i) => (
-                  <button
-                    key={t}
-                    className={`px-5 py-3 text-sm transition-colors ${
-                      i === 0
-                        ? "border-b-2 border-zinc-900 font-bold text-zinc-900 -mb-px"
-                        : "text-zinc-500 hover:text-zinc-900"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
+        <div className="mx-auto max-w-[1760px] space-y-3">
+          <ExpandableSection title="商品描述" defaultOpen>
+            <p>
+              本款冷熱共用杯採用單層食品紙 + 雙面 PE 淋膜，外層 PE 可耐水珠濕氣，內層 PE 可耐熱飲不滲漏。
+            </p>
+            <p>
+              口徑 90mm × H110mm，搭配 90mm 平蓋或拱蓋皆可。耐熱範圍 0°C ~ 90°C，適合咖啡、奶茶、果汁等冷熱飲。
+            </p>
+            <p>適用場景：咖啡廳、手搖飲、會議活動、外帶飲品。</p>
+          </ExpandableSection>
 
-              {/* Active tab content */}
-              <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div className="lg:col-span-2 space-y-3 text-sm text-zinc-700 leading-relaxed">
-                  <h3 className="text-base font-bold text-zinc-900">
-                    產品特色
-                  </h3>
-                  <p>
-                    8oz 公版瓦楞紙杯採用 100% 食品級紙材，外層瓦楞結構提供優異隔熱效果，雙手持握不燙手，無需另加杯套。
-                  </p>
-                  <p>
-                    內層為食品級 PE 淋膜，能耐 100°C 熱飲、不易滲漏。底部緊密封口設計，運送過程中不易變形。
-                  </p>
-                  <h3 className="mt-5 text-base font-bold text-zinc-900">
-                    適用情境
-                  </h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>咖啡廳、手搖飲料店外帶</li>
-                    <li>會議、活動、外燴飲料供應</li>
-                    <li>連鎖品牌 logo 印刷（請走私版報價）</li>
-                  </ul>
-                </div>
+          <ExpandableSection title="包裝與配送">
+            <p>包裝：50 入/條　20 條/箱（每箱 1,000 入）</p>
+            <p>配送：本島 7-11、全家、宅配通；超商取貨限重 5kg。</p>
+          </ExpandableSection>
 
-                {/* Side info */}
-                <aside className="space-y-3 rounded-xl border border-zinc-200 bg-zinc-50 p-5 text-sm">
-                  <div>
-                    <div className="text-xs text-zinc-500">材質</div>
-                    <div className="font-medium text-zinc-900">瓦楞紙 + 內層 PE 淋膜</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-zinc-500">尺寸</div>
-                    <div className="font-medium text-zinc-900">高 92mm × 口徑 80mm</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-zinc-500">耐熱</div>
-                    <div className="font-medium text-zinc-900">100°C</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-zinc-500">包裝</div>
-                    <div className="font-medium text-zinc-900">1,000 入 / 箱</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-zinc-500">產地</div>
-                    <div className="font-medium text-zinc-900">台灣</div>
-                  </div>
-                </aside>
-              </div>
-            </div>,
-          )}
+          <ExpandableSection title="檢驗與認證">
+            <p>食品級紙材，FDA 食品接觸認證。提供檢驗報告下載（會員專區）。</p>
+          </ExpandableSection>
         </div>
       </div>
 
@@ -575,17 +397,14 @@ export function ProductDetailMockup({
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {RELATED.map((r) => (
               <article
-                key={r.code}
+                key={r.name}
                 className="group cursor-pointer overflow-hidden rounded-xl border border-zinc-200 bg-white transition-all hover:shadow-md"
               >
                 <div className="aspect-square bg-zinc-100 flex items-center justify-center text-zinc-300 text-xs">
                   商品圖
                 </div>
                 <div className="p-4">
-                  <div className="text-xs font-mono text-zinc-400">
-                    {r.code}
-                  </div>
-                  <div className="mt-1 text-sm font-bold text-zinc-900">
+                  <div className="text-sm font-bold text-zinc-900 leading-snug">
                     {r.name}
                   </div>
                   <div className="mt-1 text-xs text-zinc-500">{r.spec}</div>
@@ -601,32 +420,58 @@ export function ProductDetailMockup({
   );
 }
 
-function AddonsBox() {
+function SpecBlock() {
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-5">
-      <div className="mb-3 text-sm font-bold text-zinc-900">
-        買這支紙杯的人也加購：
-      </div>
-      <ul className="space-y-2.5">
-        {ADDONS.map((a) => (
-          <li
-            key={a.name}
-            className="flex items-center gap-3 rounded-md border border-zinc-200 bg-zinc-50/60 p-3"
-          >
-            <div className="size-12 rounded bg-white border border-zinc-200" />
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-zinc-900 truncate">
-                {a.name}
-              </div>
-              <div className="text-xs text-zinc-500">{a.note}</div>
-            </div>
-            <div className="text-xs font-bold text-amber-700">{a.price}</div>
-            <button className="rounded border border-zinc-300 bg-white px-2 py-1 text-xs text-zinc-700 hover:border-zinc-700">
-              + 加
-            </button>
-          </li>
+      <div className="mb-3 text-sm font-bold text-zinc-900">商品規格</div>
+      <dl className="grid grid-cols-[5rem_1fr] gap-y-2 gap-x-4 text-sm">
+        {PRODUCT.specs.map((s) => (
+          <div key={s.label} className="contents">
+            <dt className="text-zinc-500">{s.label}</dt>
+            <dd className="text-zinc-900">{s.value}</dd>
+          </div>
         ))}
-      </ul>
+      </dl>
     </div>
+  );
+}
+
+function CustomCtaButton() {
+  return (
+    <a
+      href="/modules/private-quote"
+      className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-amber-700 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800 hover:bg-amber-100"
+    >
+      <PencilIcon />
+      需要客製印刷？走「私版客製報價系統」
+      <ArrowRightIcon />
+    </a>
+  );
+}
+
+function ExpandableSection({
+  title,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <details
+      open={defaultOpen}
+      className="group rounded-xl border border-zinc-200 bg-white"
+    >
+      <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-base font-bold text-zinc-900 hover:bg-zinc-50">
+        <span>{title}</span>
+        <span className="text-zinc-400 transition-transform group-open:rotate-180">
+          <ChevronDown />
+        </span>
+      </summary>
+      <div className="space-y-2 border-t border-zinc-100 px-5 py-4 text-sm text-zinc-700 leading-relaxed">
+        {children}
+      </div>
+    </details>
   );
 }

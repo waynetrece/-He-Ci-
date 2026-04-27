@@ -14,14 +14,10 @@ const PAGE_ID = "products-detail";
 const PAGE_LABEL = "公版商品系統 — 商品詳情頁";
 const ACTIVE_TAB = "detail";
 
+// 詳情頁重做版本 — 對齊 HJ 真實結構（公版冷熱共用杯 12oz 白色 為樣本）
+// 拿掉所有憑空假設的問題（多層規格選擇器、整箱訂購、業務聯繫、tabs、加購區）
+// 只留客戶 PDF 明確提到 + 跟 HJ 現有概念有關的兩題
 const QUESTIONS = [
-  {
-    no: "Q1",
-    question: "多層規格選項要支援幾層？",
-    context: "例：紙杯 → 容量 → 顏色 → 印刷 = 3 層",
-    pinnedAt: "規格選擇器",
-    importance: "high" as const,
-  },
   {
     no: "Q10",
     question: "商品影片來源？",
@@ -29,44 +25,13 @@ const QUESTIONS = [
     pinnedAt: "圖片區下方「商品影片」按鈕",
     importance: "high" as const,
   },
-  // Q11（3D 圖整合）暫時移除 — 待 Pacdora 報價確認後再放回
-  {
-    no: "Q13",
-    question: "規格切換要切到不同 URL 還是同頁切？",
-    context: "影響 SEO、書籤、分享。B2B 客戶常重複下單，獨立 URL 較佳。",
-    pinnedAt: "規格選擇器",
-  },
-  {
-    no: "Q14",
-    question: "詳情頁是否顯示真實庫存量？",
-    context: "選項：顯示精確數字 / 顯示分級（現貨/缺貨）/ 不顯示。",
-    pinnedAt: "數量輸入區",
-  },
-  {
-    no: "Q15",
-    question: "數量輸入支援整箱訂購？MOQ 怎麼顯示？",
-    context: "B2B 包材常以箱為單位，建議整箱模式 + MOQ 提示。",
-    pinnedAt: "數量輸入區",
-  },
   {
     no: "Q16",
     question: "詳情頁是否顯示「會員專屬價」？非會員看到什麼？",
-    context: "選項：一律「請洽詢」/ 非會員看零售價、會員看折扣 / 全會員同一價。",
+    context:
+      "HJ 現網站做法：未登入只看到「立即登入/註冊」，登入後才看到價格。要保留這做法、還是改成「非會員看零售價、會員看折扣價」？",
     pinnedAt: "價格區",
     importance: "high" as const,
-  },
-  {
-    no: "Q17",
-    question: "是否要「請業務聯繫」按鈕？走 LINE@ 還是表單？",
-    context: "B2B 大宗訂購常需先談條件再下單。建議：表單為主、LINE@ 備援。",
-    pinnedAt: "加入購物車區",
-  },
-  {
-    no: "Q18",
-    question: "商品說明分頁要支援哪些欄位？需要可後台維護嗎？",
-    context:
-      "標配：商品說明 / 規格表 / 印刷規範 / 運送資訊。可選：常見問答、案例、評論、檢驗報告。",
-    pinnedAt: "下方分頁區（商品說明 / 規格表 ...）",
   },
 ];
 
