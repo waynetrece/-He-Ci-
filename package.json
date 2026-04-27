@@ -2,6 +2,7 @@
   "name": "hj-proposal",
   "version": "0.1.0",
   "private": true,
+  "description": "禾啟 HJ 餐飲包材電商平台 — 提案微網站",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
