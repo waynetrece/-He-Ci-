@@ -8,52 +8,78 @@ import {
   CommentTrigger,
 } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
-import { PrivateQuoteListMockup } from "@/components/modules/mockups/PrivateQuoteListMockup";
+import { PrivateQuoteMockup } from "@/components/modules/mockups/PrivateQuoteMockup";
 import { PRIVATE_QUOTE_MOCKUPS } from "@/lib/private-quote-mockups";
 
-const PAGE_ID = "private-quote-list";
-const PAGE_LABEL = "私版報價系統 — 商品列表頁";
-const ACTIVE_TAB = "list";
+const PAGE_ID = "private-quote-form";
+const PAGE_LABEL = "私版報價系統 — 即時報價單品頁";
+const ACTIVE_TAB = "form";
+
+const SAMPLE_REF = {
+  source: "前台 / 私版商品系列 (2)",
+  quote: "客服、客人提供製作原始檔、下單，均轉 LINE 客服",
+};
 
 const QUESTIONS = [
   {
     no: "Q1",
-    question: "私版即時報價支援哪幾類商品？",
+    question: "Email 註冊的會員，是否強制綁定 LINE 才能用「自動傳送 LINE」？",
     context:
-      "選項：① 全部公版 8 大類都做 ② 只做熱門類別（如紙杯、紙袋、印刷紙品）③ 由 HJ 自行配置。範圍越大，計價邏輯越複雜，且需提供對應價目表。",
-    pinnedAt: "第 1 張商品卡（代表性入口）",
+      "技術限制：LINE 平台不允許用 Email 反查 LINE userId。Email 會員必須在會員中心做一次「綁定 LINE」按鈕，後台才能 push。注意：不綁定的人仍可使用「手動傳送」（路徑 A），不會被擋在門外。",
+    pinnedAt: "情境 B『自動傳送』卡片 + 會員中心『未綁定』情境",
     clientRef: {
-      source: "前台 / 私版商品系列 (1) + 參考 jcolor BC-67",
-      quote: "客人在網站上點選需求選項得到報價；參考 jcolor.com.tw/product/BC-67",
+      source: "前台 / 官網 (3) + 私版商品系列 (1)(2)",
+      quote: "註冊方式：LINE.Email（需驗證）；複雜客製商品轉 LINE 客服報價",
+      note: "因 LINE 平台規則，需請貴司確認 Email 註冊會員的綁定流程是否強制。",
     },
   },
   {
     no: "Q2",
-    question: "「即時報價」與「LINE 報價」如何分流？",
+    question: "即時報價的計價公式由 HJ 提供嗎？",
     context:
-      "建議在每張商品卡上標示「即時報價」或「LINE 報價」標籤，客戶一眼看出能不能站內試算。標準依據可由貴司提供（例如 HJ 自行決定哪些品項、哪些規格組合走人工估價）。",
-    pinnedAt: "第 5 張卡『模切異形紙袋』（範例：LINE 報價標籤）",
+      "可能形式：① 固定價目表（Excel 提供，每組規格對一個單價）② 底價 × 加成（例：紙杯 $1.5 × 雙面 1.3 × 全彩 1.5）③ 階梯式級距價。沒有公式系統就無法即時試算。",
+    pinnedAt: "Step 4『數量』區（影響試算邏輯）",
     clientRef: {
-      source: "前台 / 私版商品系列 (1)(2)",
-      quote: "(1) 客人在網站上點選需求選項得到報價；(2) 複雜客製商品轉 LINE 客服報價",
-      note: "需求表寫了兩種模式並存，但「哪些算複雜需轉 LINE」的判斷規則需貴司提供。",
+      source: "前台 / 私版商品系列 (1)",
+      quote: "客人在網站上點選需求選項得到報價",
+      note: "需提供計價公式 / 價目表（例：每組規格對應單價的對照表，或底價搭配加成倍率），系統才能進行即時試算。",
     },
   },
   {
     no: "Q3",
-    question: "列表頁是否要顯示「起報金額」？",
+    question: "能算的報價，是否要做「直接下單」按鈕？",
     context:
-      "如顯示「12oz 客製紙杯 起 $1.50/個」，可協助客戶第一眼判斷是否符合預算，但前提是價目表已建立。如不顯示，客戶須點進詳細頁才能看到價格。",
-    pinnedAt: "第 4 張卡『客製牛皮紙袋』（範例：起報金額）",
+      "需釐清下單流程的銜接方式。可選方案：① 能即時報價的，直接從網站購物車結帳，不必經 LINE；② 即時報價只供參考，所有下單一律由 LINE 客服確認後成立。兩者對流程設計影響很大。",
+    pinnedAt: "右側報價結果『立即下單』按鈕",
+    clientRef: {
+      source: "前台 / 私版商品系列 (1)(2)",
+      quote: "(1) 客人在網站上點選需求選項得到報價；(2) 客服、客人提供製作原始檔、下單，均轉 LINE 客服",
+      note: "需求表 (1)(2) 兩段對下單流程的描述有兩種解讀，請貴司決定希望走哪一種。",
+    },
+  },
+  {
+    no: "Q4",
+    question: "設計檔（印刷原始檔）的上傳，要做在網站上、還是強制 LINE 傳？",
+    context:
+      "選項：① 網站做檔案上傳區（FTP / 雲端儲存）② 提示「請傳到 LINE 客服」③ 兩者都做（網站上傳為主，LINE 為輔）。檔案大小、格式（AI / PDF）也要同步確認。",
+    pinnedAt: "Step 5『上傳設計檔』區",
+    clientRef: { ...SAMPLE_REF, note: "需求表寫到原始檔走 LINE，但大檔案在 LINE 上傳體驗較差，建議搭配網站上傳功能。請貴司確認偏好的方式。" },
+  },
+  {
+    no: "Q5",
+    question: "報價有效期幾天？過期後客戶看到什麼？",
+    context:
+      "範例：7 天 / 14 天 / 30 天。過期後選項：① 自動失效要求重新詢價 ② 顯示「此報價已過期」+ 一鍵帶回相同規格再詢一次。為了避免價格爭議，幾乎所有 B2B 報價系統都會設有效期。",
+    pinnedAt: "右側報價結果『加入詢價單／立即下單』下方",
     clientRef: {
       source: "需求表未提及（補充項）",
       quote: "（這項在需求表沒有對應段落）",
-      note: "顯示與否影響使用者決策速度，建議貴司確認。",
+      note: "報價有效期是 B2B 報價系統的標配，建議補上。請貴司指定希望的天數。",
     },
   },
 ];
 
-export default function PrivateQuoteListPage() {
+export default function PrivateQuoteFormPage() {
   const [annotations, setAnnotations] = useState(true);
 
   return (
@@ -104,7 +130,7 @@ export default function PrivateQuoteListPage() {
       {/* Mockup */}
       <section className="bg-zinc-200/70 px-6 py-10">
         <div className="mx-auto max-w-[1760px]">
-          <PrivateQuoteListMockup annotations={annotations} pageId={PAGE_ID} />
+          <PrivateQuoteMockup annotations={annotations} pageId={PAGE_ID} />
         </div>
       </section>
 
@@ -188,8 +214,8 @@ export default function PrivateQuoteListPage() {
       </section>
 
       <ModuleFooterNav
-        prev={{ title: "公版商品系統", href: "/modules/products" }}
-        next={{ title: "即時報價單品頁", href: "/modules/private-quote/quote-form" }}
+        prev={{ title: "私版商品列表頁", href: "/modules/private-quote" }}
+        next={{ title: "會員系統", href: "/modules/members" }}
       />
     </main>
   );
