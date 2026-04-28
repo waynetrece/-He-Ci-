@@ -18,10 +18,10 @@ const ACTIVE_TAB = "settings";
 const QUESTIONS = [
   {
     no: "Q1",
-    question: "LINE 帳號綁定是否強制？通知範圍由誰開關？綁定中斷後如何處理？",
+    question: "LINE 帳號綁定是否強制？通知範圍由誰開關？綁定中斷或推播失敗時如何處理？",
     context:
-      "目前先以這樣示意：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。想請 HJ 確認。",
-    pinnedAt: "LINE 帳號綁定區塊",
+      "目前先以這樣示意：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。注意：LINE 通知需會員完成綁定且未封鎖官方帳號才能送達；若推播失敗，本提案先以「保留通知於會員中心 + 改寄 Email」為備援，想請 HJ 確認此備援方式。",
+    pinnedAt: "LINE 帳號綁定 / 通知 區塊",
     clientRef: {
       source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
       quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
@@ -62,6 +62,18 @@ const QUESTIONS = [
       source: "後台 / 顧客管理 (1)",
       quote: "API 串接：網站客人需與原 ERP 客戶編號相同",
       note: "需求表寫了 ERP 編號要對應，但會員是否能修改公司資料、是否需審核同步 ERP 未指定。",
+    },
+  },
+  {
+    no: "Q5",
+    question: "HJ 是否已有 LINE 官方帳號、LINE Login Channel 與 Messaging API Channel？通知事件清單與通知對象由誰決定？",
+    context:
+      "LINE 整合需確認的前置條件（請 HJ 一次回覆）：① 是否已有 LINE 官方帳號？管理員權限可授權？② 是否已啟用 LINE Login Channel（給網站登入用）？③ 是否已啟用 Messaging API Channel（給通知用）？④ 兩個 Channel 是否在同一 Provider 底下（影響 userId 一致性）？⑤ 月訊息額度是否足夠？⑥ 通知事件清單（訂單成立 / 備貨 / 出貨 / 送達 / 報價回覆 / 樣品出貨 / 退換貨進度）哪些要發、發給誰（下單人 / 公司主聯絡人 / 收貨聯絡人）？⑦ 通知失敗備援（補寄 Email / 只留會員中心）？⑧ LINE 登入是否要取得 email（需向 LINE 申請額外權限）？",
+    pinnedAt: "「LINE 在本系統的功能」拆分說明區",
+    clientRef: {
+      source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
+      quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
+      note: "需求表只寫了「LINE 註冊 / 轉 LINE 客服」，未交代 LINE 帳號 / Channel / 通知事件等前置條件。這些條件會直接影響可否落地。",
     },
   },
 ];

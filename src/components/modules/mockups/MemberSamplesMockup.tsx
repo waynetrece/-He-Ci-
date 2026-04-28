@@ -13,6 +13,18 @@ import {
 
 const Q1 = {
   no: "Q1",
+  question: "「樣品申請紀錄」是否要做進會員中心？這是我們建議的延伸功能，需求表只明確要「樣品申請按鈕」",
+  context:
+    "目前先以這樣示意：把樣品申請流程之後的紀錄整合到會員中心，讓會員能查申請狀態、收件地址、物流追蹤、備註。想請 HJ 確認此功能是否要保留，以及狀態是否要與 ERP / 出貨資料對應。若不做，會員端只保留「樣品申請按鈕」，後續狀態以 LINE 或 Email 通知。",
+  clientRef: {
+    source: "前台 / 公版商品系列 (2)",
+    quote: "樣品申請：每個商品頁增加樣品按鈕",
+    note: "需求表只寫了「樣品申請按鈕」。「樣品申請紀錄」是我們延伸建議的功能，不是客戶明確要求。",
+  },
+};
+
+const Q3 = {
+  no: "Q3",
   question: "個人會員是否能申請樣品？或只開放給企業客戶（避免樣品申請濫用）？",
   context:
     "目前先以這樣示意：① 企業客戶可正常申請與查看紀錄 ② 個人會員可申請但「每年限 X 件」（具體上限想請 HJ 決定）。想請 HJ 確認是否需要對個人會員設限。",
@@ -76,6 +88,24 @@ function ChevronLeft() {
   );
 }
 
+function ChevronDown({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
 function PlusIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -97,48 +127,116 @@ const STATUS_META: Record<SampleStatus, { label: string; cls: string; iconColor:
   closed: { label: "已關閉", cls: "bg-rose-100 text-rose-700", iconColor: "text-rose-500" },
 };
 
-const SAMPLES = [
+type SampleDetail = {
+  applicantNote: string;
+  recipient: { name: string; phone: string; address: string };
+  trackingHistory: { time: string; event: string }[];
+  followUp?: string;
+};
+
+const SAMPLES: {
+  id: string;
+  date: string;
+  items: string[];
+  status: SampleStatus;
+  appliedFrom: string;
+  note?: string;
+  tracking?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  closedAt?: string;
+  closedReason?: string;
+  detail: SampleDetail;
+}[] = [
   {
     id: "S-20260428-001",
     date: "2026/04/28",
     items: ["12oz 公版瓦楞紙杯（白/黑/牛皮 各 1 個）"],
-    status: "reviewing" as SampleStatus,
+    status: "reviewing",
     appliedFrom: "公版商品列表頁 → 申請樣品",
     note: "業務確認資格中（預計 4/29 完成）",
+    detail: {
+      applicantNote: "想比較三種底色的印刷效果，預計 5 月導入新店家。",
+      recipient: { name: "陳先生", phone: "0912-345-678", address: "台北市信義區忠孝東路 5 段 100 號 8 樓" },
+      trackingHistory: [
+        { time: "2026/04/28 09:12", event: "會員送出樣品申請" },
+        { time: "2026/04/28 14:30", event: "業務 Wendy 已收到，確認會員資格中" },
+      ],
+    },
   },
   {
     id: "S-20260425-008",
     date: "2026/04/25",
     items: ["牛皮紙便當盒（M/L 各 1 個）", "防油背心紙 × 2"],
-    status: "shipped" as SampleStatus,
+    status: "shipped",
     appliedFrom: "公版樣品申請流程",
     tracking: "黑貓 880987654321",
     shippedAt: "2026/04/26",
+    detail: {
+      applicantNote: "需要比較 M/L 兩種尺寸是否能裝下我們店裡常用的雙拼便當。",
+      recipient: { name: "陳先生", phone: "0912-345-678", address: "台北市信義區忠孝東路 5 段 100 號 8 樓" },
+      trackingHistory: [
+        { time: "2026/04/25 11:00", event: "會員送出樣品申請" },
+        { time: "2026/04/25 16:00", event: "審核通過，撿料中" },
+        { time: "2026/04/26 10:15", event: "已交付黑貓宅急便（單號 880987654321）" },
+      ],
+      followUp: "黑貓宅急便預計 2026/04/27 14:00 前送達。",
+    },
   },
   {
     id: "S-20260418-014",
     date: "2026/04/18",
     items: ["PLA 環保杯 12oz × 2"],
-    status: "delivered" as SampleStatus,
+    status: "delivered",
     appliedFrom: "商品詳情頁 → 申請樣品",
     deliveredAt: "2026/04/20",
+    detail: {
+      applicantNote: "想評估 PLA 杯與一般紙杯在飲料溫度下的差異。",
+      recipient: { name: "陳先生", phone: "0912-345-678", address: "台北市信義區忠孝東路 5 段 100 號 8 樓" },
+      trackingHistory: [
+        { time: "2026/04/18 13:20", event: "會員送出樣品申請" },
+        { time: "2026/04/18 17:00", event: "審核通過" },
+        { time: "2026/04/19 10:00", event: "已寄出（黑貓 880123456789）" },
+        { time: "2026/04/20 15:32", event: "已送達" },
+      ],
+      followUp: "本筆樣品已送達，可繼續開「公版商品」訂單，或私版量身詢價。",
+    },
   },
   {
     id: "S-20260410-005",
     date: "2026/04/10",
     items: ["紙吸管套（多色）×5"],
-    status: "delivered" as SampleStatus,
+    status: "delivered",
     appliedFrom: "公版樣品申請流程",
     deliveredAt: "2026/04/12",
+    detail: {
+      applicantNote: "確認多色紙吸管套是否可印刷店家 LOGO。",
+      recipient: { name: "陳先生", phone: "0912-345-678", address: "台北市信義區忠孝東路 5 段 100 號 8 樓" },
+      trackingHistory: [
+        { time: "2026/04/10 09:00", event: "會員送出樣品申請" },
+        { time: "2026/04/10 11:30", event: "審核通過" },
+        { time: "2026/04/11 14:00", event: "已寄出" },
+        { time: "2026/04/12 12:00", event: "已送達" },
+      ],
+    },
   },
   {
     id: "S-20260330-002",
     date: "2026/03/30",
     items: ["客製腰封（範例款）×3"],
-    status: "closed" as SampleStatus,
+    status: "closed",
     appliedFrom: "商品詳情頁",
     closedAt: "2026/04/02",
     closedReason: "申請件數已達當月上限",
+    detail: {
+      applicantNote: "想申請客製腰封樣品，已標註想看的紙質。",
+      recipient: { name: "陳先生", phone: "0912-345-678", address: "台北市信義區忠孝東路 5 段 100 號 8 樓" },
+      trackingHistory: [
+        { time: "2026/03/30 17:00", event: "會員送出樣品申請" },
+        { time: "2026/04/02 10:00", event: "申請已關閉：已達當月個人會員樣品上限" },
+      ],
+      followUp: "可下個月重新申請；或聯繫客服說明採購規模升級為企業客戶。",
+    },
   },
 ];
 
@@ -161,6 +259,18 @@ export function MemberSamplesMockup({
   pageId?: string;
 }) {
   const [statusFilter, setStatusFilter] = useState<SampleStatus | "all">("all");
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(["S-20260425-008"]));
+
+  const toggleExpand = (id: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
 
   const filtered = statusFilter === "all"
     ? SAMPLES
@@ -183,27 +293,47 @@ export function MemberSamplesMockup({
 
       {/* Hero */}
       <section className="border-b border-zinc-200 bg-white px-6 py-5">
-        <div className="mx-auto flex max-w-[1760px] items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-900">樣品申請紀錄</h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              共 <span className="font-bold text-zinc-900">{filtered.length}</span> 筆 ｜ 您本月已申請 <span className="font-bold text-amber-700">2</span> 件
-            </p>
-          </div>
+        <div className="mx-auto max-w-[1760px]">
+          {/* 我們建議橫幅 */}
           <Questioned
             show={annotations}
             questions={[Q1]}
             pageId={pageId}
             position="top-right"
           >
-            <Link
-              href="/modules/products/sample"
-              className="flex items-center gap-1.5 rounded-md bg-amber-700 px-4 py-2 text-sm font-bold text-white hover:bg-amber-800"
-            >
-              <PlusIcon />
-              申請新樣品
-            </Link>
+            <div className="mb-4 flex flex-wrap items-start gap-3 rounded-lg border border-amber-300 bg-amber-50/70 px-4 py-3 text-xs text-amber-900">
+              <span className="rounded-full bg-amber-700 px-2 py-0.5 text-[11px] font-bold text-white">
+                我們建議
+              </span>
+              <p className="flex-1 leading-relaxed">
+                <span className="font-bold">「樣品申請紀錄」是我們延伸建議的功能，不是需求表明確要求。</span>
+                需求表只寫了「樣品申請按鈕」；本提案建議把樣品申請後的狀態整合進會員中心，讓客戶能查申請狀態、收件地址、物流追蹤、備註。想請 HJ 確認是否要保留此功能，以及狀態是否要與 ERP 出貨資料同步。
+              </p>
+            </div>
           </Questioned>
+
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-zinc-900">樣品申請紀錄</h1>
+              <p className="mt-1 text-sm text-zinc-500">
+                共 <span className="font-bold text-zinc-900">{filtered.length}</span> 筆 ｜ 您本月已申請 <span className="font-bold text-amber-700">2</span> 件
+              </p>
+            </div>
+            <Questioned
+              show={annotations}
+              questions={[Q3]}
+              pageId={pageId}
+              position="top-right"
+            >
+              <Link
+                href="/modules/products/sample"
+                className="flex items-center gap-1.5 rounded-md bg-amber-700 px-4 py-2 text-sm font-bold text-white hover:bg-amber-800"
+              >
+                <PlusIcon />
+                申請新樣品
+              </Link>
+            </Questioned>
+          </div>
         </div>
       </section>
 
@@ -240,6 +370,7 @@ export function MemberSamplesMockup({
         <div className="mx-auto max-w-[1760px] space-y-3">
           {filtered.map((s) => {
             const meta = STATUS_META[s.status];
+            const isOpen = expanded.has(s.id);
             return (
               <article
                 key={s.id}
@@ -311,9 +442,67 @@ export function MemberSamplesMockup({
                           取消申請
                         </button>
                       )}
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(s.id)}
+                        className={`flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
+                          isOpen
+                            ? "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800"
+                            : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+                        }`}
+                        aria-expanded={isOpen}
+                      >
+                        {isOpen ? "收合明細" : "查看明細"}
+                        <ChevronDown className={isOpen ? "rotate-180" : ""} />
+                      </button>
                     </div>
                   </div>
                 </div>
+
+                {isOpen && (
+                  <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50/70 p-4">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      <div>
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                          申請備註
+                        </div>
+                        <p className="mt-1.5 text-sm leading-relaxed text-zinc-700">
+                          {s.detail.applicantNote}
+                        </p>
+                      </div>
+                      <div>
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                          收件資訊
+                        </div>
+                        <p className="mt-1.5 text-sm font-semibold text-zinc-900">
+                          {s.detail.recipient.name} ｜ {s.detail.recipient.phone}
+                        </p>
+                        <p className="text-xs text-zinc-600">{s.detail.recipient.address}</p>
+                      </div>
+                      <div className="lg:col-span-2">
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                          狀態紀錄
+                        </div>
+                        <ol className="mt-2 space-y-1.5 text-xs">
+                          {s.detail.trackingHistory.map((h) => (
+                            <li key={`${h.time}-${h.event}`} className="flex gap-2">
+                              <span className="w-[110px] shrink-0 font-mono text-zinc-400">
+                                {h.time}
+                              </span>
+                              <span className="text-zinc-700">{h.event}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                      {s.detail.followUp && (
+                        <div className="lg:col-span-2 rounded-md border border-amber-200 bg-amber-50/70 px-3 py-2 text-xs text-amber-900">
+                          <span className="font-bold">後續：</span>
+                          {s.detail.followUp}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </article>
             );
           })}

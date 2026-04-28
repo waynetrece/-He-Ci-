@@ -37,15 +37,24 @@ const Q2 = {
 
 const Q3 = {
   no: "Q3",
-  question: "退換貨／取消訂單的狀態邊界？目前先採一般線上流程（LINE 主要用於傳送訂單通知，退換貨不走 LINE）",
+  question: "不同訂單狀態下，會員可以取消訂單或申請退換貨嗎？例如：備貨前可取消、出貨後只能申請退換貨、送達後幾天內可申請？",
   context:
-    "目前先以這樣示意（一般線上流程）：① 「待確認 / 已成立」狀態 → 線上自助取消 ② 「備貨中」→ 線上申請後業務審核 ③ 「已出貨」之後 → 線上提交退換貨單，由客服跟進。想請 HJ 確認狀態邊界與審核權責。",
+    "目前先以這樣示意（下方對照表）：① 待確認 → 可線上自助取消 ② 已成立 → 可線上自助取消 ③ 備貨中 → 不建議直接取消，可送出取消申請由業務審核 ④ 已出貨 → 不可取消，只能申請退換貨 ⑤ 已送達 → 在 X 天內可申請退換貨（天數想請 HJ 確認）⑥ 已完成 / 已關閉 → 不開放線上退換貨，只保留客服聯繫。想請 HJ 確認各狀態的可申請條件與「送達後可申請天數」。",
   clientRef: {
     source: "後台 / 訂單管理 (7)",
     quote: "退換貨",
-    note: "需求表只寫「退換貨」，未指定流程細節。本提案先以一般線上流程規劃，LINE 整合僅用於訂單通知傳送。",
+    note: "需求表只寫「退換貨」，未指定不同狀態下能做什麼。本提案先以一般線上流程規劃，LINE 整合僅用於訂單通知傳送，退換貨流程不走 LINE。",
   },
 };
+
+const RETURN_RULES: { status: string; cls: string; action: string; tone: "ok" | "warn" | "block" }[] = [
+  { status: "待確認", cls: "bg-zinc-100 text-zinc-700", action: "可線上自助取消", tone: "ok" },
+  { status: "已成立", cls: "bg-sky-100 text-sky-800", action: "可線上自助取消", tone: "ok" },
+  { status: "備貨中", cls: "bg-amber-100 text-amber-800", action: "送出取消申請，由業務審核", tone: "warn" },
+  { status: "已出貨", cls: "bg-emerald-100 text-emerald-800", action: "不可取消，可申請退換貨", tone: "warn" },
+  { status: "已送達", cls: "bg-emerald-100 text-emerald-800", action: "送達後 X 天內可申請退換貨（天數待 HJ 確認）", tone: "warn" },
+  { status: "已完成 / 已關閉", cls: "bg-zinc-100 text-zinc-700", action: "不開放線上退換貨，請聯繫客服", tone: "block" },
+];
 
 const Q4 = {
   no: "Q4",
@@ -236,16 +245,9 @@ export function MemberOrderDetailMockup({
                 <RepeatIcon />
                 再訂一次
               </button>
-              <Questioned
-                show={annotations}
-                questions={[Q3]}
-                pageId={pageId}
-                position="bottom-right"
-              >
-                <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
-                  退換貨
-                </button>
-              </Questioned>
+              <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
+                退換貨
+              </button>
               <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
                 <TruckIcon />
                 追蹤物流
@@ -294,6 +296,60 @@ export function MemberOrderDetailMockup({
               貨物已從新北市配送中心出發，預計於 2026/04/29 上午送達您的指定地址。
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* 退換貨可申請條件 */}
+      <section className="border-t border-zinc-200 bg-white px-6 py-8">
+        <div className="mx-auto max-w-[1760px]">
+          <Questioned
+            show={annotations}
+            questions={[Q3]}
+            pageId={pageId}
+            position="top-right"
+          >
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-5">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <h2 className="text-base font-bold text-zinc-900">取消 / 退換貨可申請條件</h2>
+                <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[11px] font-bold text-amber-900">
+                  待 HJ 確認天數與權責
+                </span>
+              </div>
+              <p className="mb-3 text-xs text-zinc-600">
+                以下為本提案先示意的條件對照。實際邊界（特別是「送達後可申請天數」、「備貨中能否取消」的審核權責）想請 HJ 確認。
+              </p>
+              <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
+                <table className="w-full text-sm">
+                  <thead className="bg-zinc-50 text-xs text-zinc-500">
+                    <tr>
+                      <th className="px-4 py-2.5 text-left font-medium">訂單狀態</th>
+                      <th className="px-4 py-2.5 text-left font-medium">會員可以做什麼</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100">
+                    {RETURN_RULES.map((r) => (
+                      <tr key={r.status}>
+                        <td className="px-4 py-2.5">
+                          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${r.cls}`}>
+                            {r.status}
+                          </span>
+                        </td>
+                        <td className={`px-4 py-2.5 text-sm ${
+                          r.tone === "ok"
+                            ? "text-emerald-700"
+                            : r.tone === "warn"
+                              ? "text-amber-800"
+                              : "text-zinc-500"
+                        }`}>
+                          {r.action}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </Questioned>
         </div>
       </section>
 

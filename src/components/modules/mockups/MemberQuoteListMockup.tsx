@@ -47,6 +47,18 @@ const Q3 = {
   },
 };
 
+const Q4 = {
+  no: "Q4",
+  question: "LINE 在詢價流程中的定位：通知摘要 + 客服溝通入口（完整明細仍留會員中心）對嗎？",
+  context:
+    "目前先以這樣示意：① 詢價完整明細（規格、檔案、報價、有效期、狀態紀錄）一律在會員中心顯示，可在卡片內展開列查看 ② LINE 只作為「客服溝通 + 通知摘要」入口，不放完整明細 ③ 按鈕從「至 LINE 查看」改成「開啟 LINE 聯繫客服」。想請 HJ 確認此分工。LINE 通知需 HJ 啟用 LINE 官方帳號 + Messaging API + 會員完成綁定才能送達。",
+  clientRef: {
+    source: "前台 / 私版商品系列 (2)",
+    quote: "複雜客製商品轉 LINE 客服報價",
+    note: "需求表只寫了「轉 LINE 客服報價」，沒明確 LINE 是看明細還是只是客服溝通。本提案先把明細留在會員中心、LINE 只作客服與通知，避免承諾 LINE 上有完整明細。",
+  },
+};
+
 /* ============== Icons ============== */
 
 function FilterIcon() {
@@ -69,6 +81,24 @@ function ChevronLeft() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15 18 9 12 15 6" />
+    </svg>
+  );
+}
+
+function ChevronDown({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
@@ -96,47 +126,157 @@ const STATUS_META: Record<QuoteStatus, { label: string; cls: string; sub?: strin
   expired: { label: "已過期", cls: "bg-rose-100 text-rose-700", sub: "可重詢" },
 };
 
-const QUOTES = [
+type QuoteDetail = {
+  product: string;
+  quantity: string;
+  specs: string[];
+  files: { name: string; size: string; status: "已上傳" | "客服審核中" | "需補件" }[];
+  pricing: { item: string; price: string }[];
+  validUntil: string;
+  history: { time: string; event: string; by: "會員" | "HJ 客服" | "系統" }[];
+  lineSummary?: string;
+};
+
+const QUOTES: {
+  id: string;
+  date: string;
+  items: string;
+  estimatedAmount: number;
+  status: QuoteStatus;
+  expiresAt: string;
+  note?: string;
+  detail: QuoteDetail;
+}[] = [
   {
     id: "Q-20260427-002",
     date: "2026/04/27",
     items: "12oz 客製紙杯 × 5,000 / 雙面全彩 + 燙金",
     estimatedAmount: 12500,
-    status: "sent-to-line" as QuoteStatus,
+    status: "sent-to-line",
     expiresAt: "2026/05/04",
+    detail: {
+      product: "12oz 客製紙杯（500ml 規格）",
+      quantity: "5,000 入",
+      specs: [
+        "杯型：12oz / 直筒",
+        "材質：白底紙 280g + PE 內膜",
+        "印刷：CMYK 雙面全彩",
+        "加工：杯口燙金 1 處",
+        "包裝：50 入 × 100 包",
+      ],
+      files: [
+        { name: "design-final.ai", size: "8.4 MB", status: "已上傳" },
+        { name: "color-spec.pdf", size: "1.2 MB", status: "已上傳" },
+      ],
+      pricing: [
+        { item: "印刷費（雙面全彩）", price: "NT$ 8,500" },
+        { item: "燙金加工", price: "NT$ 2,500" },
+        { item: "刀模 / 開版費", price: "NT$ 1,500（首單）" },
+      ],
+      validUntil: "報價有效至 2026/05/04（7 天）",
+      history: [
+        { time: "2026/04/27 14:32", event: "會員送出詢價單", by: "會員" },
+        { time: "2026/04/27 16:10", event: "HJ 客服已收到，刀模費已加計", by: "HJ 客服" },
+        { time: "2026/04/28 09:45", event: "等待會員確認燙金 LOGO 位置（請看 LINE）", by: "HJ 客服" },
+      ],
+      lineSummary: "HJ 客服已透過 LINE 詢問燙金 LOGO 對位細節，請於 LINE 回覆樣稿位置確認。",
+    },
   },
   {
     id: "Q-20260424-007",
     date: "2026/04/24",
     items: "客製模切紙袋 × 500 / 牛皮紙 + 異形刀模",
     estimatedAmount: 0,
-    status: "sent-to-line" as QuoteStatus,
+    status: "sent-to-line",
     expiresAt: "2026/05/01",
     note: "客服詢問刀模規格中",
+    detail: {
+      product: "客製模切紙袋（異形刀模）",
+      quantity: "500 入",
+      specs: ["材質：牛皮紙 200g", "印刷：單色印刷", "加工：異形模切（需開新刀模）"],
+      files: [{ name: "shape-draft.png", size: "640 KB", status: "客服審核中" }],
+      pricing: [
+        { item: "印刷費", price: "估價中" },
+        { item: "異形刀模開版費", price: "估價中（需依形狀計）" },
+      ],
+      validUntil: "—（報價尚未產生）",
+      history: [
+        { time: "2026/04/24 11:20", event: "會員送出詢價單", by: "會員" },
+        { time: "2026/04/25 09:30", event: "HJ 客服詢問模切尺寸與彎角半徑", by: "HJ 客服" },
+      ],
+      lineSummary: "HJ 客服已透過 LINE 詢問刀模尺寸細節，等待會員提供完整尺寸圖。",
+    },
   },
   {
     id: "Q-20260418-014",
     date: "2026/04/18",
     items: "客製禮盒 × 200 / 燙金 + 局部上光",
     estimatedAmount: 18000,
-    status: "confirmed" as QuoteStatus,
+    status: "confirmed",
     expiresAt: "2026/04/25",
+    detail: {
+      product: "客製禮盒（天地蓋）",
+      quantity: "200 入",
+      specs: [
+        "尺寸：20 × 20 × 8 cm",
+        "材質：銅版紙 350g",
+        "印刷：CMYK 全彩",
+        "加工：燙金 + 局部上光",
+      ],
+      files: [
+        { name: "box-final.pdf", size: "12.6 MB", status: "已上傳" },
+      ],
+      pricing: [
+        { item: "印刷費", price: "NT$ 12,000" },
+        { item: "燙金 + 局部上光", price: "NT$ 4,000" },
+        { item: "盒型加工", price: "NT$ 2,000" },
+      ],
+      validUntil: "報價有效至 2026/04/25（已成交）",
+      history: [
+        { time: "2026/04/18 10:00", event: "會員送出詢價單", by: "會員" },
+        { time: "2026/04/19 14:00", event: "HJ 客服回覆報價", by: "HJ 客服" },
+        { time: "2026/04/20 09:00", event: "會員確認規格", by: "會員" },
+        { time: "2026/04/20 11:00", event: "詢價單標記為已成交", by: "系統" },
+      ],
+    },
   },
   {
     id: "Q-20260410-009",
     date: "2026/04/10",
     items: "客製腰封 × 10,000 / 全彩",
     estimatedAmount: 4500,
-    status: "expired" as QuoteStatus,
+    status: "expired",
     expiresAt: "2026/04/17",
+    detail: {
+      product: "客製紙腰封",
+      quantity: "10,000 入",
+      specs: ["材質：銅版紙 150g", "印刷：CMYK 全彩"],
+      files: [],
+      pricing: [{ item: "印刷費", price: "NT$ 4,500" }],
+      validUntil: "已過期（2026/04/17）",
+      history: [
+        { time: "2026/04/10 15:00", event: "會員送出詢價單", by: "會員" },
+        { time: "2026/04/11 10:00", event: "HJ 客服回覆報價", by: "HJ 客服" },
+        { time: "2026/04/17 23:59", event: "報價有效期已過，狀態變更為已過期", by: "系統" },
+      ],
+    },
   },
   {
     id: "Q-20260428-001",
     date: "2026/04/28",
     items: "16oz 客製雙層中空杯 × 3,000",
     estimatedAmount: 6600,
-    status: "draft" as QuoteStatus,
+    status: "draft",
     expiresAt: "—",
+    detail: {
+      product: "16oz 雙層中空杯",
+      quantity: "3,000 入",
+      specs: ["杯型：16oz / 雙層中空", "材質：白底紙 280g", "印刷：單面 CMYK"],
+      files: [],
+      pricing: [{ item: "估價（草稿，未送出）", price: "NT$ 6,600" }],
+      validUntil: "—（草稿，未送出）",
+      history: [{ time: "2026/04/28 09:15", event: "會員建立草稿", by: "會員" }],
+    },
   },
 ];
 
@@ -161,6 +301,18 @@ export function MemberQuoteListMockup({
 }) {
   const [view, setView] = useState<ViewMode>("business");
   const [statusFilter, setStatusFilter] = useState<QuoteStatus | "all">("all");
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(["Q-20260427-002"]));
+
+  const toggleExpand = (id: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
 
   const filtered = statusFilter === "all"
     ? QUOTES
@@ -284,11 +436,154 @@ export function MemberQuoteListMockup({
             </div>
           </section>
 
+          {/* LINE 範圍提示 */}
+          <section className="border-b border-zinc-200 bg-emerald-50/40 px-6 py-3">
+            <div className="mx-auto max-w-[1760px] flex items-start gap-2 text-xs text-emerald-900">
+              <LineIcon className="mt-0.5 shrink-0" />
+              <p className="leading-relaxed">
+                <span className="font-bold">LINE 在詢價流程的角色：</span>
+                完整詢價明細（規格、檔案、報價、有效期、狀態紀錄）一律在此頁展開查看；LINE 只作為「客服溝通 + 通知摘要」入口，HJ 客服會在 LINE 詢問細節，但不會把整張詢價單貼到 LINE。
+              </p>
+            </div>
+          </section>
+
           {/* Quote list */}
           <section className="bg-white px-6 py-6">
             <div className="mx-auto max-w-[1760px] space-y-3">
               {filtered.map((q, idx) => {
                 const meta = STATUS_META[q.status];
+                const isOpen = expanded.has(q.id);
+                const detailRow = isOpen && (
+                  <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50/70 p-4">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      {/* 規格 */}
+                      <div>
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                          商品 / 規格
+                        </div>
+                        <div className="mt-1.5 text-sm font-semibold text-zinc-900">
+                          {q.detail.product}
+                        </div>
+                        <div className="mt-0.5 text-xs text-zinc-500">
+                          數量：{q.detail.quantity}
+                        </div>
+                        <ul className="mt-2 space-y-1 text-xs text-zinc-700">
+                          {q.detail.specs.map((s) => (
+                            <li key={s}>· {s}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* 報價 */}
+                      <div>
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                          報價內容
+                        </div>
+                        <ul className="mt-2 space-y-1 text-xs">
+                          {q.detail.pricing.map((p) => (
+                            <li key={p.item} className="flex justify-between gap-2 text-zinc-700">
+                              <span>{p.item}</span>
+                              <span className="font-mono font-medium text-zinc-900">{p.price}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-2 text-[11px] text-zinc-500">
+                          {q.detail.validUntil}
+                        </div>
+                      </div>
+
+                      {/* 上傳檔案 */}
+                      <div>
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                          上傳檔案
+                        </div>
+                        {q.detail.files.length === 0 ? (
+                          <p className="mt-2 text-xs text-zinc-400">尚未上傳</p>
+                        ) : (
+                          <ul className="mt-2 space-y-1.5 text-xs">
+                            {q.detail.files.map((f) => (
+                              <li
+                                key={f.name}
+                                className="flex items-center justify-between gap-2 rounded-md border border-zinc-200 bg-white px-2 py-1.5"
+                              >
+                                <span className="truncate font-mono text-zinc-700">
+                                  {f.name}
+                                </span>
+                                <span className="shrink-0 text-zinc-400">{f.size}</span>
+                                <span
+                                  className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                                    f.status === "已上傳"
+                                      ? "bg-emerald-100 text-emerald-800"
+                                      : f.status === "客服審核中"
+                                        ? "bg-amber-100 text-amber-800"
+                                        : "bg-rose-100 text-rose-800"
+                                  }`}
+                                >
+                                  {f.status}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      {/* 狀態紀錄 */}
+                      <div>
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                          狀態紀錄
+                        </div>
+                        <ol className="mt-2 space-y-1.5 text-xs">
+                          {q.detail.history.map((h) => (
+                            <li key={`${h.time}-${h.event}`} className="flex gap-2">
+                              <span className="w-[110px] shrink-0 font-mono text-zinc-400">
+                                {h.time}
+                              </span>
+                              <span className="text-zinc-700">{h.event}</span>
+                              <span
+                                className={`ml-auto shrink-0 rounded px-1.5 text-[10px] font-medium ${
+                                  h.by === "會員"
+                                    ? "bg-sky-100 text-sky-800"
+                                    : h.by === "HJ 客服"
+                                      ? "bg-emerald-100 text-emerald-800"
+                                      : "bg-zinc-200 text-zinc-700"
+                                }`}
+                              >
+                                {h.by}
+                              </span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    </div>
+
+                    {q.detail.lineSummary && (
+                      <div className="mt-4 flex items-start gap-2 rounded-md border border-emerald-200 bg-emerald-50/70 px-3 py-2 text-xs text-emerald-900">
+                        <LineIcon className="mt-0.5 shrink-0" />
+                        <div>
+                          <div className="font-bold">LINE 客服回覆摘要</div>
+                          <p className="mt-0.5 text-emerald-800">{q.detail.lineSummary}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+
+                const detailToggle = (
+                  <button
+                    type="button"
+                    onClick={() => toggleExpand(q.id)}
+                    className={`flex items-center gap-1 rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
+                      isOpen
+                        ? "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800"
+                        : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+                    }`}
+                    aria-expanded={isOpen}
+                  >
+                    {isOpen ? "收合明細" : "查看詢價明細"}
+                    <ChevronDown className={isOpen ? "rotate-180" : ""} />
+                  </button>
+                );
+
                 return (
                   <article
                     key={q.id}
@@ -345,6 +640,8 @@ export function MemberQuoteListMockup({
                       </div>
                     </div>
 
+                    {detailRow}
+
                     {/* Actions */}
                     <div className="mt-4 flex flex-wrap items-center justify-end gap-2 border-t border-zinc-100 pt-3">
                       {q.status === "confirmed" &&
@@ -389,12 +686,25 @@ export function MemberQuoteListMockup({
                           </button>
                         ))}
 
-                      {q.status === "sent-to-line" && (
-                        <button className="flex items-center gap-1.5 rounded-md border border-emerald-500 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">
-                          <LineIcon />
-                          至 LINE 查看
-                        </button>
-                      )}
+                      {q.status === "sent-to-line" &&
+                        (idx === 0 ? (
+                          <Questioned
+                            show={annotations}
+                            questions={[Q4]}
+                            pageId={pageId}
+                            position="top-right"
+                          >
+                            <button className="flex items-center gap-1.5 rounded-md border border-emerald-500 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">
+                              <LineIcon />
+                              開啟 LINE 聯繫客服
+                            </button>
+                          </Questioned>
+                        ) : (
+                          <button className="flex items-center gap-1.5 rounded-md border border-emerald-500 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">
+                            <LineIcon />
+                            開啟 LINE 聯繫客服
+                          </button>
+                        ))}
 
                       {q.status === "draft" && (
                         <button className="rounded-md bg-amber-700 px-4 py-2 text-xs font-bold text-white hover:bg-amber-800">
@@ -402,9 +712,8 @@ export function MemberQuoteListMockup({
                         </button>
                       )}
 
-                      <button className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 hover:bg-zinc-50">
-                        查看明細
-                      </button>
+                      {detailToggle}
+
                       <button className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-500 hover:bg-zinc-50 hover:text-rose-700">
                         刪除
                       </button>

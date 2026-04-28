@@ -875,3 +875,314 @@ context 再補狀態名稱與 ERP / 物流同步。
 ### 結論
 
 Stage 2 的方向可以通過，7 頁資訊架構完整，可以進入收尾修正。但正式給客戶前，不建議直接交付目前版本；至少要先處理 lint、標註遮擋、以及上述幾個偏工程語的文案。
+
+---
+
+## 18 · §17 收尾後 Quick Scan（2026-04-28）
+
+> 審查範圍：Claude 回報已處理 §17 後的快速複查。  
+> 檢查項目：lint、7 個會員路由、工程語關鍵字、標註位置風險。
+
+### 驗證結果
+
+- `npm run lint`：通過，0 errors。
+- Vercel 7 個會員路由：皆回 `HTTP 200`。
+  - `/modules/members/auth`
+  - `/modules/members`
+  - `/modules/members/orders`
+  - `/modules/members/orders/HJ-20260427-001`
+  - `/modules/members/quote-list`
+  - `/modules/members/samples`
+  - `/modules/members/settings`
+- `DEMO / Dashboard / timeline / B2B / userId / 拋轉 / 薅` 等大部分工程語已清掉或只剩在程式註解中，不影響客戶畫面。
+- `CommentSystem.tsx` lint 阻塞已解除。
+
+### 仍建議順手修的殘留文字
+
+以下幾個是 quick scan 還掃到的客戶可見或可能出現在 Q 對照表的文字。不是架構問題，但正式給客戶前建議清掉。
+
+| 檔案 | 目前文字 | 建議文字 |
+|---|---|---|
+| `src/components/modules/mockups/MemberAuthMockup.tsx` | `完成授權，前往會員首頁 → 進入會員首頁` | `完成授權，前往會員首頁` |
+| `src/components/modules/mockups/MemberOrderDetailMockup.tsx` | `請確認名稱與順序，以及是否要與凌越 ERP / 物流公司即時同步。` | `想請 HJ 確認名稱與順序，以及是否需要對應 ERP / 物流資料。` |
+| `src/app/modules/members/orders/[id]/page.tsx` | `請確認名稱與順序，以及是否要與凌越 ERP / 物流公司即時同步。` | 同上，避免 Q 對照表仍保留舊語氣 |
+| `src/components/modules/mockups/MemberOrderDetailMockup.tsx` | `（Demo 用 — 購物車模組製作中，實際會跳到結帳頁）` | `提案示意：實際網站會接續購物車與結帳流程。` |
+
+### 標註位置 quick scan
+
+- Dashboard 頂部標註遮擋已比前一版改善。
+- 訂單詳情 `Q3` 已改 `bottom-right`，已避開主要操作列，比 §17 時好。
+- Settings 長頁的 Q pin 大致都在右側外緣，沒有明顯蓋住主要文字；仍建議 Claude 用實際瀏覽器再看手機或窄版，避免右側 pin 壓到 `新增地址 / 編輯`。
+
+### 結論
+
+§17 的主要收尾已完成，可以視為接近可交付狀態。現在只剩上方 4 個文字殘留點，建議 Claude 順手修掉後再做最終截圖。修完後不需要重做架構審查，只要再跑一次：
+
+1. `npm run lint`
+2. 7 個路由 `HTTP 200`
+3. 關鍵字掃描：`請確認|Demo 用|購物車模組製作中|即時同步|完成授權，前往會員首頁 → 進入會員首頁`
+
+---
+
+## 19 · Wayne 新增修正點與 Codex 回覆（2026-04-28）
+
+> Wayne 補充：會員系統還有幾個邏輯與文案要調整，尤其是歷史訂單、退換貨、詢價單與 LINE 功能的界線。
+
+### 1. 歷史訂單不需要匯出功能
+
+Codex 判斷：同意。`匯出 Excel` 不應該放在會員前台，這比較像後台管理功能。
+
+#### 建議調整
+
+- `/members/orders` 移除或隱藏 `匯出 Excel` 按鈕。
+- 原本 Q1 不要問「會員是否需要匯出 Excel」。
+- Q1 改問：
+
+  > 會員中心的歷史訂單預設顯示哪些資料？例如：近 30 天、近 3 個月、全部訂單，是否需要依狀態篩選？
+
+- 後台另開題：
+
+  > 後台訂單管理是否需要匯出 Excel？匯出的欄位、時間範圍與權限由誰管理？
+
+### 2. 退換貨的時機點需要講清楚
+
+Codex 判斷：目前「退換貨」不應只是一個按鈕，應該示意可申請條件。
+
+#### 建議前台示意
+
+| 訂單狀態 | 建議動作 |
+|---|---|
+| 待確認 | 可取消訂單 |
+| 已成立 | 可取消訂單，或需 HJ 確認是否已進入備貨 |
+| 備貨中 | 不建議直接取消，可送出取消申請，由客服 / 業務確認 |
+| 已出貨 | 不可取消，只能申請退換貨 |
+| 已送達 | 可在指定天數內申請退換貨，例如 7 天內；實際天數由 HJ 確認 |
+| 已完成 / 已關閉 | 原則上不開放線上退換貨，只保留客服聯繫 |
+
+#### 建議 Q 問法
+
+> 不同訂單狀態下，會員可以取消訂單或申請退換貨嗎？例如：備貨前可取消，出貨後只能申請退換貨，送達後幾天內可申請？
+
+### 3. `至 LINE 查看` 不夠清楚
+
+Wayne 問：這是指客製詢價單嗎？連到 LINE 能看什麼？
+
+Codex 判斷：目前 `至 LINE 查看` 容易誤導。網站無法保證 LINE 裡有完整詢價單明細，除非系統有把詢價摘要、連結或 Flex Message 主動傳到 LINE。
+
+#### 建議調整
+
+- 詢價單明細應該留在網站 `/members/quote-list`。
+- LINE 只作為「客服溝通 / 報價通知 / 開啟對話」。
+- 按鈕文字不要寫 `至 LINE 查看`，建議改成：
+  - `開啟 LINE 聯繫客服`
+  - `查看客服回覆`
+  - `複製詢價編號`
+  - `查看詢價明細`
+
+#### 建議畫面邏輯
+
+- `查看詢價明細`：在網站內開 drawer / modal，顯示規格、數量、檔案、報價、有效期、狀態紀錄。
+- `開啟 LINE 聯繫客服`：只負責開啟 LINE 對話，帶入詢價編號或提示文字。
+
+### 4. LINE 功能可行性與限制
+
+Codex 查 LINE 官方文件後的判斷：
+
+- **LINE Login 可行**：可用於網站註冊 / 登入。
+- **LINE 通知可行，但有條件**：需要 LINE Official Account / Messaging API，並且會員需要完成綁定、取得可推播的 userId；若使用者封鎖官方帳號或未符合推播條件，就收不到。
+- **LINE 不等於網站資料庫**：LINE 對話可以收到摘要或連結，但完整詢價單 / 訂單明細仍應以網站會員中心為主。
+- **不應承諾「已讀」或完整追蹤**：LINE Messaging API 不適合用來保證客戶已讀每一則通知。
+
+#### 建議提案文字
+
+> LINE 可作為登入、通知與客服溝通入口；完整訂單、詢價與樣品紀錄仍保留在會員中心。若 HJ 要啟用 LINE 通知，需搭配 LINE Official Account 與 Messaging API，並讓會員完成 LINE 綁定。
+
+### 5. `查看明細` 是否需要示意
+
+Codex 判斷：需要，至少要示意一種明細內容，否則客戶不知道「查看」後會看到什麼。
+
+#### 建議最小示意
+
+- 訂單：已有訂單詳情頁，可以保留。
+- 詢價單：建議做 drawer / modal，不一定新增頁。
+  - 詢價編號
+  - 商品名稱
+  - 規格選項
+  - 數量
+  - 上傳檔案狀態
+  - 報價金額 / 有效期
+  - LINE 客服回覆摘要
+  - 操作：重新詢價 / 轉訂單 / 開啟 LINE 聯繫客服
+- 樣品紀錄：建議做 drawer / 展開列。
+  - 樣品品項
+  - 申請日期
+  - 目前狀態
+  - 物流資訊
+  - 申請備註
+  - 操作：追加詢價 / 再申請 / 聯繫客服
+
+### 6. 樣品紀錄是需求還是我們想像
+
+Codex 判斷：目前樣品紀錄比較像「我們建議」延伸，不應標成客戶已明確要求。
+
+#### 建議定位
+
+- 客戶明確提到的是「樣品申請按鈕 / 樣品申請流程」。
+- `樣品申請紀錄` 是我們為了讓會員可追蹤申請狀態而提出的延伸功能。
+- 對客戶說法要改成：
+
+  > 我們建議會員中心保留樣品申請紀錄，讓客戶能查詢樣品是否審核、寄出或送達。想請 HJ 確認是否需要此功能，以及狀態是否要和 ERP / 出貨資料對應。
+
+### Claude 下一輪應調整清單
+
+1. 移除會員前台歷史訂單的 `匯出 Excel`。
+2. 退換貨按鈕旁補可申請條件，或在 Q 裡清楚問狀態邊界。
+3. `至 LINE 查看` 改成 `開啟 LINE 聯繫客服` 或 `查看詢價明細`，不要暗示 LINE 裡一定有完整資料。
+4. LINE 功能文字改成「可作為通知與客服入口」，不要承諾一定可推播、已讀或完整查詢。
+5. 詢價單和樣品紀錄補最小明細示意。
+6. 樣品紀錄標成「我們建議」，不是「客戶要求」。
+
+---
+
+## 20 · LINE 功能可做條件與需確認資料（2026-04-28）
+
+> Wayne 補充：LINE 要能做的條件要寫清楚，也要說明需要先跟 HJ 確認哪些資料，才有辦法評估與落地。
+
+Codex 判斷：LINE 功能可以做，但不能用一句「串 LINE」帶過。提案中應拆成 4 種功能，並明確寫出前置條件、要確認的資料與限制。
+
+### 1. LINE 功能要拆成 4 類
+
+| 功能 | 可行性 | 需要的 LINE 能力 | 提案上應怎麼說 |
+|---|---|---|---|
+| LINE 快速註冊 / 登入 | 可行 | LINE Login Channel、Callback URL、網站會員帳號綁定邏輯 | 可用 LINE 作為登入方式，但企業資料、統編、發票與收件地址仍需回到網站補齊 |
+| LINE 帳號綁定 | 可行 | LINE Login 或 Messaging API 的 Account Linking、會員 ID 與 LINE userId 對應 | 讓會員把網站帳號和 LINE 帳號連起來，作為通知與客服識別基礎 |
+| LINE 通知 | 可行，但有條件 | LINE Official Account、Messaging API、Webhook、Channel access token、可推播的 userId | 可通知訂單、報價、出貨等狀態，但前提是會員完成綁定，且沒有封鎖官方帳號 |
+| 開啟 LINE 客服對話 | 可行，最單純 | LINE 官方帳號好友連結、LINE URL scheme 或官方帳號連結 | 可引導會員開啟 LINE 詢問客服，但完整訂單 / 詢價明細仍應保留在會員中心 |
+
+### 2. 不應承諾的事
+
+- 不要寫「LINE 可查看完整詢價單」，除非系統真的會把完整內容做成 LINE 訊息或 LIFF 頁。
+- 不要寫「一定會推播成功」，因為會員可能未綁定、封鎖官方帳號、沒有加好友，或通知額度 / 帳號設定不符合。
+- 不要寫「已讀追蹤」，LINE Messaging API 不適合拿來保證客戶已讀每一則系統通知。
+- 不要把 LINE 當資料庫；完整訂單、詢價、樣品紀錄仍要以網站會員中心為主。
+
+### 3. 需要先跟 HJ 確認的資料
+
+#### LINE 帳號與權限
+
+- HJ 是否已經有 LINE 官方帳號？
+- 官方帳號目前是誰管理？是否可提供管理員權限或協作權限？
+- 是否已啟用 LINE Developers Console？
+- 是否已有 LINE Login Channel？
+- 是否已有 Messaging API Channel？
+- LINE Login Channel 和 Messaging API Channel 是否在同一個 Provider 底下？這會影響 userId 對應是否一致。
+- 官方帳號目前的方案、訊息量與月用量是否足夠支援通知？
+
+#### 網站與技術資料
+
+- 正式網站網域與 callback URL。
+- 後端是否能提供 webhook endpoint 給 LINE 呼叫。
+- 會員系統是否有固定會員 ID。
+- ERP 客戶編號與網站會員 ID 是否一對一。
+- 一家公司是否可能有多個聯絡人 / 多個 LINE 帳號。
+- 若同一個 LINE 帳號曾註冊個人會員，又要綁定企業會員，帳號合併規則是什麼。
+
+#### 通知內容與觸發條件
+
+- 要通知哪些事件：註冊驗證、企業審核、報價回覆、訂單成立、備貨、出貨、送達、樣品出貨、退換貨進度。
+- 哪些通知一定要發，哪些可以讓會員關閉。
+- 通知要發給誰：下單人、公司主要聯絡人、發票聯絡人、收貨聯絡人，或全部聯絡人。
+- 每種通知需要放哪些欄位：訂單編號、詢價編號、狀態、金額、物流單號、會員中心連結。
+- 通知失敗時是否要補寄 Email 或只保留在會員中心。
+
+#### 法務與同意
+
+- LINE 登入是否要取得 email；若要取得 email，需要在 LINE Developers Console 申請 email 權限。
+- 隱私權政策是否有說明 LINE userId、通知與會員資料綁定用途。
+- 會員是否要能自行解除 LINE 綁定。
+- 行銷通知是否需要獨立同意，不能和訂單通知混在一起。
+
+### 4. 建議放在畫面或 Q 裡的文字
+
+#### 畫面文案
+
+> LINE 可作為登入、通知與客服聯繫入口。完整訂單、詢價與樣品紀錄仍保留在會員中心；LINE 通知需在會員完成綁定，且未封鎖官方帳號的情況下才能送達。
+
+#### Q 問法
+
+> HJ 是否已有 LINE 官方帳號、LINE Login Channel 與 Messaging API Channel？若要啟用 LINE 通知，需確認官方帳號權限、會員綁定方式、通知事件、通知對象、訊息內容與失敗時的備援方式。
+
+#### 給 Claude 的調整方向
+
+1. `/members/settings` 的 LINE 區塊加一句「通知需完成綁定且未封鎖官方帳號」。
+2. `LINE 快速登入` 和 `LINE 帳號綁定 / 通知` 在畫面上分開，不要混成同一個功能。
+3. `至 LINE 查看` 一律改成 `查看詢價明細` 或 `開啟 LINE 聯繫客服`。
+4. Q 列表新增或補強一題：`LINE 官方帳號、Login Channel、Messaging API、會員 userId 綁定與通知事件是否已具備？`
+5. 提案不要承諾 LINE 裡會有完整明細；最多說「LINE 可通知摘要，並引導回會員中心查看完整內容」。
+
+### 5. 官方文件依據
+
+- LINE Login 可用於網站登入，採 OAuth 2.0 / OpenID Connect 流程，需建立 LINE Login Channel 與 callback URL。
+  - https://developers.line.biz/en/docs/line-login/integrate-line-login/
+- Messaging API 需建立 LINE Official Account 並啟用 Messaging API Channel，才能透過 bot server 與 LINE Platform 收發訊息。
+  - https://developers.line.biz/en/docs/messaging-api/getting-started/
+  - https://developers.line.biz/en/docs/messaging-api/overview/
+- 推播與帳號識別需取得 LINE userId；userId 可透過 webhook、好友清單或帳號連結取得，且與 Provider / Channel 設定有關。
+  - https://developers.line.biz/en/docs/messaging-api/getting-user-ids/
+  - https://developers.line.biz/en/docs/messaging-api/linking-accounts/
+
+---
+
+## 21 · Claude 依 §19 §20 提出的改動計劃與 Codex 回覆（2026-04-28）
+
+> Claude 已讀完 §19、§20，提出下一輪修改計劃，並詢問詢價單「查看明細」要用展開列還是 modal / drawer。
+
+### Claude 改動計劃
+
+| 項目 | 改動 | 檔案 |
+|---|---|---|
+| A | 移除會員前台「匯出 Excel」按鈕；Q1 改問「預設顯示範圍 + 是否依狀態篩選」，匯出問題移到後台 | `MemberOrdersListMockup.tsx`、`orders/page.tsx` |
+| B | `至 LINE 查看` 全部改字；新增 `查看詢價明細`，示意規格 / 數量 / 檔案 / 報價 / 狀態紀錄；保留 `開啟 LINE 聯繫客服` 當第二顆按鈕 | `MemberQuoteListMockup.tsx` |
+| C | 樣品申請紀錄改標「我們建議」，新增展開列示意樣品品項 / 申請日期 / 狀態 / 物流 / 備註 / 操作 | `MemberSamplesMockup.tsx`、`members-mockups.ts` |
+| D | 退換貨補可申請條件對照表；Q 改問「不同狀態下的取消 / 退換貨邊界」 | `MemberOrderDetailMockup.tsx` |
+| E | LINE 設定區拆成 `LINE 快速登入` 與 `LINE 帳號綁定 / 通知`；通知區補條件；新增 Q「OA / Login Channel / Messaging API 是否就緒」 | `MemberSettingsMockup.tsx` |
+| F | 提案文案不承諾 LINE 有完整明細；改成「LINE 通知摘要，引導回會員中心」 | `MemberSettingsMockup.tsx`、`MemberQuoteListMockup.tsx` |
+
+### Codex 回覆
+
+整體方向正確，可以開做。A-F 都對應 Wayne 前面提出的風險點，尤其是：
+
+- 會員前台拿掉 `匯出 Excel` 是正確的，這應該留給後台。
+- `至 LINE 查看` 一定要改，避免客戶誤解 LINE 裡會有完整詢價單。
+- LINE 區塊要拆開，因為 `LINE 登入`、`LINE 帳號綁定`、`LINE 通知` 是不同技術條件。
+- 樣品紀錄要標成「我們建議」，不能寫成客戶明確要求。
+
+### B 的形式建議：採用展開列
+
+Codex 建議 `查看詢價明細` 先做成 **in-place 展開列**，不要做 modal / drawer。
+
+原因：
+
+- 目前這是提案 mockup，不是真正操作系統；展開列比較容易讓客戶在同一個畫面看懂「列表 + 明細」關係。
+- Wayne 已提醒 Q-pin / 建議標註不要蓋到畫面，modal / drawer 容易遮住主資訊或標註。
+- 詢價單明細不需要獨立頁，展開列能示意規格、數量、檔案、報價、狀態紀錄就足夠。
+- 若未來正式產品資訊量變多，再改成右側 drawer 會比較適合；但此階段不需要。
+
+#### 建議展開列內容
+
+- 詢價編號
+- 商品名稱
+- 規格 / 材質 / 尺寸 / 印刷需求
+- 數量
+- 上傳檔案或設計稿狀態
+- 報價金額或 `待報價`
+- 報價有效期
+- 狀態紀錄：送出詢價 → HJ 回覆 → 待確認 / 已轉訂單
+- 操作：
+  - `重新詢價`
+  - `轉為訂單`
+  - `開啟 LINE 聯繫客服`
+
+### 給 Wayne / Claude 的結論
+
+> 建議回 Claude：`OK 開。B 採用展開列，不用 modal / drawer；重點是不要遮住畫面，也不要讓客戶誤解 LINE 會顯示完整明細。`

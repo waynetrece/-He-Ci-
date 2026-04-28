@@ -52,6 +52,18 @@ const QUESTIONS = [
       note: "需求表寫了下單轉 LINE，但詢價單轉訂單的步驟細節未指定。",
     },
   },
+  {
+    no: "Q4",
+    question: "LINE 在詢價流程中的定位：通知摘要 + 客服溝通入口（完整明細仍留會員中心）對嗎？",
+    context:
+      "目前先以這樣示意：① 詢價完整明細（規格、檔案、報價、有效期、狀態紀錄）一律在此頁的卡片內展開查看 ② LINE 只作為「客服溝通 + 通知摘要」入口，不放完整明細 ③ 按鈕從「至 LINE 查看」改成「開啟 LINE 聯繫客服」。想請 HJ 確認此分工。LINE 通知需 HJ 啟用 LINE 官方帳號 + Messaging API + 會員完成綁定才能送達。",
+    pinnedAt: "已送 LINE 詢價單『開啟 LINE 聯繫客服』按鈕",
+    clientRef: {
+      source: "前台 / 私版商品系列 (2)",
+      quote: "複雜客製商品轉 LINE 客服報價",
+      note: "需求表只寫了「轉 LINE 客服報價」，沒明確 LINE 是看明細還是只是客服溝通。本提案先把明細留在會員中心、LINE 只作客服與通知，避免承諾 LINE 上有完整明細。",
+    },
+  },
 ];
 
 export default function MembersQuoteListPage() {

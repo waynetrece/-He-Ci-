@@ -51,7 +51,7 @@ export const MEMBER_MOCKUPS: MemberMockup[] = [
   },
   {
     id: "samples",
-    name: "樣品紀錄",
+    name: "樣品紀錄（我們建議）",
     layer: "前台",
     ready: true,
     href: "/modules/members/samples",

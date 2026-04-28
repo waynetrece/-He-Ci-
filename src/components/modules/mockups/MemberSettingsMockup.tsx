@@ -15,11 +15,23 @@ const Q1 = {
   no: "Q1",
   question: "LINE 帳號綁定是否強制？通知範圍（訂單成立 / 出貨通知 / 報價回覆）由誰開關？綁定中斷後如何處理？",
   context:
-    "目前先以這樣示意：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。想請 HJ 確認。",
+    "目前先以這樣示意：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。注意：LINE 通知需會員完成綁定且未封鎖官方帳號才能送達；若推播失敗，本提案先以「保留通知於會員中心 + 改寄 Email」為備援，想請 HJ 確認此備援方式。",
   clientRef: {
     source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
     quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
     note: "LINE 綁定的具體規範未在需求表指定。本提案以「傳送訂單通知」為核心用途。",
+  },
+};
+
+const Q5 = {
+  no: "Q5",
+  question: "HJ 是否已有 LINE 官方帳號、LINE Login Channel 與 Messaging API Channel？通知事件清單與通知對象由誰決定？",
+  context:
+    "LINE 整合需確認的前置條件（請 HJ 一次回覆）：① 是否已有 LINE 官方帳號？管理員權限可授權？② 是否已啟用 LINE Login Channel（給網站登入用）？③ 是否已啟用 Messaging API Channel（給通知用）？④ 兩個 Channel 是否在同一 Provider 底下（影響 userId 一致性）？⑤ 月訊息額度是否足夠？⑥ 通知事件清單（訂單成立 / 備貨 / 出貨 / 送達 / 報價回覆 / 樣品出貨 / 退換貨進度）哪些要發、發給誰（下單人 / 公司主聯絡人 / 收貨聯絡人）？⑦ 通知失敗備援（補寄 Email / 只留會員中心）？⑧ LINE 登入是否要取得 email（需向 LINE 申請額外權限）？",
+  clientRef: {
+    source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
+    quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
+    note: "需求表只寫了「LINE 註冊 / 轉 LINE 客服」，未交代 LINE 帳號 / Channel / 通知事件等前置條件。這些條件會直接影響可否落地。",
   },
 };
 
@@ -316,7 +328,67 @@ export function MemberSettingsMockup({
             </Section>
           </Questioned>
 
-          {/* 5. LINE 帳號綁定 */}
+          {/* 5a. LINE 在本系統的 4 種功能（澄清拆分） */}
+          <Questioned
+            show={annotations}
+            questions={[Q5]}
+            pageId={pageId}
+            position="top-right"
+          >
+            <Section
+              title="LINE 在本系統的功能"
+              subtitle="本系統 LINE 共 4 種用途，請看下方說明（避免被當成同一件事）"
+            >
+              <div className="col-span-full">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {[
+                    {
+                      title: "1. LINE 快速登入",
+                      where: "登入 / 註冊頁",
+                      desc: "用 LINE 帳號登入網站。需 LINE Login Channel。企業資料 / 統編 / 發票 / 收件地址仍需回網站補齊。",
+                      tone: "border-sky-300 bg-sky-50/60 text-sky-900",
+                    },
+                    {
+                      title: "2. LINE 帳號綁定",
+                      where: "本頁下方「LINE 帳號綁定」",
+                      desc: "把網站會員與 LINE 帳號連結，作為通知與客服識別基礎。需 LINE Login 或 Account Linking。",
+                      tone: "border-emerald-300 bg-emerald-50/60 text-emerald-900",
+                    },
+                    {
+                      title: "3. LINE 通知",
+                      where: "本頁下方「通知偏好」",
+                      desc: "訂單、報價、出貨等狀態用 LINE 推播。需 LINE Official Account + Messaging API + 會員完成綁定 + 未封鎖官方帳號才能送達。",
+                      tone: "border-amber-300 bg-amber-50/60 text-amber-900",
+                    },
+                    {
+                      title: "4. 開啟 LINE 客服對話",
+                      where: "詢價單、訂單頁的「開啟 LINE 聯繫客服」按鈕",
+                      desc: "引導會員開 LINE 對話視窗。完整詢價 / 訂單 / 樣品紀錄仍以會員中心為主，LINE 不放完整明細。",
+                      tone: "border-zinc-300 bg-zinc-50 text-zinc-800",
+                    },
+                  ].map((f) => (
+                    <div key={f.title} className={`rounded-lg border ${f.tone} px-3 py-2.5`}>
+                      <div className="flex items-center gap-1.5">
+                        <LineIcon className="size-4" />
+                        <span className="text-sm font-bold">{f.title}</span>
+                      </div>
+                      <div className="mt-1 text-[11px] font-medium opacity-70">
+                        位置：{f.where}
+                      </div>
+                      <p className="mt-1 text-xs leading-relaxed opacity-90">
+                        {f.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-[11px] leading-relaxed text-zinc-600">
+                  ※ 上述功能要落地，需 HJ 先確認：是否已有 LINE 官方帳號 / LINE Login Channel / Messaging API Channel；通知事件清單；通知失敗時的備援方式（補寄 Email 或只留會員中心）。詳見 Q5。
+                </p>
+              </div>
+            </Section>
+          </Questioned>
+
+          {/* 5b. LINE 帳號綁定 */}
           <Questioned
             show={annotations}
             questions={[Q1]}
@@ -324,8 +396,8 @@ export function MemberSettingsMockup({
             position="top-right"
           >
             <Section
-              title="LINE 帳號綁定"
-              subtitle="綁定後可在 LINE 接收報價、訂單、出貨通知"
+              title="LINE 帳號綁定 / 通知"
+              subtitle="綁定後可在 LINE 接收訂單、出貨、報價通知；通知需未封鎖官方帳號才能送達"
               tone={lineStep === "bound" ? "emerald" : "default"}
             >
               <div className="col-span-full">
@@ -476,11 +548,13 @@ export function MemberSettingsMockup({
                     ))}
                   </tbody>
                 </table>
-                {lineStep !== "bound" && (
-                  <div className="border-t border-zinc-200 bg-amber-50/40 px-4 py-2 text-xs text-amber-800">
-                    ※ LINE 通知需先綁定 LINE 帳號才能開啟（見上方）
-                  </div>
-                )}
+                <div className="border-t border-zinc-200 bg-amber-50/40 px-4 py-2 text-xs text-amber-800 leading-relaxed">
+                  {lineStep !== "bound" ? (
+                    <>※ LINE 通知需先綁定 LINE 帳號才能開啟（見上方）。完成綁定後仍需未封鎖官方帳號才能收到通知；若推播失敗，會保留通知於會員中心。</>
+                  ) : (
+                    <>※ LINE 通知需未封鎖 HJ 官方帳號才能送達；若推播失敗，本提案以「保留通知於會員中心 + 改寄 Email」為備援方式。實際備援機制待 HJ 確認。</>
+                  )}
+                </div>
               </div>
             </div>
           </Section>

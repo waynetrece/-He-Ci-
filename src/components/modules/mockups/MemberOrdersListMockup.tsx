@@ -13,13 +13,13 @@ import {
 
 const Q1 = {
   no: "Q1",
-  question: "訂單列表預設顯示時間範圍？是否需要匯出 Excel 功能（會員自助匯出，還是只後台管理員）？",
+  question: "會員中心的歷史訂單預設顯示哪些資料？例如：近 30 天 / 近 3 個月 / 全部訂單，以及是否要依狀態篩選？",
   context:
-    "目前先以這樣示意：① 預設顯示「近 30 天」的訂單 ② 提供時間範圍切換（近 7 天 / 近 30 天 / 近 3 個月 / 全部）③ 右上提供「匯出 Excel」按鈕讓會員自助匯出。想請 HJ 確認預設範圍與匯出權限。",
+    "目前先以這樣示意：① 預設顯示「近 30 天」② 提供時間範圍切換（近 7 天 / 近 30 天 / 近 3 個月 / 全部）③ 提供狀態篩選（待確認 / 已成立 / 備貨中 / 已出貨 / 已完成 / 已取消）。想請 HJ 確認預設範圍與篩選需求。匯出 Excel 屬於後台訂單管理功能，會員前台不放。",
   clientRef: {
-    source: "前台 / 會員 (1) + 後台 / 訂單管理 (5)",
-    quote: "查詢歷史訂單，可再購買一次按鈕；訂單資料匯出",
-    note: "需求表寫了匯出但未指定是後台用還是前台會員用；預設範圍也未指定。",
+    source: "前台 / 會員 (1)",
+    quote: "查詢歷史訂單，可再購買一次按鈕",
+    note: "需求表寫了「訂單資料匯出」，但匯出屬後台管理員功能，不是會員前台功能；會員前台只保留查詢、篩選、查看詳情、再訂一次。",
   },
 };
 
@@ -41,16 +41,6 @@ function FilterIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-    </svg>
-  );
-}
-
-function DownloadIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
     </svg>
   );
 }
@@ -144,24 +134,11 @@ export function MemberOrdersListMockup({
       {/* Header */}
       <section className="border-b border-zinc-200 bg-white px-6 py-5">
         <div className="mx-auto max-w-[1760px]">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-zinc-900">歷史訂單</h1>
-              <p className="mt-1 text-sm text-zinc-500">
-                共 <span className="font-bold text-zinc-900">{filteredOrders.length}</span> 筆訂單
-              </p>
-            </div>
-            <Questioned
-              show={annotations}
-              questions={[Q1]}
-              pageId={pageId}
-              position="top-right"
-            >
-              <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
-                <DownloadIcon />
-                匯出 Excel
-              </button>
-            </Questioned>
+          <div>
+            <h1 className="text-2xl font-bold text-zinc-900">歷史訂單</h1>
+            <p className="mt-1 text-sm text-zinc-500">
+              共 <span className="font-bold text-zinc-900">{filteredOrders.length}</span> 筆訂單
+            </p>
           </div>
         </div>
       </section>
@@ -188,20 +165,27 @@ export function MemberOrdersListMockup({
           <span className="text-zinc-300">|</span>
 
           {/* Status filter */}
-          <div className="flex items-center gap-1.5 text-xs">
-            <FilterIcon />
-            <span className="text-zinc-500">狀態：</span>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "all")}
-              className="rounded-md border border-zinc-300 bg-white px-2 py-1"
-            >
-              <option value="all">全部</option>
-              {Object.entries(STATUS_META).map(([key, m]) => (
-                <option key={key} value={key}>{m.label}</option>
-              ))}
-            </select>
-          </div>
+          <Questioned
+            show={annotations}
+            questions={[Q1]}
+            pageId={pageId}
+            position="top-right"
+          >
+            <div className="flex items-center gap-1.5 text-xs">
+              <FilterIcon />
+              <span className="text-zinc-500">狀態：</span>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "all")}
+                className="rounded-md border border-zinc-300 bg-white px-2 py-1"
+              >
+                <option value="all">全部</option>
+                {Object.entries(STATUS_META).map(([key, m]) => (
+                  <option key={key} value={key}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+          </Questioned>
 
           {/* Search */}
           <div className="ml-auto flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs w-72">
