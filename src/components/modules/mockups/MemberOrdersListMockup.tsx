@@ -89,7 +89,7 @@ const STATUS_META: Record<OrderStatus, { label: string; cls: string }> = {
 const ORDERS = [
   { id: "HJ-20260427-001", date: "2026/04/27", items: "12oz 客製紙杯 × 5,000 + 客製紙杯 × 3,000", types: ["公版", "私版"] as const, amount: 13903, status: "shipped" as OrderStatus },
   { id: "HJ-20260420-008", date: "2026/04/20", items: "牛皮紙便當盒 × 2,000 + 餐具組 × 1,000", types: ["公版"] as const, amount: 12800, status: "completed" as OrderStatus },
-  { id: "HJ-20260415-003", date: "2026/04/15", items: "客製模切紙袋 × 500", types: ["私版"] as const, amount: 0, status: "preparing" as OrderStatus, note: "LINE 報價中" },
+  { id: "HJ-20260415-003", date: "2026/04/15", items: "客製模切紙袋 × 500", types: ["私版"] as const, amount: 0, status: "preparing" as OrderStatus, note: "客服報價中" },
   { id: "HJ-20260408-012", date: "2026/04/08", items: "PLA 環保杯 × 2,000", types: ["公版"] as const, amount: 5600, status: "completed" as OrderStatus },
   { id: "HJ-20260330-005", date: "2026/03/30", items: "客製腰封 × 5,000", types: ["私版"] as const, amount: 2500, status: "completed" as OrderStatus },
   { id: "HJ-20260322-001", date: "2026/03/22", items: "8oz 紙杯 × 10,000", types: ["公版"] as const, amount: 15000, status: "cancelled" as OrderStatus },
