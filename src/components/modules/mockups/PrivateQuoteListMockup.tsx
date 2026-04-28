@@ -35,11 +35,6 @@ const Q3 = {
   question: "列表頁是否要顯示「起報金額」？",
   context:
     "如顯示「12oz 客製紙杯 起 $1.50/個」，可協助客戶第一眼判斷是否符合預算，但前提是價目表已建立。如不顯示，客戶須點進詳細頁才能看到價格。",
-  clientRef: {
-    source: "需求表未提及（補充項）",
-    quote: "（這項在需求表沒有對應段落）",
-    note: "顯示與否影響使用者決策速度，建議貴司確認。",
-  },
 };
 
 /* ============== Icons ============== */
@@ -64,21 +59,6 @@ function ChevronRight() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 18 15 12 9 6" />
-    </svg>
-  );
-}
-
-function CalcIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="4" y="3" width="16" height="18" rx="2" />
-      <line x1="8" y1="7" x2="16" y2="7" />
-      <line x1="8" y1="11" x2="10" y2="11" />
-      <line x1="14" y1="11" x2="16" y2="11" />
-      <line x1="8" y1="15" x2="10" y2="15" />
-      <line x1="14" y1="15" x2="16" y2="15" />
-      <line x1="8" y1="19" x2="10" y2="19" />
-      <line x1="14" y1="19" x2="16" y2="19" />
     </svg>
   );
 }
@@ -138,58 +118,11 @@ export function PrivateQuoteListMockup({
       <MockupSiteHeader />
 
       {/* Hero */}
-      <section className="border-b border-zinc-200 bg-gradient-to-br from-amber-50 to-white px-6 py-10">
+      <section className="border-b border-zinc-200 bg-white px-6 py-8">
         <div className="mx-auto max-w-[1760px]">
-          <div className="text-xs font-mono uppercase tracking-widest text-amber-700">
+          <h1 className="text-3xl font-bold text-zinc-900">
             私版客製商品
-          </div>
-          <h1 className="mt-2 text-3xl font-bold text-zinc-900">
-            從常見規格 LOGO 印刷，到複雜模切燙金 — 一站式客製
           </h1>
-          <p className="mt-2 max-w-3xl text-sm text-zinc-600">
-            常見規格商品標示「即時報價」，選好規格即知價格；標示「LINE 報價」的特殊規格，由 HJ 客服在 LINE 上人工估價。
-          </p>
-        </div>
-      </section>
-
-      {/* Two-path explainer */}
-      <section className="border-b border-zinc-200 bg-zinc-50/40 px-6 py-8">
-        <div className="mx-auto grid max-w-[1760px] gap-4 md:grid-cols-2">
-          <article className="flex gap-4 rounded-xl border-2 border-emerald-300 bg-white p-5 shadow-sm">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-              <CalcIcon />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-800">
-                  路徑 A
-                </span>
-                <span className="text-sm font-bold text-zinc-900">即時報價</span>
-              </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-zinc-600">
-                點進商品 → 選規格 → 系統立即顯示單價 / 小計 / 加入詢價單。常見規格走這條路。
-              </p>
-            </div>
-          </article>
-
-          <article className="flex gap-4 rounded-xl border-2 border-zinc-300 bg-white p-5 shadow-sm">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
-              <LineIcon />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold uppercase text-zinc-600">
-                  路徑 B
-                </span>
-                <span className="text-sm font-bold text-zinc-900">
-                  LINE 報價
-                </span>
-              </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-zinc-600">
-                特殊規格（燙金 / 模切 / 異形）→ 系統把您選的規格自動帶到 LINE 客服 → 由業務人工估價回覆。
-              </p>
-            </div>
-          </article>
         </div>
       </section>
 
@@ -255,6 +188,34 @@ export function PrivateQuoteListMockup({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {PRIVATE_PRODUCTS.map((p, idx) => {
+              // Q3 直接釘在金額，不是整張卡
+              const priceBlockRaw = p.startPrice ? (
+                <div className="mb-2 flex items-baseline justify-between">
+                  <span className="text-xs text-zinc-500">起報</span>
+                  <span className="font-mono text-sm font-bold text-emerald-800">
+                    {p.startPrice}
+                  </span>
+                </div>
+              ) : (
+                <div className="mb-2 text-xs text-zinc-500">
+                  需 LINE 客服估價
+                </div>
+              );
+
+              const priceBlock =
+                idx === 3 ? (
+                  <Questioned
+                    show={annotations}
+                    questions={[Q3]}
+                    pageId={pageId}
+                    position="top-right"
+                  >
+                    {priceBlockRaw}
+                  </Questioned>
+                ) : (
+                  priceBlockRaw
+                );
+
               const cardInner = (
                 <article className="group flex h-full flex-col rounded-xl bg-white shadow-sm border border-zinc-100 transition-all hover:shadow-lg hover:-translate-y-0.5">
                   {/* Image */}
@@ -288,18 +249,7 @@ export function PrivateQuoteListMockup({
                     </p>
 
                     <div className="mt-auto pt-3">
-                      {p.startPrice ? (
-                        <div className="mb-2 flex items-baseline justify-between">
-                          <span className="text-xs text-zinc-500">起報</span>
-                          <span className="font-mono text-sm font-bold text-emerald-800">
-                            {p.startPrice}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="mb-2 text-xs text-zinc-500">
-                          需 LINE 客服估價
-                        </div>
-                      )}
+                      {priceBlock}
                       <button
                         className={`flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-bold transition-colors ${
                           p.mode === "auto"
@@ -324,7 +274,7 @@ export function PrivateQuoteListMockup({
                 </article>
               );
 
-              // Pin Q1 to first card (代表入口商品), Q2 to a "LINE 報價" card, Q3 to a card with "起 $X" 標示
+              // Q1 釘第 1 張代表性入口、Q2 釘第 5 張示範 LINE 報價標籤
               if (idx === 0) {
                 return (
                   <Questioned
@@ -344,19 +294,6 @@ export function PrivateQuoteListMockup({
                     key={p.code}
                     show={annotations}
                     questions={[Q2]}
-                    pageId={pageId}
-                    position="top-right"
-                  >
-                    {cardInner}
-                  </Questioned>
-                );
-              }
-              if (idx === 3) {
-                return (
-                  <Questioned
-                    key={p.code}
-                    show={annotations}
-                    questions={[Q3]}
                     pageId={pageId}
                     position="top-right"
                   >
