@@ -11,15 +11,34 @@ const Q1 = {
   question: "商品影片來源？",
   context:
     "選項：後台直接上傳影片檔 / 嵌入 YouTube、Vimeo 連結。前者佔伺服器空間，後者較省。",
+  clientRef: {
+    source: "後台 / 公版商品 (5)",
+    quote: "商品頁可+影片 or 3D 圖（連結 pacdora.com 模板）",
+    note: "您有寫要有影片或 3D 圖，並給了 pacdora 範例（為 3D 模板），但「影片」是上傳檔還是 YouTube/Vimeo 嵌入未指定。",
+  },
 };
 const Q2 = {
   no: "Q2",
   question: "詳情頁是否顯示「會員專屬價」？非會員看到什麼？",
   context:
     "HJ 現網站做法：未登入只看到「立即登入/註冊」，登入後才看到價格。要保留這做法、還是改成「非會員看零售價、會員看折扣價」？",
+  clientRef: {
+    source: "前台 / 公版商品系列 (1) + 後台 / 顧客管理 (2)",
+    quote: "提供給客人下單；多層會員分級：商品會因顧客分級而有不同價",
+    note: "您有寫要讓客人下單、會員分級不同價，但「非會員看零售價 vs 必須登入才看價」這個 B2B 常見岔路未指定。",
+  },
 };
 
-type QItem = { no: string; question: string; context?: string };
+type QItem = {
+  no: string;
+  question: string;
+  context?: string;
+  clientRef?: {
+    source: string;
+    quote: string;
+    note?: string;
+  };
+};
 
 /* ============== Icons ============== */
 function PlayIcon() {

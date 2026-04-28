@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  ClipboardIcon,
   CommentToolbar,
   CommentTrigger,
 } from "@/components/modules/CommentSystem";
@@ -14,42 +15,61 @@ const PAGE_ID = "products-sample";
 const PAGE_LABEL = "公版商品系統 — 樣品申請流程";
 const ACTIVE_TAB = "sample";
 
+const SAMPLE_REF = {
+  source: "前台 / 公版商品系列 (2)",
+  quote: "樣品申請：每個商品頁增加樣品按鈕",
+};
+
 const QUESTIONS = [
   {
     no: "Q1",
     question: "樣品申請是否要收費？運費誰付？",
     context: "選項：完全免費 / 樣品免費但運費自付 / 限金額或會員等級",
     pinnedAt: "決策點：收費 / 運費規則？",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提收費／運費規則。" },
   },
   {
     no: "Q2",
     question: "樣品申請是否限會員才能申請？",
     context: "選項：任何人皆可申請 / 必須登入會員 / 須註冊但不需審核",
     pinnedAt: "決策點：要登入嗎？",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提資格限制。" },
   },
   {
     no: "Q3",
     question: "是否需要後台人工審核才寄出？",
     context: "選項：自動寄出 / 業務審核通過後才寄出。後者較安全但增加處理時間。",
     pinnedAt: "決策點：後台是否要審核？",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提審核流程。" },
   },
   {
     no: "Q4",
     question: "一次最多可以申請幾件樣品？",
     context: "範例：1 件 / 3 件 / 不限。影響表單的商品選擇器 UI。",
     pinnedAt: "決策點：表單欄位／件數／寄送方式",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提件數上限。" },
   },
   {
     no: "Q5",
     question: "樣品寄送方式有哪些？",
     context: "選項：超商取貨 / 宅配到府 / 自取。影響表單收件資訊欄位。",
     pinnedAt: "決策點：表單欄位／件數／寄送方式",
+    clientRef: {
+      source: "後台 / 物流 (1)(2)(3)",
+      quote: "(1) 四大超商 (2) 多家宅配（出貨時可選擇物流公司） (3) 自取",
+      note: "您有寫一般訂單的物流方式，但「樣品是否套同一套規則」未明說。",
+    },
   },
   {
     no: "Q6",
     question: "客戶是否能在會員中心查申請狀態？",
     context: "若要做：會員中心多一個「樣品申請紀錄」頁，可看狀態（申請中／審核中／已寄出／已收到）。",
     pinnedAt: "決策點：查詢狀態頁要做嗎？",
+    clientRef: {
+      source: "前台 / 會員 (2)",
+      quote: "訂單配送狀態",
+      note: "您有寫「訂單」可查狀態，但「樣品申請紀錄」是另一條實體（與訂單不同），是否也要查狀態未提。",
+    },
   },
   {
     no: "Q7",
@@ -57,6 +77,7 @@ const QUESTIONS = [
     context:
       "標配：姓名 / 公司名 / 電話 / 收件地址。可選：統編、用途說明、希望寄達日。每個欄位都要客戶確認是必填還是選填。",
     pinnedAt: "決策點：表單欄位／件數／寄送方式",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提表單欄位細節。" },
   },
 ];
 
@@ -150,6 +171,27 @@ export default function ProductsSamplePage() {
                       <span aria-hidden>↑</span>
                       已標註於：{q.pinnedAt}
                     </p>
+                  )}
+                  {q.clientRef && (
+                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
+                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
+                          <ClipboardIcon /> 您的需求表
+                        </span>
+                        <span className="text-sky-300">·</span>
+                        <span className="font-medium text-sky-700">
+                          {q.clientRef.source}
+                        </span>
+                      </div>
+                      <div className="text-sm leading-relaxed text-zinc-800">
+                        「{q.clientRef.quote}」
+                      </div>
+                      {q.clientRef.note && (
+                        <div className="mt-1 text-xs text-zinc-500">
+                          {q.clientRef.note}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div className="shrink-0">

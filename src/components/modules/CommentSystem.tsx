@@ -220,6 +220,26 @@ function InfoIcon({ className = "" }: { className?: string }) {
   );
 }
 
+export function ClipboardIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+    </svg>
+  );
+}
+
 export function AnnotationBadge({
   type,
   onClick,
@@ -355,7 +375,7 @@ function CommentDialog({
 }) {
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
       onClick={onClose}
     >
       <div
@@ -715,7 +735,18 @@ function CommentSidePanel({
 }
 
 /* ========== Question Pin — 一個 pin 可同時顯示多題（同主題群組） ========== */
-type QItem = { no: string; question: string; context?: string };
+export type ClientRef = {
+  source: string; // 客戶需求表的位置，如「前台 / 公版商品系列 (3)」
+  quote: string; // 原文摘錄
+  note?: string; // 補充：客戶寫了什麼／沒寫什麼
+};
+
+export type QItem = {
+  no: string;
+  question: string;
+  context?: string;
+  clientRef?: ClientRef;
+};
 
 export function QuestionPin({
   questions,
@@ -746,7 +777,7 @@ export function QuestionPin({
 
       {open && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
           onClick={() => setOpen(false)}
         >
           <div
@@ -785,6 +816,27 @@ export function QuestionPin({
                         <p className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
                           {q.context}
                         </p>
+                      )}
+                      {q.clientRef && (
+                        <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5 text-xs">
+                          <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1 font-bold text-sky-800">
+                              <ClipboardIcon /> 您的需求表
+                            </span>
+                            <span className="text-sky-300">·</span>
+                            <span className="font-medium text-sky-700">
+                              {q.clientRef.source}
+                            </span>
+                          </div>
+                          <div className="text-sm leading-relaxed text-zinc-800">
+                            「{q.clientRef.quote}」
+                          </div>
+                          {q.clientRef.note && (
+                            <div className="mt-1 text-zinc-500">
+                              {q.clientRef.note}
+                            </div>
+                          )}
+                        </div>
                       )}
                       <div className="mt-3">
                         <CommentTrigger
@@ -913,7 +965,7 @@ export function Annotated({
 
       {open && rationale && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
           onClick={() => setOpen(false)}
         >
           <div

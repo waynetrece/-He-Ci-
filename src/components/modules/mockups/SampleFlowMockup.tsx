@@ -1,46 +1,75 @@
 import { QuestionPin } from "../CommentSystem";
 
+const SAMPLE_REF = {
+  source: "前台 / 公版商品系列 (2)",
+  quote: "樣品申請：每個商品頁增加樣品按鈕",
+};
+
 const Q1 = {
   no: "Q1",
   question: "樣品申請是否要收費？運費誰付？",
   context:
     "選項：① 完全免費 ② 樣品免費但運費自付 ③ 限金額或會員等級。影響表單後是否有結帳流程。",
+  clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提收費／運費規則。" },
 };
 const Q2 = {
   no: "Q2",
   question: "樣品申請是否限會員才能申請？",
   context:
     "選項：① 任何人皆可申請（要填收件資料）② 必須登入會員 ③ 須註冊但不需審核。影響流程入口。",
+  clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提資格限制。" },
 };
 const Q3 = {
   no: "Q3",
   question: "是否需要後台人工審核才寄出？",
   context:
     "選項：① 自動寄出（送出表單立即進出貨流程）② 業務審核通過後才寄出（可避免濫用）。後者增加處理時間但較安全。",
+  clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提審核流程。" },
 };
 const Q4 = {
   no: "Q4",
   question: "一次最多可以申請幾件樣品？",
   context: "範例：1 件 / 3 件 / 不限。影響表單的商品選擇器 UI。",
+  clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提件數上限。" },
 };
 const Q5 = {
   no: "Q5",
   question: "樣品寄送方式有哪些？",
   context: "選項：超商取貨 / 宅配到府 / 自取。影響表單收件資訊欄位。",
+  clientRef: {
+    source: "後台 / 物流 (1)(2)(3)",
+    quote: "(1) 四大超商 (2) 多家宅配（出貨時可選擇物流公司） (3) 自取",
+    note: "您有寫一般訂單的物流方式，但「樣品是否套同一套規則」未明說。",
+  },
 };
 const Q6 = {
   no: "Q6",
   question: "客戶是否能在會員中心查申請狀態？",
   context: "若要做：需要會員中心多一個「樣品申請紀錄」頁，可看狀態（申請中／審核中／已寄出／已收到）。",
+  clientRef: {
+    source: "前台 / 會員 (2)",
+    quote: "訂單配送狀態",
+    note: "您有寫「訂單」可查狀態，但「樣品申請紀錄」是另一條實體（與訂單不同），是否也要查狀態未提。",
+  },
 };
 const Q7 = {
   no: "Q7",
   question: "樣品申請的必填欄位有哪些？",
   context:
     "標配：姓名／公司名／電話／收件地址。可選：統編、用途說明、希望寄達日。每個欄位都要客戶確認是必填還是選填。",
+  clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提表單欄位細節。" },
 };
 
-type QItem = { no: string; question: string; context?: string };
+type QItem = {
+  no: string;
+  question: string;
+  context?: string;
+  clientRef?: {
+    source: string;
+    quote: string;
+    note?: string;
+  };
+};
 
 /* ============== Flow building blocks ============== */
 function StepNode({

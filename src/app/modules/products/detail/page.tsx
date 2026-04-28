@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  ClipboardIcon,
   CommentToolbar,
   CommentTrigger,
 } from "@/components/modules/CommentSystem";
@@ -20,6 +21,11 @@ const QUESTIONS = [
     question: "商品影片來源？",
     context: "選項：後台直接上傳影片檔 / 嵌入 YouTube、Vimeo 連結",
     pinnedAt: "圖片區下方「商品影片」按鈕",
+    clientRef: {
+      source: "後台 / 公版商品 (5)",
+      quote: "商品頁可+影片 or 3D 圖（連結 pacdora.com 模板）",
+      note: "您有寫要有影片或 3D 圖，並給了 pacdora 範例（為 3D 模板），但「影片」是上傳檔還是 YouTube/Vimeo 嵌入未指定。",
+    },
   },
   {
     no: "Q2",
@@ -27,6 +33,11 @@ const QUESTIONS = [
     context:
       "HJ 現網站做法：未登入只看到「立即登入/註冊」，登入後才看到價格。要保留這做法、還是改成「非會員看零售價、會員看折扣價」？",
     pinnedAt: "價格區",
+    clientRef: {
+      source: "前台 / 公版商品系列 (1) + 後台 / 顧客管理 (2)",
+      quote: "提供給客人下單；多層會員分級：商品會因顧客分級而有不同價",
+      note: "您有寫要讓客人下單、會員分級不同價，但「非會員看零售價 vs 必須登入才看價」這個 B2B 常見岔路未指定。",
+    },
   },
 ];
 
@@ -128,6 +139,27 @@ export default function ProductsDetailPage() {
                       <span aria-hidden>↑</span>
                       已標註於：{q.pinnedAt}
                     </p>
+                  )}
+                  {q.clientRef && (
+                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
+                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
+                          <ClipboardIcon /> 您的需求表
+                        </span>
+                        <span className="text-sky-300">·</span>
+                        <span className="font-medium text-sky-700">
+                          {q.clientRef.source}
+                        </span>
+                      </div>
+                      <div className="text-sm leading-relaxed text-zinc-800">
+                        「{q.clientRef.quote}」
+                      </div>
+                      {q.clientRef.note && (
+                        <div className="mt-1 text-xs text-zinc-500">
+                          {q.clientRef.note}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div className="shrink-0">

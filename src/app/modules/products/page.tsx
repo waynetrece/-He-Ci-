@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  ClipboardIcon,
   CommentToolbar,
   CommentTrigger,
 } from "@/components/modules/CommentSystem";
@@ -14,46 +15,74 @@ const PAGE_ID = "products-list";
 const PAGE_LABEL = "公版商品系統";
 const ACTIVE_TAB = "list";
 
+const SAMPLE_REF = {
+  source: "前台 / 公版商品系列 (2)",
+  quote: "樣品申請：每個商品頁增加樣品按鈕",
+};
+
 const QUESTIONS = [
   {
     no: "Q1",
     question: "多層規格選項要支援幾層？",
     context: "例：紙杯 → 容量（8oz/12oz）→ 材質（PE/PLA）→ 印刷（單面/雙面）= 3 層",
     pinnedAt: "左欄『材質』篩選區",
+    clientRef: {
+      source: "前台 / 公版商品系列 (3)",
+      quote: "多層 規格&選項",
+      note: "您有寫「多層」，但未指定支援幾層 → 我們需要您確認層數上限。",
+    },
   },
   {
     no: "Q2",
     question: "不同規格組合要分開算庫存嗎？",
     context: "例：「8oz 白色紙杯」賣完了，「12oz 白色紙杯」還能不能賣？分開算 → 各自獨立、其中一款缺貨不影響其他款；合併算 → 同款商品共用一個庫存數字，其中一個沒了全部都擋下。",
     pinnedAt: "左欄『材質』篩選區",
+    clientRef: {
+      source: "後台 / 庫存管理 (1)(2)(3) + 顧客管理 (1)（隱含）",
+      quote: "API 串接：庫存即時更新／部分商品需要預留庫存／缺貨提醒；網站客人需與原 ERP 客戶編號相同",
+      note: "您有寫要串 ERP 即時庫存，但未說明「庫存的最小單位是商品還是規格組合」→ 影響網站如何擋缺貨。",
+    },
   },
   {
     no: "Q3",
     question: "商品列表頁是否顯示價格？",
     context: "B2B 電商常選擇隱藏價格，需登入才看得到。或一律顯示「請洽詢」字樣。",
     pinnedAt: "第 1 張卡『請洽詢』價格區",
+    clientRef: {
+      source: "前台 / 公版商品系列 (1)",
+      quote: "提供給客人下單",
+      note: "您有寫要讓客人下單（隱含要看得到價格），但未指定「列表頁直接顯示／詳情頁才顯示／必須登入才看得到」。",
+    },
   },
   {
     no: "Q4",
     question: "分級會員看到的價格如何呈現？",
     context: "選項：只顯示該等級價、原價劃掉+會員價、原價+折扣 % 等。",
     pinnedAt: "第 1 張卡『請洽詢』價格區",
+    clientRef: {
+      source: "後台 / 顧客管理 (2)",
+      quote: "多層會員分級：商品會因顧客分級而有不同價",
+      note: "您有寫「不同價」，但未指定呈現方式 → 我們需要您選一種。",
+    },
   },
   {
     no: "Q5",
     question: "樣品申請是否要收費？",
     context: "選項：完全免費 / 樣品免費但運費自付 / 限金額或會員等級",
     pinnedAt: "第 3 張卡『申請樣品』按鈕",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提收費規則。" },
   },
   {
     no: "Q6",
     question: "樣品申請是否限會員才能申請？",
     pinnedAt: "第 3 張卡『申請樣品』按鈕",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提資格限制。" },
   },
   {
     no: "Q7",
     question: "樣品申請是否要後台審核才寄出？",
     pinnedAt: "第 3 張卡『申請樣品』按鈕",
+    clientRef: { ...SAMPLE_REF, note: "您有寫要有樣品按鈕，但未提審核流程。" },
   },
 ];
 
@@ -155,6 +184,27 @@ export default function ProductsModulePage() {
                       <span aria-hidden>↑</span>
                       已標註於：{q.pinnedAt}
                     </p>
+                  )}
+                  {q.clientRef && (
+                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
+                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
+                          <ClipboardIcon /> 您的需求表
+                        </span>
+                        <span className="text-sky-300">·</span>
+                        <span className="font-medium text-sky-700">
+                          {q.clientRef.source}
+                        </span>
+                      </div>
+                      <div className="text-sm leading-relaxed text-zinc-800">
+                        「{q.clientRef.quote}」
+                      </div>
+                      {q.clientRef.note && (
+                        <div className="mt-1 text-xs text-zinc-500">
+                          {q.clientRef.note}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div className="shrink-0">
