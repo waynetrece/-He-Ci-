@@ -10,7 +10,7 @@ const MOCKUP_LINKS = [
 
 export function TopNav() {
   return (
-    <nav className="sticky top-0 z-40 border-b border-zinc-300 bg-white/95 backdrop-blur shadow-sm">
+    <nav className="sticky top-0 z-40 border-b border-zinc-300 bg-white shadow-sm">
       <div className="mx-auto flex max-w-[1760px] items-center gap-6 px-6 py-3">
         <Link
           href="/"

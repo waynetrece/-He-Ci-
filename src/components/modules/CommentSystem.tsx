@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+
+function ModalPortal({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
+  return createPortal(children, document.body);
+}
 
 export type CommentType = "general" | "question" | "revision" | "ok";
 
@@ -373,7 +383,16 @@ function CommentDialog({
   onClose: () => void;
   onSubmit: () => void;
 }) {
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   return (
+    <ModalPortal>
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
       onClick={onClose}
@@ -463,6 +482,7 @@ function CommentDialog({
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 }
 
@@ -492,7 +512,7 @@ export function CommentToolbar({
 
   return (
     <>
-      <div className="sticky top-[57px] z-30 border-b border-zinc-200 bg-white/95 backdrop-blur px-6 py-3 shadow-sm">
+      <div className="sticky top-[57px] z-30 border-b border-zinc-200 bg-white px-6 py-3 shadow-sm">
         <div className="mx-auto flex max-w-[1760px] items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="text-sm font-mono uppercase tracking-widest text-zinc-500">
@@ -757,6 +777,15 @@ export function QuestionPin({
 }) {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   if (questions.length === 0) return null;
   const label = questions.map((q) => q.no).join("·");
   const tooltip = questions.map((q) => `${q.no}：${q.question}`).join("\n");
@@ -776,6 +805,7 @@ export function QuestionPin({
       </button>
 
       {open && (
+        <ModalPortal>
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
           onClick={() => setOpen(false)}
@@ -862,6 +892,7 @@ export function QuestionPin({
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
     </>
   );
@@ -926,6 +957,15 @@ export function Annotated({
 }) {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   const positionCls = {
     "top-right": "-top-3 -right-3",
     "top-left": "-top-3 -left-3",
@@ -964,6 +1004,7 @@ export function Annotated({
       </div>
 
       {open && rationale && (
+        <ModalPortal>
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
           onClick={() => setOpen(false)}
@@ -1005,6 +1046,7 @@ export function Annotated({
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
     </>
   );
