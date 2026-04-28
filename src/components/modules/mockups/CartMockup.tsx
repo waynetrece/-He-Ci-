@@ -314,7 +314,7 @@ export function CartMockup({
                       <span className="rounded bg-indigo-100 px-2 py-0.5 text-xs font-bold text-indigo-800">
                         私版
                       </span>
-                      由報價單帶入，規格鎖定，不可改數量
+                      由報價單帶入，規格 / 數量鎖定，但可移出購物車
                     </h2>
                     <div className="space-y-3">
                       {ITEMS.filter((i) => i.type === "private").map((item) => (
@@ -482,13 +482,15 @@ function CartItemCard({ item, view }: { item: CartItem; view: ViewMode }) {
             </div>
           </div>
 
-          <button
-            className="flex items-center gap-1 text-xs text-zinc-400 hover:text-rose-700"
-            disabled={isPrivate && !expired}
-          >
+          <button className="flex items-center gap-1 text-xs text-zinc-500 hover:text-rose-700">
             <TrashIcon />
-            {isPrivate && !expired ? "（不可移除）" : "移除"}
+            移除
           </button>
+          {isPrivate && !expired && (
+            <span className="text-[10px] text-zinc-400">
+              規格 / 數量鎖定，可移出
+            </span>
+          )}
         </div>
       </div>
     </article>

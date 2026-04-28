@@ -5,7 +5,7 @@ const MOCKUP_LINKS = [
   { name: "私版報價", href: "/modules/private-quote", ready: true },
   { name: "會員系統", href: "/modules/members", ready: true },
   { name: "訂單系統", href: "/modules/orders", ready: false },
-  { name: "金物流", href: "/modules/checkout", ready: false },
+  { name: "金物流", href: "/modules/checkout", ready: true },
 ];
 
 export function TopNav() {
