@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Annotated, Questioned } from "../CommentSystem";
+import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
   MockupSiteFooter,
@@ -167,45 +167,35 @@ export function MemberDashboardMockup({
       <MockupSiteHeader />
 
       {/* Mockup Demo Toggle (B2B vs Personal preview) — 不在實際網站，是 demo 用 */}
-      <Annotated
-        show={annotations}
-        source="ours"
-        label="Demo 工具"
-        title="會員類型預覽切換"
-        rationale={
-          "這個切換鈕只是給客戶 demo 看「兩種會員的 Dashboard 樣貌差異」用，實際網站會根據登入身份自動顯示對應版本。\n\n切換後可看到：個人會員隱藏公司資料卡、詢價紀錄等 B2B 專屬區塊；企業客戶顯示完整 ERP / 公司資訊。"
-        }
-        pageId={pageId}
-        elementId="view-toggle"
-        elementLabel="會員類型預覽切換"
-        position="bottom-left"
-      >
-        <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
-          <div className="mx-auto flex max-w-[1760px] items-center gap-3 text-xs">
-            <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">
-              DEMO
-            </span>
-            <span className="text-zinc-700">
-              切換預覽會員類型，看兩種會員的 Dashboard 差異：
-            </span>
-            <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
-              {(["personal", "business"] as ViewType[]).map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setView(v)}
-                  className={`rounded px-3 py-1 font-medium transition-colors ${
-                    view === v
-                      ? "bg-amber-700 text-white"
-                      : "text-zinc-600 hover:bg-zinc-50"
-                  }`}
-                >
-                  {v === "personal" ? "個人會員" : "企業客戶"}
-                </button>
-              ))}
-            </div>
+      {/* Demo toggle — 不加 Annotated，因為這條本身就是 demo 工具，標題已自說明 */}
+      <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
+        <div className="mx-auto flex max-w-[1760px] items-center gap-3 text-xs">
+          <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">
+            DEMO
+          </span>
+          <span className="text-zinc-700">
+            切換預覽會員類型，看兩種會員的 Dashboard 差異：
+          </span>
+          <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
+            {(["personal", "business"] as ViewType[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                className={`rounded px-3 py-1 font-medium transition-colors ${
+                  view === v
+                    ? "bg-amber-700 text-white"
+                    : "text-zinc-600 hover:bg-zinc-50"
+                }`}
+              >
+                {v === "personal" ? "個人會員" : "企業客戶"}
+              </button>
+            ))}
           </div>
+          <span className="ml-auto text-zinc-500 italic">
+            （實際網站會依登入身份自動顯示對應版本）
+          </span>
         </div>
-      </Annotated>
+      </div>
 
       {/* Hero with greeting + tier badge */}
       <section className="border-b border-zinc-200 bg-gradient-to-br from-amber-50 to-white px-6 py-7">
@@ -263,7 +253,14 @@ export function MemberDashboardMockup({
                   <Field label="公司名稱" value={profile.companyName!} />
                   <Field label="統一編號" value={profile.taxId!} mono />
                   <Field label="ERP 客戶編號" value={profile.erpCode!} mono highlight />
-                  <Field label="目前價格級距" value={profile.priceLevel} />
+                  <Questioned
+                    show={annotations}
+                    questions={[Q1, Q3]}
+                    pageId={pageId}
+                    position="top-right"
+                  >
+                    <Field label="目前價格級距" value={profile.priceLevel} />
+                  </Questioned>
                 </div>
               </div>
             </Questioned>
@@ -277,7 +274,7 @@ export function MemberDashboardMockup({
           <div className="mx-auto max-w-[1760px]">
             <Questioned
               show={annotations}
-              questions={[Q3]}
+              questions={[Q1, Q3]}
               pageId={pageId}
               position="top-right"
             >
@@ -296,16 +293,9 @@ export function MemberDashboardMockup({
       {/* Cards grid */}
       <section className="bg-zinc-50/40 px-6 py-8">
         <div className="mx-auto max-w-[1760px]">
-          <Questioned
-            show={annotations}
-            questions={[Q1]}
-            pageId={pageId}
-            position="top-left"
-          >
-            <h2 className="mb-4 text-base font-bold text-zinc-700">
-              快速功能
-            </h2>
-          </Questioned>
+          <h2 className="mb-4 text-base font-bold text-zinc-700">
+            快速功能
+          </h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {/* 歷史訂單 */}
             <Card

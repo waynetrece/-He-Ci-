@@ -259,17 +259,21 @@ export function AnnotationBadge({
   onClick?: () => void;
 }) {
   const isClient = type === "client";
+  // Compact mode：預設只顯示「●建議」mini pill，hover 才放大顯示完整文案
   const cls = isClient
-    ? "inline-flex items-center gap-2 rounded-lg border-2 border-sky-500 bg-sky-50 px-3.5 py-2 text-sm font-bold text-sky-800 whitespace-nowrap shadow-md"
-    : "inline-flex items-center gap-2 rounded-lg border-2 border-amber-500 bg-amber-50 px-3.5 py-2 text-sm font-bold text-amber-800 whitespace-nowrap shadow-md";
+    ? "group inline-flex items-center gap-1 rounded-full border border-sky-500 bg-sky-50 px-2 py-0.5 text-[11px] font-bold text-sky-800 whitespace-nowrap shadow-sm"
+    : "group inline-flex items-center gap-1 rounded-full border border-amber-500 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-800 whitespace-nowrap shadow-sm";
   const dotCls = isClient ? "bg-sky-600" : "bg-amber-600";
   const labelText = isClient ? "客戶要求" : "我們建議";
+  const compactLabel = isClient ? "客戶" : "建議";
 
   const inner = (
     <>
-      <span className={`size-2.5 rounded-full ${dotCls}`} />
-      <span>{labelText}</span>
-      {onClick && <InfoIcon className="ml-0.5 opacity-80" />}
+      <span className={`size-1.5 rounded-full ${dotCls}`} />
+      {/* 預設 compact，hover 顯示完整文字 */}
+      <span className="group-hover:hidden">{compactLabel}</span>
+      <span className="hidden group-hover:inline">{labelText}</span>
+      {onClick && <InfoIcon className="ml-0.5 size-3 opacity-70" />}
     </>
   );
 
