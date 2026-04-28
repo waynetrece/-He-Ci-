@@ -315,7 +315,7 @@ export function CommentTrigger({
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<CommentType>("general");
   const [text, setText] = useState("");
-  const { pageComments, add } = useComments(pageId);
+  const { pageComments, add, remove } = useComments(pageId);
 
   const myComments = pageComments.filter((c) => c.elementId === elementId);
   const count = myComments.length;
@@ -352,6 +352,7 @@ export function CommentTrigger({
           text={text}
           setText={setText}
           existing={myComments}
+          onDelete={remove}
           onClose={() => {
             setOpen(false);
             setText("");
@@ -375,6 +376,7 @@ function CommentDialog({
   text,
   setText,
   existing,
+  onDelete,
   onClose,
   onSubmit,
 }: {
@@ -384,6 +386,7 @@ function CommentDialog({
   text: string;
   setText: (s: string) => void;
   existing: Comment[];
+  onDelete: (id: string) => void;
   onClose: () => void;
   onSubmit: () => void;
 }) {
@@ -413,7 +416,7 @@ function CommentDialog({
         </div>
 
         {existing.length > 0 && (
-          <div className="border-b border-zinc-100 px-6 py-3 max-h-32 overflow-y-auto">
+          <div className="border-b border-zinc-100 px-6 py-3 max-h-40 overflow-y-auto">
             <div className="mb-2 text-xs text-zinc-500">
               已有 {existing.length} 則留言
             </div>
@@ -425,7 +428,23 @@ function CommentDialog({
                   className={`mb-1.5 flex items-center gap-2 rounded border px-3 py-2 text-sm ${meta.chip}`}
                 >
                   <meta.Icon className={`shrink-0 ${meta.iconColor}`} />
-                  <span>{c.text}</span>
+                  <span className="flex-1 text-zinc-900 break-words">{c.text}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm("確定要刪除這則留言嗎？")) {
+                        onDelete(c.id);
+                      }
+                    }}
+                    className="shrink-0 rounded p-1 text-zinc-400 hover:bg-rose-100 hover:text-rose-700 transition-colors"
+                    title="刪除這則留言"
+                    aria-label="刪除留言"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
                 </div>
               );
             })}
@@ -464,7 +483,7 @@ function CommentDialog({
             onChange={(e) => setText(e.target.value)}
             placeholder="請輸入您的意見、問題或修改建議..."
             rows={4}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
             autoFocus
           />
         </div>
@@ -502,7 +521,7 @@ export function CommentToolbar({
   annotations: boolean;
   setAnnotations: (v: boolean) => void;
 }) {
-  const { pageComments, clearAll } = useComments(pageId);
+  const { pageComments, clearAll, remove } = useComments(pageId);
   const [panelOpen, setPanelOpen] = useState(false);
 
   const counts = {
@@ -577,6 +596,7 @@ export function CommentToolbar({
           comments={pageComments}
           onClose={() => setPanelOpen(false)}
           onClear={clearAll}
+          onDelete={remove}
         />
       )}
     </>
@@ -613,11 +633,13 @@ function CommentSidePanel({
   comments,
   onClose,
   onClear,
+  onDelete,
 }: {
   pageLabel: string;
   comments: Comment[];
   onClose: () => void;
   onClear: () => void;
+  onDelete: (id: string) => void;
 }) {
   const [filter, setFilter] = useState<CommentType | "all">("all");
 
@@ -713,13 +735,29 @@ function CommentSidePanel({
                         <div className="mt-1 text-xs text-zinc-600">
                           @ {c.elementLabel}
                         </div>
-                        <div className="mt-2 text-sm text-zinc-900">
+                        <div className="mt-2 text-sm text-zinc-900 break-words">
                           {c.text}
                         </div>
                         <div className="mt-1.5 text-[10px] text-zinc-500">
                           {new Date(c.createdAt).toLocaleString("zh-TW")}
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm("確定要刪除這則留言嗎？")) {
+                            onDelete(c.id);
+                          }
+                        }}
+                        className="shrink-0 rounded p-1 text-zinc-400 hover:bg-rose-100 hover:text-rose-700 transition-colors"
+                        title="刪除這則留言"
+                        aria-label="刪除留言"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
                     </div>
                   </li>
                 );
