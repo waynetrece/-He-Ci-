@@ -1186,3 +1186,99 @@ Codex 建議 `查看詢價明細` 先做成 **in-place 展開列**，不要做 m
 ### 給 Wayne / Claude 的結論
 
 > 建議回 Claude：`OK 開。B 採用展開列，不用 modal / drawer；重點是不要遮住畫面，也不要讓客戶誤解 LINE 會顯示完整明細。`
+
+---
+
+## 22 · e712d76 後 Quick Scan（2026-04-28）
+
+> Claude 已推 `e712d76 refactor(members): 拿掉 LINE 通知/綁定/客服 UI、拿掉樣品「我們建議」標 — LINE 功能改純 Q 諮詢`，Wayne 請 Codex 再 quick scan。
+
+### 驗證結果
+
+- `npm run lint`：通過。
+- Vercel 7 個會員路由：皆回 `HTTP 200`。
+  - `/modules/members/auth`
+  - `/modules/members`
+  - `/modules/members/orders`
+  - `/modules/members/orders/HJ-20260427-001`
+  - `/modules/members/quote-list`
+  - `/modules/members/samples`
+  - `/modules/members/settings`
+- `settings` 的 LINE 綁定 / 通知 UI 已移除，只保留 Q 諮詢，方向正確。
+- `quote-list` 的 `至 LINE 查看`、`開啟 LINE 聯繫客服`、`客服回覆摘要` 已從會員詢價畫面移除，方向正確。
+- `samples` 頁與 tab 已無 `我們建議` 標籤，方向正確。
+- 歷史訂單前台沒有看到 `匯出 Excel` 按鈕，僅在 Q 說明中標示「匯出屬後台」，方向正確。
+
+### 仍需調整的殘留
+
+#### 1. Dashboard 還有 LINE 綁定卡
+
+檔案：`src/components/modules/mockups/MemberDashboardMockup.tsx`
+
+目前仍有：
+
+- `LINE 帳號綁定`
+- `報價、訂單、出貨通知會推到 LINE`
+- `綁定後可接收訂單通知`
+- `2 筆等 LINE 客服回覆`
+- `—（LINE 報價中）`
+
+這和 Claude 的說法「唯一保留的 LINE 畫面元件是 auth 頁的 LINE 快速註冊／登入」不一致。建議：
+
+- 刪掉 Dashboard 的 `LINE 帳號綁定` 卡，或改成不含 LINE 的 `通知設定` / `帳號設定`。但目前已有 `帳號與公司資料` 卡，最乾淨是直接移除。
+- `2 筆等 LINE 客服回覆` 改 `2 筆等客服回覆`。
+- `—（LINE 報價中）` 改 `待報價` 或 `等客服報價`。
+
+#### 2. Auth Q2 還在承諾 Settings 會有 LINE 綁定
+
+檔案：
+
+- `src/components/modules/mockups/MemberAuthMockup.tsx`
+- `src/app/modules/members/auth/page.tsx`
+
+目前 Q2 context 仍寫：
+
+> 登入後在「帳號設定」會另外有「LINE 帳號綁定」用來接收訂單／報價／出貨通知。
+
+但 settings 現在已把 LINE 綁定 UI 拿掉，只保留 Q 諮詢。建議改成：
+
+> 目前畫面先只示意 `LINE 快速登入 / 註冊`。至於 LINE 通知、客服對話與帳號綁定，先保留在會員設定頁 Q 中請 HJ 確認，確認後再決定是否納入畫面。
+
+#### 3. 訂單詳情仍承諾「LINE 上回覆」
+
+檔案：`src/components/modules/mockups/MemberOrderDetailMockup.tsx`
+
+目前客製商品再訂 modal 仍寫：
+
+> HJ 客服將在 LINE 上回覆您新的報價。
+
+這和「LINE 通知 / 客服功能先不 push 在畫面」的方向衝突。建議改成：
+
+> 客製商品的價格與規格可能會依當次需求調整。您可先確認上次規格，再送出詢價；HJ 客服會依確認的客服管道回覆最新報價。
+
+#### 4. Order Detail Q3 note 還寫 LINE 僅用於訂單通知
+
+檔案：
+
+- `src/components/modules/mockups/MemberOrderDetailMockup.tsx`
+- `src/app/modules/members/orders/[id]/page.tsx`
+
+目前 note 寫：
+
+> LINE 整合僅用於訂單通知傳送，退換貨流程不走 LINE。
+
+因為 LINE 通知現在已改成「尚未規劃進畫面，僅 Q 諮詢」，這句會讓客戶以為訂單通知已確定走 LINE。建議改成：
+
+> 需求表只寫「退換貨」，未指定不同狀態下能做什麼。本提案先以一般線上流程規劃；客服 / 通知管道另於會員設定 Q 中請 HJ 確認。
+
+### 可保留的 LINE 字樣
+
+以下屬於需求引用或私版商品既有模組，不必在這輪會員修正一起清掉：
+
+- auth 頁的 `LINE 快速註冊 / 登入`：需求表明確寫到註冊方式，保留正確。
+- `clientRef.quote` 內引用需求表的 `複雜客製商品轉 LINE 客服報價`：可以保留，因為那是引用客戶原始需求，不是畫面承諾。
+- 私版商品模組 `PrivateQuote*` 的 LINE 報價字樣：不屬於這次會員系統 e712d76 的修正範圍。
+
+### 給 Claude 的結論
+
+> 方向大致對，但還沒完全收乾淨。請再補一個小修：Dashboard 移除 LINE 綁定卡與 LINE 報價字樣；Auth Q2 不要說 settings 會有 LINE 綁定；訂單詳情 modal / Q note 不要承諾 LINE 回覆或 LINE 訂單通知。完成後再跑 lint 和 7 路由即可。
