@@ -13,7 +13,7 @@ import {
 
 const Q1 = {
   no: "Q1",
-  question: "訂單狀態與配送狀態是否分兩條 timeline？我們提供以下預設方案，請貴司確認名稱、順序、是否與 ERP / 物流同步：",
+  question: "訂單狀態與配送狀態是否分兩條進度列？我們提供以下預設方案，想請 HJ 確認名稱、順序、是否與 ERP / 物流同步：",
   context:
     "預設方案：\n● 訂單狀態：待確認 → 已成立 → 備貨中 → 已出貨 → 已完成；例外：已取消 / 退換貨處理中\n● 配送狀態：未出貨 → 已交物流 → 運送中 → 已送達；例外：配送異常\n\n請確認名稱與順序，以及是否要與凌越 ERP / 物流公司即時同步。",
   clientRef: {
@@ -27,7 +27,7 @@ const Q2 = {
   no: "Q2",
   question: "「再訂一次」遇到公版商品 → 加購物車；遇到私版／客製商品 → 帶入規格重新詢價、還是轉 LINE 確認？",
   context:
-    "目前畫面預設：① 公版商品（如 12oz 紙杯）按下「再訂一次」直接加入購物車 ② 私版／客製商品（如客製腰封）按下「再訂一次」會帶入上次規格到「我的詢價紀錄」並提示客戶重新確認，因為價格與規格可能變動。",
+    "目前先以這樣示意：① 公版商品（如 12oz 紙杯）按下「再訂一次」直接加入購物車 ② 私版／客製商品（如客製腰封）按下「再訂一次」會帶入上次規格到「我的詢價紀錄」並提示客戶重新確認，因為價格與規格可能變動。",
   clientRef: {
     source: "前台 / 會員 (1) + 私版商品系列 (1)(2)",
     quote: "查詢歷史訂單，可再購買一次按鈕；複雜客製商品轉 LINE 客服報價",
@@ -37,13 +37,13 @@ const Q2 = {
 
 const Q3 = {
   no: "Q3",
-  question: "退換貨／取消訂單的狀態邊界？目前先採一般線上流程（LINE 主要用於拋轉訂單通知，退換貨不走 LINE）",
+  question: "退換貨／取消訂單的狀態邊界？目前先採一般線上流程（LINE 主要用於傳送訂單通知，退換貨不走 LINE）",
   context:
-    "目前畫面預設（一般線上流程）：① 「待確認 / 已成立」狀態 → 線上自助取消 ② 「備貨中」→ 線上申請後業務審核 ③ 「已出貨」之後 → 線上提交退換貨單，由客服跟進。請貴司確認狀態邊界與審核權責。",
+    "目前先以這樣示意（一般線上流程）：① 「待確認 / 已成立」狀態 → 線上自助取消 ② 「備貨中」→ 線上申請後業務審核 ③ 「已出貨」之後 → 線上提交退換貨單，由客服跟進。想請 HJ 確認狀態邊界與審核權責。",
   clientRef: {
     source: "後台 / 訂單管理 (7)",
     quote: "退換貨",
-    note: "需求表只寫「退換貨」，未指定流程細節。本提案先以一般線上流程規劃，LINE 整合僅用於訂單通知拋轉。",
+    note: "需求表只寫「退換貨」，未指定流程細節。本提案先以一般線上流程規劃，LINE 整合僅用於訂單通知傳送。",
   },
 };
 
@@ -240,7 +240,7 @@ export function MemberOrderDetailMockup({
                 show={annotations}
                 questions={[Q3]}
                 pageId={pageId}
-                position="top-right"
+                position="bottom-right"
               >
                 <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
                   退換貨
@@ -362,7 +362,7 @@ export function MemberOrderDetailMockup({
                               className="flex items-center gap-1.5 rounded-md bg-emerald-50 border border-emerald-300 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-100"
                             >
                               <RepeatIcon />
-                              再訂一次（公版直接加購物車）
+                              再訂一次（加入購物車）
                             </button>
                           </Questioned>
                         ) : (
@@ -374,7 +374,7 @@ export function MemberOrderDetailMockup({
                               className="flex items-center gap-1.5 rounded-md bg-indigo-50 border border-indigo-300 px-3 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100"
                             >
                               <RepeatIcon />
-                              再訂一次（私版需重新確認規格）
+                              沿用規格再詢價
                             </button>
                             {item.note && (
                               <span className="text-xs text-zinc-500">
@@ -410,7 +410,7 @@ export function MemberOrderDetailMockup({
               position="top-left"
             >
               <div className="mt-4 rounded-md bg-zinc-50/60 px-4 py-3 text-xs text-zinc-500">
-                訂單來源：HJ 網站系統 · 訂單編號與凌越 ERP 編號 <span className="font-mono">ERP-2604-031</span> 同步
+                訂單來源：HJ 網站系統 · 此筆訂單可對應 ERP 訂單編號 <span className="font-mono">ERP-2604-031</span>
               </div>
             </Questioned>
           </div>
@@ -490,7 +490,7 @@ export function MemberOrderDetailMockup({
                 <>
                   <RepeatIcon />
                   <h3 className="mt-3 text-lg font-bold text-zinc-900">
-                    規格已帶入詢價紀錄
+                    已帶入上次規格
                   </h3>
                   <p className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
                     客製商品價格與規格可能變動，請至「我的詢價紀錄」確認規格後送出，HJ 客服將在 LINE 上回覆您新的報價。

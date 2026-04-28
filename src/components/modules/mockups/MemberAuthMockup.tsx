@@ -15,7 +15,7 @@ const Q1 = {
   no: "Q1",
   question: "註冊流程是否分為「個人會員 / 企業客戶」兩種？企業客戶是否需後台審核或手動升級？兩種會員各自必填／選填哪些資料？",
   context:
-    "目前畫面預設：① 註冊第一步先選會員類型 ② 個人會員填基本資料即可立即啟用 ③ 企業客戶填公司資料後標示「審核中」狀態，由 HJ 業務人工確認 ERP 編號與分級後啟用。實際是否要這樣分流，請貴司確認。",
+    "目前先以這樣示意：① 註冊第一步先選會員類型 ② 個人會員填基本資料即可立即啟用 ③ 企業客戶填公司資料後標示「審核中」狀態，由 HJ 業務人工確認 ERP 編號與分級後啟用。實際是否要這樣分流，想請 HJ 確認。",
   clientRef: {
     source: "前台 / 官網 (3) + 後台 / 顧客管理 (1)",
     quote: "註冊方式：LINE.Email（需驗證）；網站客人需與原 ERP 客戶編號相同",
@@ -27,7 +27,7 @@ const Q2 = {
   no: "Q2",
   question: "LINE 在系統中是用來「快速登入／註冊」、「接收通知/客服綁定」，還是兩者都要支援？兩者畫面如何分清楚？",
   context:
-    "目前畫面預設：①「LINE 一鍵登入／註冊」用來建立或登入會員（在這個 Auth 頁）② 登入後在「帳號設定」會另外有「LINE 帳號綁定」用來接收訂單／報價／出貨通知。兩者是不同功能，避免客戶混淆。",
+    "目前先以這樣示意：①「LINE 一鍵登入／註冊」用來建立或登入會員（在這個註冊／登入頁）② 登入後在「帳號設定」會另外有「LINE 帳號綁定」用來接收訂單／報價／出貨通知。兩者是不同功能，避免客戶混淆。",
   clientRef: {
     source: "前台 / 官網 (3) + 私版商品系列 (1)(2)",
     quote: "註冊方式：LINE.Email（需驗證）；複雜客製商品轉 LINE 客服報價",
@@ -140,7 +140,7 @@ export function MemberAuthMockup({
             {mode === "register" ? "註冊會員" : "會員登入"}
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            個人購買、餐飲業者皆可使用 — 客製商品、會員價、訂單追蹤一站搞定
+            個人採購與餐飲業者皆可使用，註冊後可查看會員價格、訂單進度與詢價紀錄
           </p>
         </div>
       </section>
@@ -180,7 +180,7 @@ export function MemberAuthMockup({
                 label="加值功能"
                 title="會員類型分流"
                 rationale={
-                  "B2B 餐飲包材會員與個人會員的需求差異很大（公司資料、發票、ERP 編號、分級價）。一進註冊就分流可以避免後續資料補不齊。\n\n企業客戶會多一道「審核中」狀態，由 HJ 業務確認 ERP 編號與分級後才啟用，避免價格資訊錯配。"
+                  "企業會員與個人會員的需求差異很大（公司資料、發票、ERP 編號、分級價）。一進註冊就分流可以避免後續資料補不齊。\n\n企業客戶會多一道「審核中」狀態，由 HJ 業務確認 ERP 編號與分級後才啟用，避免價格資訊錯配。"
                 }
                 pageId={pageId}
                 elementId="account-type"
@@ -267,7 +267,7 @@ export function MemberAuthMockup({
                   <Field label="確認密碼" type="password" required />
                   {type === "business" && (
                     <div className="rounded-md border border-amber-200 bg-amber-50/60 p-3 text-xs text-amber-900">
-                      註冊送出後，您的帳號將進入「審核中」狀態。HJ 業務人員會於 1 個工作日內確認您的公司資料與 ERP 客戶編號，啟用後您將收到 Email 通知。
+                      註冊送出後，您的帳號將進入「審核中」狀態。HJ 業務人員確認您的公司資料與 ERP 客戶編號後，您會收到 Email 啟用通知。
                     </div>
                   )}
                 </div>
@@ -362,11 +362,11 @@ export function MemberAuthMockup({
                 href="/modules/members"
                 className="mt-6 inline-flex items-center gap-2 rounded-md bg-emerald-600 px-6 py-3 text-sm font-bold text-white hover:bg-emerald-700"
               >
-                模擬授權完成 → 進入會員首頁
+                完成授權，前往會員首頁 → 進入會員首頁
                 <ArrowRight />
               </Link>
               <p className="mt-3 text-xs text-zinc-400">
-                （Demo 用：點此跳過 LINE 授權步驟）
+                （提案示意：實際網站會前往 LINE 授權頁）
               </p>
             </div>
           )}
@@ -381,7 +381,7 @@ export function MemberAuthMockup({
                 您的企業帳號審核中
               </h2>
               <p className="mt-2 text-sm text-zinc-700">
-                Email 驗證完成。HJ 業務人員會於 1 個工作日內確認您的公司資料與 ERP 客戶編號。
+                Email 驗證完成。HJ 業務人員確認您的公司資料與 ERP 客戶編號後，將以 Email 通知您啟用。
               </p>
               <div className="mx-auto mt-4 max-w-md rounded-md bg-white p-4 text-left text-xs">
                 <div className="font-bold text-zinc-900 mb-2">審核中可使用功能</div>

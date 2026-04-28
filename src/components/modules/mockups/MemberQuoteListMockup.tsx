@@ -15,11 +15,11 @@ const Q1 = {
   no: "Q1",
   question: "個人會員是否能使用「私版報價」功能？或只開放給企業客戶？",
   context:
-    "目前畫面預設：① 企業客戶（B2B）可使用完整詢價功能 ② 個人會員預設不開放，登入後在此頁顯示「升級為企業客戶」引導。請貴司確認個人會員能否使用私版詢價。",
+    "目前先以這樣示意：① 企業會員可使用完整詢價功能 ② 個人會員預設不開放，登入後在此頁顯示「升級為企業客戶」引導。想請 HJ 確認個人會員能否使用私版詢價。",
   clientRef: {
     source: "前台 / 私版商品系列 (1)",
     quote: "客人在網站上點選需求選項得到報價",
-    note: "需求表沒指定誰能用私版報價。本提案先預設只 B2B 可用，請貴司確認。",
+    note: "需求表沒指定誰能用私版報價。本提案先預設只企業會員可用，想請 HJ 確認。",
   },
 };
 
@@ -27,11 +27,11 @@ const Q2 = {
   no: "Q2",
   question: "詢價單有效期幾天？過期後處理方式？",
   context:
-    "目前畫面預設：詢價單有效期 7 天，過期後狀態變「已過期」，提供「一鍵重新詢價」按鈕將原規格帶回詢價流程。請貴司指定有效天數與過期處理。",
+    "目前先以這樣示意：詢價單有效期 7 天，過期後狀態變「已過期」，提供「一鍵重新詢價」按鈕將原規格帶回詢價流程。想請 HJ 指定有效天數與過期處理。",
   clientRef: {
     source: "需求表未提及（補充項）",
     quote: "（這項在需求表沒有對應段落）",
-    note: "詢價單有效期是 B2B 報價系統標配，需貴司指定。",
+    note: "報價通常需設定有效期限，避免價格與材料條件變動。想請 HJ 指定天數。",
   },
 };
 
@@ -39,7 +39,7 @@ const Q3 = {
   no: "Q3",
   question: "詢價單轉訂單的流程？是否需要 LINE 客服確認後才能轉？",
   context:
-    "目前畫面預設：① 「已成交」狀態的詢價單可直接「轉訂單」進結帳流程 ② 「已送 LINE」狀態需 HJ 客服在 LINE 確認規格與報價後，才會將詢價單標記成「已成交」，會員才能繼續結帳。",
+    "目前先以這樣示意：① 「已成交」狀態的詢價單可直接「轉訂單」進結帳流程 ② 「已送 LINE」狀態需 HJ 客服在 LINE 確認規格與報價後，才會將詢價單標記成「已成交」，會員才能繼續結帳。",
   clientRef: {
     source: "前台 / 私版商品系列 (2)",
     quote: "客服、客人提供製作原始檔、下單，均轉 LINE 客服",
@@ -174,9 +174,9 @@ export function MemberQuoteListMockup({
       <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] items-center gap-3 text-xs">
           <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">
-            DEMO
+            預覽
           </span>
-          <span className="text-zinc-700">切換預覽會員類型：</span>
+          <span className="text-zinc-700">切換會員類型：</span>
           <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
             {(["personal", "business"] as ViewMode[]).map((v) => (
               <button
@@ -193,7 +193,7 @@ export function MemberQuoteListMockup({
             ))}
           </div>
           <span className="ml-auto text-zinc-500 italic">
-            （此功能可能僅限企業客戶 — 見 Q1）
+            （此功能由企業會員使用 — 見 Q1）
           </span>
         </div>
       </div>
@@ -233,10 +233,10 @@ export function MemberQuoteListMockup({
                 <FileTextIcon />
               </div>
               <h2 className="mt-4 text-xl font-bold text-zinc-900">
-                私版客製詢價，目前僅供企業客戶使用
+                若您有大量採購或客製印刷需求
               </h2>
               <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
-                如您有客製化、大量採購或客製印刷需求，建議升級為「企業客戶」帳號，可享：
+                可申請企業會員服務，享有：
               </p>
               <ul className="mx-auto mt-3 max-w-sm text-left text-sm text-zinc-700 space-y-1">
                 <li>• 私版即時報價系統</li>
@@ -249,7 +249,7 @@ export function MemberQuoteListMockup({
                 href="/modules/members/settings"
                 className="mt-5 inline-flex items-center gap-1.5 rounded-md bg-amber-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-amber-800"
               >
-                升級為企業客戶
+                申請企業會員服務
               </Link>
               <p className="mt-3 text-xs text-zinc-400">
                 （或直接聯繫客服詢問少量客製方案）

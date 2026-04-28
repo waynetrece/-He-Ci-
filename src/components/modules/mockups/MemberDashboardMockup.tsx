@@ -15,7 +15,7 @@ const Q1 = {
   no: "Q1",
   question: "一般會員與企業客戶是否共用同一套等級系統，還是各自獨立？各有幾級、等級名稱、升降級規則、價格生效時間？當會員等級價、企業合約價、ERP 客戶特殊價同時存在時，價格優先順序如何判定？",
   context:
-    "目前畫面預設：個人會員顯示「VIP 銀級」、企業客戶顯示「合作客戶 A 級」當示意。實際命名與分級數需貴司提供。價格優先順序也是計價邏輯核心，需確認。",
+    "目前先以這樣示意：個人會員顯示「VIP 銀級」、企業客戶顯示「合作客戶 A 級」當示意。實際命名與分級數想請 HJ 提供。價格優先順序也是計價邏輯核心，需確認。",
   clientRef: {
     source: "後台 / 顧客管理 (2)",
     quote: "多層會員分級：商品會因顧客分級而有不同價",
@@ -25,13 +25,13 @@ const Q1 = {
 
 const Q2 = {
   no: "Q2",
-  question: "Dashboard 依會員類型顯示什麼差異？個人會員的 Dashboard 隱藏哪些區塊（公司資料卡 / 詢價紀錄 / 多門市 等）？ERP 客戶編號是否在會員自己看的畫面顯示？",
+  question: "會員首頁依會員類型顯示什麼差異？個人會員的會員首頁要隱藏哪些區塊（公司資料卡 / 詢價紀錄 / 多門市等）？ERP 客戶編號是否在會員自己看的畫面顯示？",
   context:
-    "目前畫面預設：企業客戶頂部有「公司資料卡」（公司名 / 統編 / ERP 客戶編號 / 等級 / 價格級距）；個人會員此區塊隱藏，改顯示精簡版「會員資料卡」。請貴司確認顯示策略。",
+    "目前先以這樣示意：企業客戶頂部有「公司資料卡」（公司名 / 統編 / ERP 客戶編號 / 等級 / 價格級距）；個人會員此區塊隱藏，改顯示精簡版會員資料。想請 HJ 確認顯示策略。",
   clientRef: {
     source: "後台 / 顧客管理 (1)(2)",
     quote: "API 串接：網站客人需與原 ERP 客戶編號相同；多層會員分級",
-    note: "需求表沒有指定 ERP 客戶編號是否要對會員自己顯示，也沒有規定 Dashboard 兩種會員的差異。",
+    note: "需求表沒有指定 ERP 客戶編號是否要對會員自己顯示，也沒有規定會員首頁在兩種會員間的差異。",
   },
 };
 
@@ -39,7 +39,7 @@ const Q3 = {
   no: "Q3",
   question: "價格顯示規則 — 未登入訪客 / 個人會員 / 企業客戶分別看到什麼價格？顯示原價、會員價、企業價、請洽詢，還是隱藏價格？",
   context:
-    "目前畫面預設：個人會員顯示「會員價」+「原價劃掉」；企業客戶顯示「合約價」+「等級價」。實際是否顯示、要顯示什麼數字、未登入訪客看到的版本，需貴司確認。",
+    "目前先以這樣示意：個人會員顯示「會員價」+「原價劃掉」；企業客戶顯示「合約價」+「等級價」。實際是否顯示、要顯示什麼數字、未登入訪客看到的版本，想請 HJ 確認。",
   clientRef: {
     source: "後台 / 顧客管理 (2)",
     quote: "多層會員分級：商品會因顧客分級而有不同價",
@@ -171,10 +171,10 @@ export function MemberDashboardMockup({
       <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] items-center gap-3 text-xs">
           <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">
-            DEMO
+            預覽
           </span>
           <span className="text-zinc-700">
-            切換預覽會員類型，看兩種會員的 Dashboard 差異：
+            切換會員類型，確認不同會員看到的內容：
           </span>
           <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
             {(["personal", "business"] as ViewType[]).map((v) => (
@@ -316,7 +316,7 @@ export function MemberDashboardMockup({
                 meta="2 筆等 LINE 客服回覆"
                 href="/modules/members/quote-list"
                 tone="indigo"
-                badge="B2B"
+                badge="企業專屬"
               />
             )}
 

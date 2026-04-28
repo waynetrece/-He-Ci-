@@ -15,11 +15,11 @@ const Q1 = {
   no: "Q1",
   question: "LINE 帳號綁定是否強制？通知範圍（訂單成立 / 出貨通知 / 報價回覆）由誰開關？綁定中斷後如何處理？",
   context:
-    "目前畫面預設：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。請貴司確認。",
+    "目前先以這樣示意：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。想請 HJ 確認。",
   clientRef: {
     source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
     quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
-    note: "LINE 綁定的具體規範未在需求表指定。本提案以「拋轉訂單通知」為核心用途。",
+    note: "LINE 綁定的具體規範未在需求表指定。本提案以「傳送訂單通知」為核心用途。",
   },
 };
 
@@ -27,11 +27,11 @@ const Q2 = {
   no: "Q2",
   question: "是否需要常用收件地址 / 多門市地址管理？個人會員可存幾筆？企業客戶可存幾筆？標籤命名規則？",
   context:
-    "目前畫面預設：① 個人會員可存 5 筆地址，標籤為「家裡 / 工作 / 其他」② 企業客戶不限筆數，標籤為「總店 / 分店 / 倉庫 / 其他」可自訂。可標記預設地址。請貴司確認上限與標籤。",
+    "目前先以這樣示意：① 個人會員可存 5 筆地址，標籤為「家裡 / 工作 / 其他」② 企業客戶可依需求設定上限，標籤為「總店 / 分店 / 倉庫 / 其他」可自訂。可標記預設地址。想請 HJ 確認上限與標籤。",
   clientRef: {
     source: "需求表未提及（補充項）",
     quote: "（這項在需求表沒有對應段落）",
-    note: "餐飲客戶可能多門市配送，建議補上。請貴司確認上限與標籤命名。",
+    note: "餐飲客戶可能多門市配送，建議補上。想請 HJ 確認上限與標籤命名。",
   },
 };
 
@@ -39,11 +39,11 @@ const Q3 = {
   no: "Q3",
   question: "發票資料需要哪些欄位（公司抬頭、統編、發票寄送方式、Email 收件、紙本郵寄地址）？個人會員是否簡化版（僅 Email）？",
   context:
-    "目前畫面預設：① 企業客戶需填寫公司抬頭、統編、發票寄送方式（Email / 紙本郵寄擇一）② 個人會員僅需 Email 收件 ③ 紙本寄送可指定地址。請貴司確認欄位需求。",
+    "目前先以這樣示意：① 企業客戶需填寫公司抬頭、統編、發票寄送方式（Email / 紙本郵寄擇一）② 個人會員僅需 Email 收件 ③ 紙本寄送可指定地址。想請 HJ 確認欄位需求。",
   clientRef: {
     source: "需求表未提及（補充項）",
     quote: "（這項在需求表沒有對應段落）",
-    note: "B2B 場景幾乎一定會問。請貴司確認欄位完整度。",
+    note: "企業場景幾乎一定會問。想請 HJ 確認欄位完整度。",
   },
 };
 
@@ -51,7 +51,7 @@ const Q4 = {
   no: "Q4",
   question: "公司資料（公司名、統編、ERP 客戶編號、發票資料）若由會員自行修改，是否需要後台審核後才同步 ERP？",
   context:
-    "目前畫面預設：① 公司名、統編、發票資料 → 會員可自行修改，但變更後標示「待業務確認」，由 HJ 業務在後台審核通過才同步 ERP ② ERP 客戶編號 → 唯讀，僅後台可改。請貴司確認規則。",
+    "目前先以這樣示意：① 公司名、統編、發票資料 → 會員可自行修改，但變更後標示「待業務確認」，由 HJ 業務在後台審核通過才同步 ERP ② ERP 客戶編號 → 唯讀，僅後台可改。想請 HJ 確認規則。",
   clientRef: {
     source: "後台 / 顧客管理 (1)",
     quote: "API 串接：網站客人需與原 ERP 客戶編號相同",
@@ -117,9 +117,9 @@ export function MemberSettingsMockup({
       <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] items-center gap-3 text-xs">
           <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">
-            DEMO
+            預覽
           </span>
-          <span className="text-zinc-700">切換預覽會員類型，看不同欄位差異：</span>
+          <span className="text-zinc-700">切換會員類型，確認不同欄位差異：</span>
           <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
             {(["personal", "business"] as ViewMode[]).map((v) => (
               <button
@@ -368,7 +368,7 @@ export function MemberSettingsMockup({
                         onClick={() => setLineStep("bound")}
                         className="rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700"
                       >
-                        模擬授權完成
+                        完成授權，前往會員首頁
                       </button>
                       <button
                         onClick={() => setLineStep("unbound")}
@@ -378,7 +378,7 @@ export function MemberSettingsMockup({
                       </button>
                     </div>
                     <p className="mt-3 text-xs text-zinc-400">
-                      （Demo 用：點此跳過真實 LINE 授權步驟）
+                      （提案示意：實際網站會前往 LINE 授權頁）
                     </p>
                   </div>
                 )}
@@ -400,9 +400,9 @@ export function MemberSettingsMockup({
                             <span className="font-medium">Wayne C.</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-zinc-600">LINE userId</span>
+                            <span className="text-zinc-600">綁定識別碼</span>
                             <span className="font-mono text-xs text-zinc-500">
-                              U4af4980629••••••（後台儲存）
+                              ••••••（系統儲存）
                             </span>
                           </div>
                           <div className="flex justify-between">

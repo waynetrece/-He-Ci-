@@ -1,14 +1,24 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 
+const subscribeNoop = () => () => {};
+const isClientSnapshot = () => true;
+const isServerSnapshot = () => false;
+
 function ModalPortal({ children }: { children: ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  if (!mounted) return null;
+  const isClient = useSyncExternalStore(
+    subscribeNoop,
+    isClientSnapshot,
+    isServerSnapshot,
+  );
+  if (!isClient) return null;
   return createPortal(children, document.body);
 }
 
@@ -173,8 +183,11 @@ function useComments(pageId: string) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // Hydrate state from localStorage on client mount — legitimate use of
+    // setState in effect (sync React state with external storage).
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (raw) setComments(JSON.parse(raw));
     } catch {}
     setLoaded(true);
