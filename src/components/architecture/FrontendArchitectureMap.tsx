@@ -41,6 +41,7 @@ const COMMERCE: Item[] = [
     label: "私版商品系列",
     sub: "2 種報價模式",
     star: true,
+    href: "/modules/private-quote",
     children: ["即時報價系統（仿 jcolor）", "LINE 客服轉單"],
   },
   { label: "作品集系列" },
