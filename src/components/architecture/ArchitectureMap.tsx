@@ -46,7 +46,6 @@ export function ArchitectureMap() {
         <SectionHeader
           kicker="整體架構"
           title="禾啟 HJ 整體架構圖"
-          desc="一張圖看完平台所有組成 — 前台、後台、外部關鍵整合的完整層級關係。"
         />
 
         {/* Root */}
