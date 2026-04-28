@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Annotated, Questioned } from "../CommentSystem";
 import {
   MockupShell,
@@ -337,10 +338,13 @@ export function ProductDetailMockup({
 
             {/* Action buttons — 對齊 HJ 真實做法（追蹤、貨到通知）+ 申請樣品（客戶 PDF 要求新增） */}
             <div className="space-y-2">
-              <button className="flex w-full items-center justify-center gap-2 rounded-md bg-amber-700 px-4 py-3.5 text-base font-bold text-white shadow-sm hover:bg-amber-800">
+              <Link
+                href="/modules/cart"
+                className="flex w-full items-center justify-center gap-2 rounded-md bg-amber-700 px-4 py-3.5 text-base font-bold text-white shadow-sm hover:bg-amber-800"
+              >
                 <PlusIcon />
                 加入購物車
-              </button>
+              </Link>
 
               {/* 申請樣品按鈕 — 客戶 PDF 明確要求新增（HJ 現網站沒這功能） */}
               {annotations ? (

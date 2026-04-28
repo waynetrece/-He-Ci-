@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Annotated, Questioned } from "../CommentSystem";
 import {
   MockupShell,
@@ -380,9 +381,12 @@ function renderCardInner(
 
         {/* Action buttons */}
         <div className="mt-3 flex gap-1.5">
-          <button className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-amber-700 px-2 py-2.5 text-sm font-bold text-white hover:bg-amber-800 shadow-sm transition-colors">
+          <Link
+            href="/modules/cart"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-amber-700 px-2 py-2.5 text-sm font-bold text-white hover:bg-amber-800 shadow-sm transition-colors"
+          >
             <PlusIcon /> 加入購物車
-          </button>
+          </Link>
           {p.hasSample &&
             (showSample ? (
               <Questioned
