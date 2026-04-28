@@ -3,7 +3,7 @@ import Link from "next/link";
 const MOCKUP_LINKS = [
   { name: "公版商品", href: "/modules/products", ready: true },
   { name: "私版報價", href: "/modules/private-quote", ready: true },
-  { name: "會員系統", href: "/modules/members", ready: false },
+  { name: "會員系統", href: "/modules/members", ready: true },
   { name: "訂單系統", href: "/modules/orders", ready: false },
   { name: "金物流", href: "/modules/checkout", ready: false },
 ];

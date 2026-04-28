@@ -62,8 +62,9 @@ const SERVICE: Item[] = [
   { label: "聯絡我們" },
   {
     label: "會員中心",
-    sub: "3 子頁",
-    children: ["歷史訂單", "一鍵再購買", "訂單配送追蹤"],
+    sub: "7 子頁",
+    href: "/modules/members",
+    children: ["註冊/登入", "會員首頁", "歷史訂單", "訂單詳情", "詢價紀錄", "樣品紀錄", "帳號設定"],
   },
 ];
 
