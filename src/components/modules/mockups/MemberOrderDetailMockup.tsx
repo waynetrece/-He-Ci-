@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Annotated, Questioned } from "../CommentSystem";
+import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
   MockupSiteFooter,
@@ -236,30 +236,16 @@ export function MemberOrderDetailMockup({
                 <RepeatIcon />
                 再訂一次
               </button>
-              <Annotated
+              <Questioned
                 show={annotations}
-                source="ours"
-                label="加值功能"
-                title="退換貨入口"
-                rationale={
-                  "退換貨入口直接放在訂單詳情頁，避免客戶找不到。實際處理流程（線上 vs LINE）由客戶決定，這次提案先放入口。"
-                }
+                questions={[Q3]}
                 pageId={pageId}
-                elementId="action-rma"
-                elementLabel="退換貨入口"
                 position="top-right"
               >
-                <Questioned
-                  show={annotations}
-                  questions={[Q3]}
-                  pageId={pageId}
-                  position="top-left"
-                >
-                  <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
-                    退換貨
-                  </button>
-                </Questioned>
-              </Annotated>
+                <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
+                  退換貨
+                </button>
+              </Questioned>
               <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
                 <TruckIcon />
                 追蹤物流
