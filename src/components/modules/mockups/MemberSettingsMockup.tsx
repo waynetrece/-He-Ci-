@@ -11,30 +11,6 @@ import {
 
 /* ============== Q definitions ============== */
 
-const Q1 = {
-  no: "Q1",
-  question: "LINE 帳號綁定是否強制？通知範圍（訂單成立 / 出貨通知 / 報價回覆）由誰開關？綁定中斷後如何處理？",
-  context:
-    "目前先以這樣示意：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。注意：LINE 通知需會員完成綁定且未封鎖官方帳號才能送達；若推播失敗，本提案先以「保留通知於會員中心 + 改寄 Email」為備援，想請 HJ 確認此備援方式。",
-  clientRef: {
-    source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
-    quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
-    note: "LINE 綁定的具體規範未在需求表指定。本提案以「傳送訂單通知」為核心用途。",
-  },
-};
-
-const Q5 = {
-  no: "Q5",
-  question: "HJ 是否已有 LINE 官方帳號、LINE Login Channel 與 Messaging API Channel？通知事件清單與通知對象由誰決定？",
-  context:
-    "LINE 整合需確認的前置條件（請 HJ 一次回覆）：① 是否已有 LINE 官方帳號？管理員權限可授權？② 是否已啟用 LINE Login Channel（給網站登入用）？③ 是否已啟用 Messaging API Channel（給通知用）？④ 兩個 Channel 是否在同一 Provider 底下（影響 userId 一致性）？⑤ 月訊息額度是否足夠？⑥ 通知事件清單（訂單成立 / 備貨 / 出貨 / 送達 / 報價回覆 / 樣品出貨 / 退換貨進度）哪些要發、發給誰（下單人 / 公司主聯絡人 / 收貨聯絡人）？⑦ 通知失敗備援（補寄 Email / 只留會員中心）？⑧ LINE 登入是否要取得 email（需向 LINE 申請額外權限）？",
-  clientRef: {
-    source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
-    quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
-    note: "需求表只寫了「LINE 註冊 / 轉 LINE 客服」，未交代 LINE 帳號 / Channel / 通知事件等前置條件。這些條件會直接影響可否落地。",
-  },
-};
-
 const Q2 = {
   no: "Q2",
   question: "是否需要常用收件地址 / 多門市地址管理？個人會員可存幾筆？企業客戶可存幾筆？標籤命名規則？",
@@ -73,17 +49,9 @@ const Q4 = {
 
 /* ============== Icons ============== */
 
-function LineIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.197-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .627.285.627.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
-    </svg>
-  );
-}
-
 function CheckCircle() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm5.707 9.707-7 7a1 1 0 0 1-1.414 0l-3-3a1 1 0 1 1 1.414-1.414L10 14.586l6.293-6.293a1 1 0 1 1 1.414 1.414z" />
     </svg>
   );
@@ -109,7 +77,6 @@ function ChevronLeft() {
 /* ============== Component ============== */
 
 type ViewMode = "business" | "personal";
-type LineBindStep = "unbound" | "redirecting" | "bound";
 
 export function MemberSettingsMockup({
   annotations = false,
@@ -119,7 +86,6 @@ export function MemberSettingsMockup({
   pageId?: string;
 }) {
   const [view, setView] = useState<ViewMode>("business");
-  const [lineStep, setLineStep] = useState<LineBindStep>("unbound");
 
   return (
     <MockupShell url="https://hjhj.com.tw/members/settings">
@@ -328,178 +294,8 @@ export function MemberSettingsMockup({
             </Section>
           </Questioned>
 
-          {/* 5a. LINE 在本系統的 4 種功能（澄清拆分） */}
-          <Questioned
-            show={annotations}
-            questions={[Q5]}
-            pageId={pageId}
-            position="top-right"
-          >
-            <Section
-              title="LINE 在本系統的功能"
-              subtitle="本系統 LINE 共 4 種用途，請看下方說明（避免被當成同一件事）"
-            >
-              <div className="col-span-full">
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {[
-                    {
-                      title: "1. LINE 快速登入",
-                      where: "登入 / 註冊頁",
-                      desc: "用 LINE 帳號登入網站。需 LINE Login Channel。企業資料 / 統編 / 發票 / 收件地址仍需回網站補齊。",
-                      tone: "border-sky-300 bg-sky-50/60 text-sky-900",
-                    },
-                    {
-                      title: "2. LINE 帳號綁定",
-                      where: "本頁下方「LINE 帳號綁定」",
-                      desc: "把網站會員與 LINE 帳號連結，作為通知與客服識別基礎。需 LINE Login 或 Account Linking。",
-                      tone: "border-emerald-300 bg-emerald-50/60 text-emerald-900",
-                    },
-                    {
-                      title: "3. LINE 通知",
-                      where: "本頁下方「通知偏好」",
-                      desc: "訂單、報價、出貨等狀態用 LINE 推播。需 LINE Official Account + Messaging API + 會員完成綁定 + 未封鎖官方帳號才能送達。",
-                      tone: "border-amber-300 bg-amber-50/60 text-amber-900",
-                    },
-                    {
-                      title: "4. 開啟 LINE 客服對話",
-                      where: "詢價單、訂單頁的「開啟 LINE 聯繫客服」按鈕",
-                      desc: "引導會員開 LINE 對話視窗。完整詢價 / 訂單 / 樣品紀錄仍以會員中心為主，LINE 不放完整明細。",
-                      tone: "border-zinc-300 bg-zinc-50 text-zinc-800",
-                    },
-                  ].map((f) => (
-                    <div key={f.title} className={`rounded-lg border ${f.tone} px-3 py-2.5`}>
-                      <div className="flex items-center gap-1.5">
-                        <LineIcon className="size-4" />
-                        <span className="text-sm font-bold">{f.title}</span>
-                      </div>
-                      <div className="mt-1 text-[11px] font-medium opacity-70">
-                        位置：{f.where}
-                      </div>
-                      <p className="mt-1 text-xs leading-relaxed opacity-90">
-                        {f.desc}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-3 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-[11px] leading-relaxed text-zinc-600">
-                  ※ 上述功能要落地，需 HJ 先確認：是否已有 LINE 官方帳號 / LINE Login Channel / Messaging API Channel；通知事件清單；通知失敗時的備援方式（補寄 Email 或只留會員中心）。詳見 Q5。
-                </p>
-              </div>
-            </Section>
-          </Questioned>
-
-          {/* 5b. LINE 帳號綁定 */}
-          <Questioned
-            show={annotations}
-            questions={[Q1]}
-            pageId={pageId}
-            position="top-right"
-          >
-            <Section
-              title="LINE 帳號綁定 / 通知"
-              subtitle="綁定後可在 LINE 接收訂單、出貨、報價通知；通知需未封鎖官方帳號才能送達"
-              tone={lineStep === "bound" ? "emerald" : "default"}
-            >
-              <div className="col-span-full">
-                {/* Unbound state */}
-                {lineStep === "unbound" && (
-                  <div className="rounded-lg border-2 border-dashed border-amber-300 bg-amber-50/30 p-5 text-center">
-                    <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-amber-100 text-amber-700">
-                      <LineIcon className="size-7" />
-                    </div>
-                    <h3 className="mt-3 text-base font-bold text-zinc-900">
-                      尚未綁定 LINE 帳號
-                    </h3>
-                    <p className="mt-1 text-sm text-zinc-600">
-                      綁定後可享：報價回覆即時通知 / 訂單狀態主動推播 / 出貨追蹤訊息
-                    </p>
-                    <button
-                      onClick={() => setLineStep("redirecting")}
-                      className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700"
-                    >
-                      <LineIcon />
-                      綁定 LINE 帳號
-                    </button>
-                  </div>
-                )}
-
-                {/* Redirecting state */}
-                {lineStep === "redirecting" && (
-                  <div className="rounded-lg border border-emerald-300 bg-emerald-50/40 p-5 text-center">
-                    <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                      <LineIcon className="size-7" />
-                    </div>
-                    <h3 className="mt-3 text-base font-bold text-zinc-900">
-                      正在前往 LINE 授權頁
-                    </h3>
-                    <p className="mt-1 text-sm text-zinc-600">
-                      請於 LINE 上同意授權，完成後系統會自動回到本頁面。
-                    </p>
-                    <div className="mt-4 flex justify-center gap-2">
-                      <button
-                        onClick={() => setLineStep("bound")}
-                        className="rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700"
-                      >
-                        完成授權，前往會員首頁
-                      </button>
-                      <button
-                        onClick={() => setLineStep("unbound")}
-                        className="rounded-md border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-                      >
-                        取消
-                      </button>
-                    </div>
-                    <p className="mt-3 text-xs text-zinc-400">
-                      （提案示意：實際網站會前往 LINE 授權頁）
-                    </p>
-                  </div>
-                )}
-
-                {/* Bound state */}
-                {lineStep === "bound" && (
-                  <div className="rounded-lg border border-emerald-300 bg-emerald-50/40 p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                        <CheckCircle />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-emerald-900">
-                          已完成 LINE 綁定
-                        </h3>
-                        <div className="mt-2 grid gap-1.5 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-zinc-600">LINE 暱稱</span>
-                            <span className="font-medium">Wayne C.</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-zinc-600">綁定識別碼</span>
-                            <span className="font-mono text-xs text-zinc-500">
-                              ••••••（系統儲存）
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-zinc-600">綁定時間</span>
-                            <span className="text-zinc-700">
-                              2026/04/28 15:32
-                            </span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setLineStep("unbound")}
-                          className="mt-4 rounded-md border border-zinc-300 bg-white px-4 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 hover:text-rose-700"
-                        >
-                          解除綁定
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Section>
-          </Questioned>
-
-          {/* 6. 通知偏好 */}
-          <Section title="通知偏好" subtitle="決定接收哪些通知與通知管道">
+          {/* 5. 通知偏好（Email） */}
+          <Section title="通知偏好" subtitle="決定接收哪些 Email 通知">
             <div className="col-span-full">
               <div className="overflow-hidden rounded-lg border border-zinc-200">
                 <table className="w-full text-sm">
@@ -507,17 +303,16 @@ export function MemberSettingsMockup({
                     <tr>
                       <th className="px-4 py-2.5 text-left font-medium">通知類型</th>
                       <th className="px-4 py-2.5 text-center font-medium">Email</th>
-                      <th className="px-4 py-2.5 text-center font-medium">LINE</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-100">
                     {[
-                      { name: "訂單成立通知", email: true, line: true, required: true },
-                      { name: "出貨通知", email: true, line: true, required: false },
-                      { name: "報價回覆", email: false, line: true, required: false },
-                      { name: "樣品出貨", email: true, line: false, required: false },
-                      { name: "重要公告", email: true, line: false, required: true },
-                      { name: "行銷活動", email: false, line: false, required: false },
+                      { name: "訂單成立通知", email: true, required: true },
+                      { name: "出貨通知", email: true, required: false },
+                      { name: "報價回覆", email: true, required: false },
+                      { name: "樣品出貨", email: true, required: false },
+                      { name: "重要公告", email: true, required: true },
+                      { name: "行銷活動", email: false, required: false },
                     ].map((n) => (
                       <tr key={n.name}>
                         <td className="px-4 py-2.5">
@@ -536,25 +331,10 @@ export function MemberSettingsMockup({
                             className="size-4 rounded border-zinc-300 accent-amber-700 disabled:opacity-60"
                           />
                         </td>
-                        <td className="px-4 py-2.5 text-center">
-                          <input
-                            type="checkbox"
-                            defaultChecked={n.line}
-                            disabled={(n.required && n.line) || lineStep !== "bound"}
-                            className="size-4 rounded border-zinc-300 accent-amber-700 disabled:opacity-40"
-                          />
-                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                <div className="border-t border-zinc-200 bg-amber-50/40 px-4 py-2 text-xs text-amber-800 leading-relaxed">
-                  {lineStep !== "bound" ? (
-                    <>※ LINE 通知需先綁定 LINE 帳號才能開啟（見上方）。完成綁定後仍需未封鎖官方帳號才能收到通知；若推播失敗，會保留通知於會員中心。</>
-                  ) : (
-                    <>※ LINE 通知需未封鎖 HJ 官方帳號才能送達；若推播失敗，本提案以「保留通知於會員中心 + 改寄 Email」為備援方式。實際備援機制待 HJ 確認。</>
-                  )}
-                </div>
               </div>
             </div>
           </Section>

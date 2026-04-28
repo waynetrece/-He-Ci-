@@ -37,25 +37,13 @@ const Q2 = {
 
 const Q3 = {
   no: "Q3",
-  question: "詢價單轉訂單的流程？是否需要 LINE 客服確認後才能轉？",
+  question: "詢價單轉訂單的流程？是否需要客服確認後才能轉？",
   context:
-    "目前先以這樣示意：① 「已成交」狀態的詢價單可直接「轉訂單」進結帳流程 ② 「已送 LINE」狀態需 HJ 客服在 LINE 確認規格與報價後，才會將詢價單標記成「已成交」，會員才能繼續結帳。",
+    "目前先以這樣示意：①「已成交」狀態的詢價單可直接「轉訂單」進結帳流程 ②「等客服回覆」狀態需 HJ 客服確認規格與報價後，才會將詢價單標記成「已成交」，會員才能繼續結帳。客服溝通管道（LINE / 站內訊息 / Email）見另題（LINE 整體規劃）。",
   clientRef: {
     source: "前台 / 私版商品系列 (2)",
     quote: "客服、客人提供製作原始檔、下單，均轉 LINE 客服",
-    note: "需求表寫了下單轉 LINE，但詢價單轉訂單的步驟細節未指定。",
-  },
-};
-
-const Q4 = {
-  no: "Q4",
-  question: "LINE 在詢價流程中的定位：通知摘要 + 客服溝通入口（完整明細仍留會員中心）對嗎？",
-  context:
-    "目前先以這樣示意：① 詢價完整明細（規格、檔案、報價、有效期、狀態紀錄）一律在會員中心顯示，可在卡片內展開列查看 ② LINE 只作為「客服溝通 + 通知摘要」入口，不放完整明細 ③ 按鈕從「至 LINE 查看」改成「開啟 LINE 聯繫客服」。想請 HJ 確認此分工。LINE 通知需 HJ 啟用 LINE 官方帳號 + Messaging API + 會員完成綁定才能送達。",
-  clientRef: {
-    source: "前台 / 私版商品系列 (2)",
-    quote: "複雜客製商品轉 LINE 客服報價",
-    note: "需求表只寫了「轉 LINE 客服報價」，沒明確 LINE 是看明細還是只是客服溝通。本提案先把明細留在會員中心、LINE 只作客服與通知，避免承諾 LINE 上有完整明細。",
+    note: "需求表寫了「下單轉 LINE 客服」，但詢價單轉訂單的步驟細節未指定。",
   },
 };
 
@@ -65,14 +53,6 @@ function FilterIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-    </svg>
-  );
-}
-
-function LineIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.197-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .627.285.627.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
     </svg>
   );
 }
@@ -121,7 +101,7 @@ type QuoteStatus = "draft" | "sent-to-line" | "confirmed" | "expired";
 
 const STATUS_META: Record<QuoteStatus, { label: string; cls: string; sub?: string }> = {
   draft: { label: "草稿", cls: "bg-zinc-100 text-zinc-700", sub: "尚未送出" },
-  "sent-to-line": { label: "已送 LINE", cls: "bg-emerald-100 text-emerald-800", sub: "等客服回覆" },
+  "sent-to-line": { label: "等客服回覆", cls: "bg-emerald-100 text-emerald-800", sub: "報價處理中" },
   confirmed: { label: "已成交", cls: "bg-amber-100 text-amber-800", sub: "可轉訂單" },
   expired: { label: "已過期", cls: "bg-rose-100 text-rose-700", sub: "可重詢" },
 };
@@ -134,7 +114,6 @@ type QuoteDetail = {
   pricing: { item: string; price: string }[];
   validUntil: string;
   history: { time: string; event: string; by: "會員" | "HJ 客服" | "系統" }[];
-  lineSummary?: string;
 };
 
 const QUOTES: {
@@ -177,9 +156,8 @@ const QUOTES: {
       history: [
         { time: "2026/04/27 14:32", event: "會員送出詢價單", by: "會員" },
         { time: "2026/04/27 16:10", event: "HJ 客服已收到，刀模費已加計", by: "HJ 客服" },
-        { time: "2026/04/28 09:45", event: "等待會員確認燙金 LOGO 位置（請看 LINE）", by: "HJ 客服" },
+        { time: "2026/04/28 09:45", event: "等待會員確認燙金 LOGO 位置", by: "HJ 客服" },
       ],
-      lineSummary: "HJ 客服已透過 LINE 詢問燙金 LOGO 對位細節，請於 LINE 回覆樣稿位置確認。",
     },
   },
   {
@@ -204,7 +182,6 @@ const QUOTES: {
         { time: "2026/04/24 11:20", event: "會員送出詢價單", by: "會員" },
         { time: "2026/04/25 09:30", event: "HJ 客服詢問模切尺寸與彎角半徑", by: "HJ 客服" },
       ],
-      lineSummary: "HJ 客服已透過 LINE 詢問刀模尺寸細節，等待會員提供完整尺寸圖。",
     },
   },
   {
@@ -283,7 +260,7 @@ const QUOTES: {
 const FILTERS: { id: QuoteStatus | "all"; label: string }[] = [
   { id: "all", label: "全部" },
   { id: "draft", label: "草稿" },
-  { id: "sent-to-line", label: "已送 LINE" },
+  { id: "sent-to-line", label: "等客服回覆" },
   { id: "confirmed", label: "已成交" },
   { id: "expired", label: "已過期" },
 ];
@@ -392,7 +369,7 @@ export function MemberQuoteListMockup({
               </p>
               <ul className="mx-auto mt-3 max-w-sm text-left text-sm text-zinc-700 space-y-1">
                 <li>• 私版即時報價系統</li>
-                <li>• LINE 客服直接溝通規格</li>
+                <li>• 客服協助確認規格細節</li>
                 <li>• 企業合約價（合作客戶等級）</li>
                 <li>• 多門市配送地址</li>
                 <li>• 統編發票自動歸戶</li>
@@ -433,17 +410,6 @@ export function MemberQuoteListMockup({
               <span className="ml-auto text-zinc-500">
                 共 <span className="font-bold text-zinc-900">{filtered.length}</span> 筆
               </span>
-            </div>
-          </section>
-
-          {/* LINE 範圍提示 */}
-          <section className="border-b border-zinc-200 bg-emerald-50/40 px-6 py-3">
-            <div className="mx-auto max-w-[1760px] flex items-start gap-2 text-xs text-emerald-900">
-              <LineIcon className="mt-0.5 shrink-0" />
-              <p className="leading-relaxed">
-                <span className="font-bold">LINE 在詢價流程的角色：</span>
-                完整詢價明細（規格、檔案、報價、有效期、狀態紀錄）一律在此頁展開查看；LINE 只作為「客服溝通 + 通知摘要」入口，HJ 客服會在 LINE 詢問細節，但不會把整張詢價單貼到 LINE。
-              </p>
             </div>
           </section>
 
@@ -556,15 +522,6 @@ export function MemberQuoteListMockup({
                       </div>
                     </div>
 
-                    {q.detail.lineSummary && (
-                      <div className="mt-4 flex items-start gap-2 rounded-md border border-emerald-200 bg-emerald-50/70 px-3 py-2 text-xs text-emerald-900">
-                        <LineIcon className="mt-0.5 shrink-0" />
-                        <div>
-                          <div className="font-bold">LINE 客服回覆摘要</div>
-                          <p className="mt-0.5 text-emerald-800">{q.detail.lineSummary}</p>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 );
 
@@ -683,26 +640,6 @@ export function MemberQuoteListMockup({
                         ) : (
                           <button className="rounded-md bg-amber-700 px-4 py-2 text-xs font-bold text-white hover:bg-amber-800">
                             一鍵重新詢價
-                          </button>
-                        ))}
-
-                      {q.status === "sent-to-line" &&
-                        (idx === 0 ? (
-                          <Questioned
-                            show={annotations}
-                            questions={[Q4]}
-                            pageId={pageId}
-                            position="top-right"
-                          >
-                            <button className="flex items-center gap-1.5 rounded-md border border-emerald-500 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">
-                              <LineIcon />
-                              開啟 LINE 聯繫客服
-                            </button>
-                          </Questioned>
-                        ) : (
-                          <button className="flex items-center gap-1.5 rounded-md border border-emerald-500 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">
-                            <LineIcon />
-                            開啟 LINE 聯繫客服
                           </button>
                         ))}
 

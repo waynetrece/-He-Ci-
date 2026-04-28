@@ -13,18 +13,6 @@ import {
 
 const Q1 = {
   no: "Q1",
-  question: "「樣品申請紀錄」是否要做進會員中心？這是我們建議的延伸功能，需求表只明確要「樣品申請按鈕」",
-  context:
-    "目前先以這樣示意：把樣品申請流程之後的紀錄整合到會員中心，讓會員能查申請狀態、收件地址、物流追蹤、備註。想請 HJ 確認此功能是否要保留，以及狀態是否要與 ERP / 出貨資料對應。若不做，會員端只保留「樣品申請按鈕」，後續狀態以 LINE 或 Email 通知。",
-  clientRef: {
-    source: "前台 / 公版商品系列 (2)",
-    quote: "樣品申請：每個商品頁增加樣品按鈕",
-    note: "需求表只寫了「樣品申請按鈕」。「樣品申請紀錄」是我們延伸建議的功能，不是客戶明確要求。",
-  },
-};
-
-const Q3 = {
-  no: "Q3",
   question: "個人會員是否能申請樣品？或只開放給企業客戶（避免樣品申請濫用）？",
   context:
     "目前先以這樣示意：① 企業客戶可正常申請與查看紀錄 ② 個人會員可申請但「每年限 X 件」（具體上限想請 HJ 決定）。想請 HJ 確認是否需要對個人會員設限。",
@@ -293,47 +281,27 @@ export function MemberSamplesMockup({
 
       {/* Hero */}
       <section className="border-b border-zinc-200 bg-white px-6 py-5">
-        <div className="mx-auto max-w-[1760px]">
-          {/* 我們建議橫幅 */}
+        <div className="mx-auto flex max-w-[1760px] items-end justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-zinc-900">樣品申請紀錄</h1>
+            <p className="mt-1 text-sm text-zinc-500">
+              共 <span className="font-bold text-zinc-900">{filtered.length}</span> 筆 ｜ 您本月已申請 <span className="font-bold text-amber-700">2</span> 件
+            </p>
+          </div>
           <Questioned
             show={annotations}
             questions={[Q1]}
             pageId={pageId}
             position="top-right"
           >
-            <div className="mb-4 flex flex-wrap items-start gap-3 rounded-lg border border-amber-300 bg-amber-50/70 px-4 py-3 text-xs text-amber-900">
-              <span className="rounded-full bg-amber-700 px-2 py-0.5 text-[11px] font-bold text-white">
-                我們建議
-              </span>
-              <p className="flex-1 leading-relaxed">
-                <span className="font-bold">「樣品申請紀錄」是我們延伸建議的功能，不是需求表明確要求。</span>
-                需求表只寫了「樣品申請按鈕」；本提案建議把樣品申請後的狀態整合進會員中心，讓客戶能查申請狀態、收件地址、物流追蹤、備註。想請 HJ 確認是否要保留此功能，以及狀態是否要與 ERP 出貨資料同步。
-              </p>
-            </div>
-          </Questioned>
-
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-zinc-900">樣品申請紀錄</h1>
-              <p className="mt-1 text-sm text-zinc-500">
-                共 <span className="font-bold text-zinc-900">{filtered.length}</span> 筆 ｜ 您本月已申請 <span className="font-bold text-amber-700">2</span> 件
-              </p>
-            </div>
-            <Questioned
-              show={annotations}
-              questions={[Q3]}
-              pageId={pageId}
-              position="top-right"
+            <Link
+              href="/modules/products/sample"
+              className="flex items-center gap-1.5 rounded-md bg-amber-700 px-4 py-2 text-sm font-bold text-white hover:bg-amber-800"
             >
-              <Link
-                href="/modules/products/sample"
-                className="flex items-center gap-1.5 rounded-md bg-amber-700 px-4 py-2 text-sm font-bold text-white hover:bg-amber-800"
-              >
-                <PlusIcon />
-                申請新樣品
-              </Link>
-            </Questioned>
-          </div>
+              <PlusIcon />
+              申請新樣品
+            </Link>
+          </Questioned>
         </div>
       </section>
 

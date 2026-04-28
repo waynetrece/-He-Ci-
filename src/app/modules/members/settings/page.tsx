@@ -18,14 +18,14 @@ const ACTIVE_TAB = "settings";
 const QUESTIONS = [
   {
     no: "Q1",
-    question: "LINE 帳號綁定是否強制？通知範圍由誰開關？綁定中斷或推播失敗時如何處理？",
+    question: "LINE 通知 / 客服功能是否要做？若要做：通知範圍、綁定流程、客服管道由誰決定？",
     context:
-      "目前先以這樣示意：① 綁定為「選用」非強制 ② 綁定後預設開啟「訂單成立通知 / 出貨通知 / 報價回覆」三項，可在通知偏好區個別關閉 ③ 解除綁定後，通知改用 Email 寄送。注意：LINE 通知需會員完成綁定且未封鎖官方帳號才能送達；若推播失敗，本提案先以「保留通知於會員中心 + 改寄 Email」為備援，想請 HJ 確認此備援方式。",
-    pinnedAt: "LINE 帳號綁定 / 通知 區塊",
+      "本提案目前畫面只留 LINE 註冊／登入（auth 頁），其他 LINE 功能（綁定、通知推播、LINE 客服對話）尚未規劃進畫面，需 HJ 先確認後再做。需確認的點：① 通知範圍（訂單成立 / 備貨 / 出貨 / 送達 / 報價回覆 / 樣品 / 退換貨）哪些要發 ② 綁定流程（強制 / 選用）③ 推播失敗備援（改寄 Email / 只留會員中心）④ 客服溝通管道（LINE / 站內訊息 / Email）⑤ 是否要做 LINE 客服對話入口。",
+    pinnedAt: "（LINE 通知 / 客服尚未規劃進畫面，僅此 Q 諮詢）",
     clientRef: {
       source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
       quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
-      note: "LINE 綁定的具體規範未在需求表指定。本提案以「傳送訂單通知」為核心用途。",
+      note: "需求表只寫了「LINE 註冊」與「轉 LINE 客服報價」，未指定通知 / 綁定 / 推播 / 失敗備援等細節。提案先把 LINE 從畫面拿掉，待 HJ 答覆通知與客服範圍後再規劃。",
     },
   },
   {
@@ -66,14 +66,14 @@ const QUESTIONS = [
   },
   {
     no: "Q5",
-    question: "HJ 是否已有 LINE 官方帳號、LINE Login Channel 與 Messaging API Channel？通知事件清單與通知對象由誰決定？",
+    question: "HJ 是否已有 LINE 官方帳號、LINE Login Channel 與 Messaging API Channel？",
     context:
-      "LINE 整合需確認的前置條件（請 HJ 一次回覆）：① 是否已有 LINE 官方帳號？管理員權限可授權？② 是否已啟用 LINE Login Channel（給網站登入用）？③ 是否已啟用 Messaging API Channel（給通知用）？④ 兩個 Channel 是否在同一 Provider 底下（影響 userId 一致性）？⑤ 月訊息額度是否足夠？⑥ 通知事件清單（訂單成立 / 備貨 / 出貨 / 送達 / 報價回覆 / 樣品出貨 / 退換貨進度）哪些要發、發給誰（下單人 / 公司主聯絡人 / 收貨聯絡人）？⑦ 通知失敗備援（補寄 Email / 只留會員中心）？⑧ LINE 登入是否要取得 email（需向 LINE 申請額外權限）？",
-    pinnedAt: "「LINE 在本系統的功能」拆分說明區",
+      "LINE 整合需確認的前置條件（與 Q1 搭配回答；功能尚未規劃進畫面）：① 是否已有 LINE 官方帳號？管理員權限可授權？② 是否已啟用 LINE Login Channel（給網站登入用）？③ 是否已啟用 Messaging API Channel（給通知用）？④ 兩個 Channel 是否在同一 Provider 底下（影響 userId 一致性）？⑤ 月訊息額度是否足夠？⑥ LINE 登入是否要取得 email（需向 LINE 申請額外權限）？",
+    pinnedAt: "（LINE 整合前置條件，功能尚未規劃進畫面）",
     clientRef: {
       source: "前台 / 私版商品系列 (1)(2) + 官網 (3)",
       quote: "註冊方式：LINE.Email；複雜客製商品轉 LINE 客服報價",
-      note: "需求表只寫了「LINE 註冊 / 轉 LINE 客服」，未交代 LINE 帳號 / Channel / 通知事件等前置條件。這些條件會直接影響可否落地。",
+      note: "需求表只寫了「LINE 註冊 / 轉 LINE 客服」，未交代 LINE 帳號 / Channel 等前置條件。這些條件會直接影響可否落地。",
     },
   },
 ];
