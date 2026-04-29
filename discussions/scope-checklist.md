@@ -662,3 +662,67 @@ Wayne 截圖指出月結信用額度 Q「規劃太複雜」、「客戶看了會
 - ⚠ 建議調整。
 - 可暫時接受。
 - 給 Claude 的結論。
+
+---
+
+## 13 · 進度更新 — 暫停等 HJ 窗口 LINE 回覆（2026-04-29 晚）
+
+> Claude 已推 `471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`。Wayne 親自走過畫面後決定**暫停 mockup 進一步調整**，先以 LINE 詢問 HJ 窗口（業務聯絡人）拿到實際業務面答案後再繼續。
+
+### 為何暫停
+
+Wayne 看完 cart 簡化版後的觀察：
+
+1. CartMockup Q1（公私版混單）文字仍偏複雜，HJ 業主看了會想很多。
+2. Wayne 的業務直覺：私版有製作期，公版可即出，硬塞同一張訂單後續處理上會很糟糕。傾向「分開出單」。
+3. 但這方向不是 Claude / Codex 能單獨判斷 — 屬於 HJ 業務面決策，需窗口確認 HJ 目前怎麼處理類似情境。
+4. 結論：先停 mockup，問清楚實際做法再回頭調整。
+
+### Wayne 已送出的 LINE 6 題（給窗口）
+
+| # | 主題 | 主要問題 |
+|---|---|---|
+| 1 | 公版 + 私版混單處理 | 同單分批出貨 / 自動拆單 / 規定客戶分開結帳？ |
+| 2 | 月結客戶 SOP | 哪些等級可月結（A？A+B？）/ 每筆人工審核還是老客戶自動通過 / 由誰審 |
+| 3 | 付款方式組合 | 信用卡 / ATM / 貨到付款 / 月結 30 天 — 個人會員是否可月結 / 客製私版是否禁信用卡 / 4 種要不要增減 |
+| 4 | 訂單同步凌越 ERP | 即時 API / 排程批次 / 手動匯入 — 同步失敗是否擋下單 |
+| 5 | 發票 | 三聯式記憶 OK 嗎 / 個人會員是否強制綁手機條碼載具 |
+| 6 | 運費 | 算法（重量 / 體積 / 區域 / 金額）/ 合作客戶 A / B 級是否有特別優惠 |
+
+> Wayne 強調：6 題不一定全部問，Q1 / Q2 / Q4 是最關鍵。窗口若不確定可以說「要再問 XX」，不逼當下回。
+
+### 暫停期間 Claude 的行為
+
+- ❌ **不主動改購物車 / 結帳 mockup**（避免猜錯方向二次工）
+- ❌ **不主動改 §12 提的 Q 措辭**
+- ❌ **不主動改 `advanced-features-memo.md`**
+- ✅ Wayne 拿到窗口回覆並貼給 Claude 後，依答案調整 mockup + Q + scope-checklist
+- ✅ 期間若 Wayne 指定其他模組（客戶版 scope 清稿、訂單系統深入、會員系統補強），可進行不衝突的工作
+
+### 給 Codex 的請求（這次審）
+
+1. **§12 的 review 仍可進行**（4/29 簡化方向是否合理、mockup 是否乾淨、Q 措辭是否一致）。
+2. **不需要再提購物車 / 結帳的進階建議**（等窗口回覆才能繼續推進）。
+3. **若 Codex 注意到 LINE 6 題之外的盲點**（例如：訪客結帳、SMS 通知、退換貨後續處理、樣品申請後續、保固 / SLA 等），請列出來給 Wayne 補問窗口。
+4. **若 Codex 注意到非購物車 / 結帳的問題**（例如：會員系統、私版商品、公版商品、訂單詳情、settings Q1 + Q5 LINE 整體規劃），可正常提出，不受暫停影響。
+5. 驗證跟之前一樣即可：
+   - `npm run lint`
+   - `npx tsc --noEmit`
+   - 公開路由 `/`、`/modules/cart`、`/modules/checkout`、`/modules/checkout/success`、`/modules/members` 是否仍 HTTP 200
+
+### 不變的部分
+
+- TopNav：金物流仍 ready，可從頂部進入 `/modules/checkout`。
+- 已完成模組：架構首頁、公版商品、私版報價、會員系統、購物車 + 結帳閉環（簡化版）。
+- TopNav 訂單系統仍是「製作中」，等 Wayne 指定。
+- `discussions/advanced-features-memo.md` 是 Wayne 內部口袋備案，不對外、不主動給客戶。
+- `discussions/scope-checklist.md` 是內部協作版，不是 HJ 客戶交付版。
+- `memory/checkpoint.md`、`memory/claude-handoff.md`、`memory/claude-handoff.md` 已同步更新到 471042b + 暫停狀態。
+
+### 待補事項（Wayne 拿到窗口回覆後）
+
+- CartMockup Q1：依答案決定保留同單 vs 改拆單，文字精簡到 1-2 行
+- CheckoutMockup Q1（付款方式）：依窗口回覆收斂 4 種付款方式範圍
+- CheckoutMockup Q2（月結 SOP）：依窗口回覆決定審核條件
+- CheckoutSuccessMockup Q1（ERP 同步）：依窗口回覆寫具體機制（即時 / 批次 / 手動）
+- 補問可能盲點：訪客結帳、退換貨後續、樣品後續、SMS、保固 / SLA

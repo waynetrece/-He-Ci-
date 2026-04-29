@@ -1,46 +1,60 @@
-# Checkpoint - 2026-04-29
+# Checkpoint - 2026-04-29（晚）
 
 ## 分支
 - `main`（已推 origin，Vercel auto-deploy）
-- 最新 commit：`891dc8f chore(cart): 依 scope-checklist §10 Quick Review 補 5 修`
+- 最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
 - 公開站：`https://hj-proposal.vercel.app/`
 
-## 已完成範圍
-- 架構總覽首頁。
-- 公版商品：列表、詳情、樣品申請流程。
-- 私版報價：列表、即時報價表單。
-- 會員系統：登入/註冊、Dashboard、訂單列表、訂單詳情、詢價紀錄、樣品紀錄、帳號設定。
-- 購物車 + 結帳閉環：
-  - `/modules/cart`
-  - `/modules/checkout`
-  - `/modules/checkout/success`
+## 狀態：購物車 + 結帳暫停中
 
-## 最新修補（891dc8f）
-- `TopNav`：金物流改成 ready，客戶可從頂部進入 `/modules/checkout`。
-- 月結 Q：改成「合作 A 級」示意，不再寫 A / B 級都可。
-- 購物車私版報價：保留規格 / 數量鎖定，但可移出購物車。
-- Checkout success：畫面通知區移除 LINE 通知承諾，改成其他通知管道待確認。
-- ERP 同步文字：改成依需求表先示意，實際機制待 HJ + 凌越確認。
+Wayne 走過畫面後決定先用 LINE 問 HJ 窗口拿到實際業務面答案，再回頭調 mockup。
+
+### 暫停理由
+- CartMockup Q1（公私版混單）文字仍偏複雜
+- Wayne 業務直覺：私版有製作期，公版可即出，傾向「分開出單」，但需窗口確認 HJ 實際做法
+- 為避免猜錯方向二次工，暫停 mockup 進一步調整
+
+### 已送 LINE 6 題（給窗口）
+1. 公版 + 私版同時下單怎麼處理（同單分批 / 自動拆單 / 規定分開結帳）
+2. 月結客戶 SOP（等級 / 是否每筆審 / 由誰審）
+3. 付款方式組合（信用卡 / ATM / 貨到付款 / 月結 — 是否要增減 / 個人能否月結 / 私版是否禁信用卡）
+4. 訂單同步凌越 ERP（即時 API / 批次 / 手動 — 失敗是否擋下單）
+5. 發票（三聯式記憶 / 個人會員載具強制）
+6. 運費（算法 / 合作客戶優惠）
+
+## 已完成範圍
+- 架構總覽首頁
+- 公版商品 3 頁（列表 / 詳情 / 樣品申請）
+- 私版報價 2 頁（列表 / 即時報價）
+- 會員系統 7 頁
+- **購物車 + 結帳閉環（簡化版）**：
+  - `/modules/cart` — 公版 + 私版分區，私版可移出
+  - `/modules/checkout` — 拿掉分送多門市；月結改人工審核版
+  - `/modules/checkout/success` — 拿掉自動信用額度判斷
+
+## 471042b 改了什麼
+- CartMockup Q1：擴成 4 子題（拆訂單 / 出貨單 / ERP / 運費），對到食品冷藏類比
+- CheckoutMockup：拿掉 splitDelivery state、checkbox、逐項指定 UI、原 Q2（多門市）
+- CheckoutMockup：月結拿掉自動信用額度檢查 UI
+- CheckoutMockup Q1（原 Q3）：付款方式從「指定式」改「列 4 種 + 建議匹配」
+- CheckoutSuccessMockup MonthlyReviewView：拿掉自動扣額度數字
+- 新增 `discussions/advanced-features-memo.md` — Wayne 內部進階功能口袋備案
 
 ## 驗證
 - `npm run lint`：pass
 - `npx tsc --noEmit`：pass
-- 公開 Vercel 路由 HTTP 200：
-  - `/`
-  - `/modules/cart`
-  - `/modules/checkout`
-  - `/modules/checkout/success`
-  - `/modules/members`
 
-## 目前工作區整理狀態
-- `discussions/scope-checklist.md` 有未提交的 §10 quick review 與 §11 修補後確認，可作為內部協作紀錄。
-- `memory/claude-handoff.md` 是給 Claude 的接手摘要。
-- `.gitignore` 新增本地 QA 暫存規則：`/.playwright-mcp/`、`/*.png`，只為降低本機截圖/log 洗版。
-- 根目錄 PNG 截圖與 `.playwright-mcp/` 未刪除，只是不再建議追蹤。
+## 下次接手要做的
+1. 等 Wayne 拿到窗口 LINE 回覆，貼回對話。
+2. 依答案：
+   - CartMockup Q1：決定保留同單 vs 改拆單，文字精簡到 1-2 行。
+   - CheckoutMockup Q1 / Q2 / Q3：依答案調 Q 措辭。
+   - CheckoutSuccessMockup Q1：依答案寫具體 ERP 機制。
+3. 補問窗口可能盲點：訪客結帳、退換貨後續、樣品後續、SMS、保固 / SLA。
+4. scope-checklist.md §13 已標明暫停期間 Claude 的行為邊界。
 
-## 下一步
-- 若要保存協作紀錄：commit `.gitignore`、`discussions/scope-checklist.md`、`memory/checkpoint.md`、`memory/claude-handoff.md`。
-- 下一個功能方向不要直接開工，需 Wayne 明確指定：
-  - 訂單系統深入功能。
-  - ERP / 金物流文件包。
-  - 客戶版 scope checklist 清稿。
+## 不要做的事
+- 不主動改 cart / checkout mockup。
+- 不主動改 §12 / §13 提的 Q 措辭。
+- 不主動改 `advanced-features-memo.md`。
+- 訂單系統 TopNav 仍「製作中」，待 Wayne 指定。
