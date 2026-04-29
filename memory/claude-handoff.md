@@ -9,10 +9,36 @@
 - 技術：Next.js 16.2.4 + React 19.2.4 + Tailwind v4
 - 分支：`main`
 - 產品碼最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
-- 文件 / 進度最新 commit：`c15b49a docs(progress): 4/29 暫停狀態 + LINE 6 題 — 給 Codex 進度更新`
+- 客戶確認問題 / Word 交付最新 commit：`ae6865b docs(client-questions): 新增 HJ 窗口確認 Word 檔`
 - `main` 已與 `origin/main` 對齊。
 
-## 目前狀態：購物車 + 結帳暫停中
+## 最新狀態：客戶確認問題已送 HJ 窗口
+
+Wayne 已將 Codex 整理的 Word 檔提供給 HJ 窗口：
+
+- Word：`exports/HJ-網站需求確認問題清單.docx`
+- Markdown：`discussions/hj-client-confirmation-questions.md`
+- Obsidian：`1-Projects/禾啟HJ-餐飲包材電商/13-提供客戶確認問題清單.md`
+
+這份客戶版是從 PDF 需求表重新整理，只包含 Wayne 指定要問的範圍，共 32 題，已移除「第一版」用語，改成「網站正式上線時」或具體問法。
+
+### Claude 目前不要做
+
+- 不要再整理舊 31 題。
+- 不要再主動修改 cart / checkout / success / member / product mockup。
+- 不要把 `advanced-features-memo.md` 進階備案混進客戶問題。
+- 不要把內部版 `discussions/hj-pdf-driven-questions.md` 直接給客戶。
+
+### 等窗口回覆後再做
+
+收到 HJ 窗口回覆後，再依答案調整：
+
+- 既有 mockup 內的問題與提示文字。
+- cart / checkout / success 的公私版混單、金流、物流、ERP、庫存相關說明。
+- 會員 / 訂單狀態 / 樣品申請相關頁面是否需要補強。
+- scope-checklist 與 Obsidian 對應文件。
+
+## 前一階段狀態：購物車 + 結帳暫停中
 
 Wayne 親自走過簡化版購物車 + 結帳閉環畫面後，決定先以 LINE 詢問 HJ 窗口拿到實際業務面答案，再回頭調 mockup。
 

@@ -3,10 +3,27 @@
 ## 分支
 - `main`（已推 origin，Vercel auto-deploy）
 - 產品碼最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
-- 文件 / 進度最新 commit：`c15b49a docs(progress): 4/29 暫停狀態 + LINE 6 題 — 給 Codex 進度更新`
+- 客戶確認問題 / Word 交付最新 commit：`ae6865b docs(client-questions): 新增 HJ 窗口確認 Word 檔`
 - 公開站：`https://hj-proposal.vercel.app/`
 
-## 狀態：購物車 + 結帳暫停中
+## 最新狀態：客戶確認問題已送窗口，等待回覆
+
+Wayne 已將 `HJ-網站需求確認問題清單.docx` 提供給 HJ 窗口。接下來先等待窗口回覆，再依答案調整之前做好的 mockup / 版面 / Q。
+
+### 客戶版交付檔
+- Repo Word：`exports/HJ-網站需求確認問題清單.docx`
+- Repo Markdown：`discussions/hj-client-confirmation-questions.md`
+- Obsidian Word：`1-Projects/禾啟HJ-餐飲包材電商/HJ-網站需求確認問題清單.docx`
+- Obsidian Markdown：`1-Projects/禾啟HJ-餐飲包材電商/13-提供客戶確認問題清單.md`
+
+### 目前工作邊界
+- ✅ 等 HJ 窗口回覆。
+- ✅ 回覆後再回頭調整 cart / checkout / member / product mockup 內的問題與說明。
+- ❌ 等待期間不要再主動修改既有 mockup。
+- ❌ 不要再從舊 31 題或 `window-line-batch2.md` 往外擴。
+- ❌ 不要把 `advanced-features-memo.md` 的進階備案主動給客戶。
+
+## 前一階段狀態：購物車 + 結帳暫停中
 
 Wayne 走過畫面後決定先用 LINE 問 HJ 窗口拿到實際業務面答案，再回頭調 mockup。
 
