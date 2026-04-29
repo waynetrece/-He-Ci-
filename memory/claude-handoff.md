@@ -10,7 +10,10 @@
 - 分支：`main`
 - 產品碼最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
 - 客戶確認問題 / Word 交付最新 commit：`ae6865b docs(client-questions): 新增 HJ 窗口確認 Word 檔`
+- 進度紀錄最新 commit：`6c8386d docs(progress): 記錄 HJ 客戶問題已送窗口`
 - `main` 已與 `origin/main` 對齊。
+
+> 🆕 **下次新視窗最快接續**：先讀 `memory/autoresume.md`（一句話狀態 + 等待中事項 + 起手式）。
 
 ## 最新狀態：客戶確認問題已送 HJ 窗口
 
