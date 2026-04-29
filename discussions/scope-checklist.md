@@ -978,6 +978,7 @@ Codex 在新檔結尾整理了第一輪建議先問 8 題：
 ### 18.1 產出檔案
 
 - Repo：`discussions/hj-client-confirmation-questions.md`
+- Word：`exports/HJ-網站需求確認問題清單.docx`
 - Obsidian：`13-提供客戶確認問題清單.md`
 
 ### 18.2 範圍
