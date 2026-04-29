@@ -8,7 +8,8 @@
 - 公開站：`https://hj-proposal.vercel.app/`
 - 技術：Next.js 16.2.4 + React 19.2.4 + Tailwind v4
 - 分支：`main`
-- 最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
+- 產品碼最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
+- 文件 / 進度最新 commit：`c15b49a docs(progress): 4/29 暫停狀態 + LINE 6 題 — 給 Codex 進度更新`
 - `main` 已與 `origin/main` 對齊。
 
 ## 目前狀態：購物車 + 結帳暫停中

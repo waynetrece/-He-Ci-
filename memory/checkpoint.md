@@ -2,7 +2,8 @@
 
 ## 分支
 - `main`（已推 origin，Vercel auto-deploy）
-- 最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
+- 產品碼最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
+- 文件 / 進度最新 commit：`c15b49a docs(progress): 4/29 暫停狀態 + LINE 6 題 — 給 Codex 進度更新`
 - 公開站：`https://hj-proposal.vercel.app/`
 
 ## 狀態：購物車 + 結帳暫停中
