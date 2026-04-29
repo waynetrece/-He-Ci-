@@ -10,7 +10,8 @@
 - 分支：`main`
 - 產品碼最新 commit：`471042b refactor(cart-checkout): 依 Wayne 4/29 feedback 簡化進階功能 + 拆備註`
 - 客戶確認問題 / Word 交付最新 commit：`ae6865b docs(client-questions): 新增 HJ 窗口確認 Word 檔`
-- 進度紀錄最新 commit：`6c8386d docs(progress): 記錄 HJ 客戶問題已送窗口`
+- 進度紀錄最新 commit：`aa712a2 docs(progress): 進度紀錄定型 — autoresume + checkpoint + handoff 三檔對齊`
+- LINE 調研最新 commit：`a0ed40c docs(line): LINE 整合可行性調研 — Messaging API 取代已停用的 Notify`
 - `main` 已與 `origin/main` 對齊。
 
 > 🆕 **下次新視窗最快接續**：先讀 `memory/autoresume.md`（一句話狀態 + 等待中事項 + 起手式）。
@@ -40,6 +41,19 @@ Wayne 已將 Codex 整理的 Word 檔提供給 HJ 窗口：
 - cart / checkout / success 的公私版混單、金流、物流、ERP、庫存相關說明。
 - 會員 / 訂單狀態 / 樣品申請相關頁面是否需要補強。
 - scope-checklist 與 Obsidian 對應文件。
+
+## LINE 客製詢價補充決策（2026-04-29）
+
+Wayne 提供 HJ LINE 官方帳號截圖後，確認 HJ 已有 LINE 官方帳號 `@hjhjtw`，但**沒有第三方 LINE 客服系統**。
+
+後續 LINE 客製詢價方向統一如下：
+
+- **B 當正式目標**：客戶送出私版客製需求後，網站建立詢價單，並自動傳一則詢價摘要到客戶 LINE。
+- **A 當保底流程**：客戶尚未加好友 / 尚未綁定 LINE / 推播失敗時，網站仍建立詢價單，並顯示 HJ LINE 與詢價編號，讓客服人工接續。
+- **正式資料以網站後台為準**：詢價單、規格、數量、備註、報價狀態不要只留在 LINE 對話。
+- **不承諾自動報價**：LINE 只做通知與後續人工對話。
+
+請先讀 `discussions/line-integration-research.md`，不要沿用「送進第三方客服系統」或「LINE 自動完成報價」的說法。
 
 ## 前一階段狀態：購物車 + 結帳暫停中
 
