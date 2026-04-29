@@ -25,13 +25,13 @@ const Q1 = {
 
 const Q2 = {
   no: "Q2",
-  question: "月結審核 SOP — 由誰審？何時通知？拒絕後如何處理？",
+  question: "月結審核 SOP — 由誰審？多久內回覆？拒絕後如何處理？",
   context:
-    "目前先以這樣示意：① 月結訂單超過信用額度自動進「月結審核中」狀態 ② HJ 業務在後台審核，可「核准」或「拒絕並改其他付款方式」③ 核准後以 Email 通知會員（其他通知管道待 HJ 確認，見 settings Q1 + Q5 LINE 整體規劃）④ 拒絕則會員需重新到「結帳」改付款方式。想請 HJ 確認：審核權責、SLA。",
+    "目前先以這樣示意：① 所有月結訂單一律進「月結審核中」狀態 ② HJ 業務在後台審核，可「核准」或「拒絕並請客戶改其他付款方式」③ 核准 → 訂單轉「已成立」並送 ERP，以 Email 通知會員 ④ 拒絕 → 通知會員回結帳改付款方式。\n\n想請 HJ 確認：\n• 審核權責（業務 / 主管 / 會計？）\n• 審核 SLA（多久內回覆？例如 1 個工作天）\n• 通知管道（Email？其他見 settings Q1 + Q5 LINE 整體規劃）\n\n（信用額度自動扣 / 自動擋下單屬進階功能；HJ 確認需要再規劃）",
   clientRef: {
     source: "後台 / 訂單管理 (3) + 後台 / 金流 (7)",
     quote: "訂單即時匯入凌越 ERP；綠界、一般匯款、宅配/自取貨到付款",
-    note: "需求表沒明寫月結，本提案先示意審核 SOP，需 HJ 確認。",
+    note: "需求表沒明寫月結，本提案以「人工審核版」示意；信用額度自動檢查屬進階功能，HJ 提出再規劃。",
   },
 };
 
@@ -288,17 +288,16 @@ function MonthlyReviewView({ orderId }: { orderId: string }) {
       </div>
       <h1 className="mt-5 text-2xl font-bold text-zinc-900">訂單已送出，月結審核中</h1>
       <p className="mt-2 text-sm text-zinc-600">
-        本筆訂單超過您目前的信用額度範圍，需 HJ 業務人工確認後才會進入備貨。
+        本筆月結訂單需 HJ 業務人工確認後才會成立並進入備貨。
       </p>
 
       <div className="mt-6 rounded-lg border border-indigo-300 bg-indigo-50/60 p-4 text-left text-sm">
         <Row label="訂單編號" value={orderId} mono />
         <Row label="付款方式" value="月結 30 天" />
         <Row label="本單金額" value="NT$ 22,150" mono />
-        <Row label="目前未結金額" value="NT$ 195,300" mono />
-        <Row label="信用額度上限" value="NT$ 200,000" mono />
+        <Row label="送審時間" value="2026/04/29 14:32" />
         <div className="mt-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-          ⚠ 本單後總額 NT$ 217,450，超過信用額度 NT$ 17,450，需業務確認
+          ⓘ 月結訂單一律需業務人工審核（依後台 SOP 設定）
         </div>
       </div>
 

@@ -575,3 +575,90 @@ Q1 問法是對的：`即時 API / 批次同步 / 手動匯入` 三選一。但 
 ### 給 Claude 的結論
 
 > §10 的 5 個修補點已完成，lint / TypeScript / 公開路由 smoke check 也通過。下一步不要重做購物車 + 結帳，除非 Wayne 指定新調整。若要往下一階段，請先等 Wayne 明確指定方向：訂單系統深入功能、ERP / 金物流文件包，或客戶版 scope checklist 清稿。
+
+---
+
+## 12 · Wayne 4/29 feedback 後簡化（給 Codex 審）
+
+> Wayne 親自走過購物車 + 結帳閉環畫面後，提出 4 點問題與 1 個原則性指示。Claude 依其調整 mockup 與 Q 措辭，並把進階功能拆出獨立備註文件。本節用於請 Codex 確認 scope 對齊與品質。
+
+### 1. Wayne 提出的 4 點問題與處理方式
+
+| # | Wayne 提的點 | Claude 處理方式 |
+|---|---|---|
+| 1 | 公版 + 私版同一張購物車會不會有問題？（食品冷藏類比） | CartMockup Q1 改寫，明確問 HJ：混單時是否要拆訂單 / 出貨單 / ERP 開單？運費是否分計？保留「同車、同單、分批出貨」示意，由 HJ 決定。 |
+| 2 | 「分送多地址 = 5 個商品分到 5 家門市」？ | 確認原意如此。但因為 Wayne 認為這是進階功能（公司沒做過、客戶也沒明確要求），CheckoutMockup 整段拿掉（splitDelivery state、checkbox、逐項指定 UI、原 Q2）。 |
+| 3 | 多門市分送是 Claude 自己加的，公司沒做過 | 確認是 Claude 自己想的，需求表沒明寫。已從 mockup 主流程移除，搬到 `discussions/advanced-features-memo.md` §1。 |
+| 4 | 付款方式 Q 描述太「指定式」，建議改成「列付款方式 + 建議匹配」 | CheckoutMockup Q1（原 Q3）改寫成新格式：先列 4 種付款方式，再給建議分配（一般會員適合 X、企業會員適合 Y、客製私版建議 Z），請 HJ 微調。 |
+
+### 2. Wayne 的原則性指示
+
+> 「初步應該先規劃一個好推動但不會漏掉，像進階的功能你可以整理一份文件備注給我，當客戶有提問到時可以建議的功能。」
+
+Claude 處理方式：
+- **新增 `discussions/advanced-features-memo.md`**，用作 Wayne 內部口袋備案（非客戶交付版）。
+- 內容包含：多門市分送、月結信用額度自動檢查、公私版混單拆單規則，加一張其他可能進階功能對照表。
+- 每項列出：進階做法、推動成本、第一版採用方式、HJ 主動提時的話術。
+- 文件明確標明：**不主動給客戶**，只在 HJ 主動提才拿出來討論。
+
+### 3. 月結相關 Q 也跟著簡化
+
+Wayne 截圖指出月結信用額度 Q「規劃太複雜」、「客戶看了會想很多」，故同步調整：
+
+| 檔案 | 原本 | 簡化後 |
+|---|---|---|
+| `CheckoutMockup.tsx` Q2 月結 | 「訂單成立時系統檢查當前未結金額 + 本單金額 ≤ 信用額度，超過則...」 | 「月結訂單一律進審核中、業務人工審核」 |
+| `CheckoutMockup.tsx` 月結 UI | 「合作 A 級信用額度：已用 NT$ 38,500 / 上限 NT$ 200,000 ✓ 額度充足」 | 「月結訂單流程：送出後不直接成立 → 進入月結審核中 → HJ 業務確認後才轉已成立」 |
+| `CheckoutMockup.tsx` Order summary | 「✓ 本單採月結 30 天，出貨後 5/28 結帳」 | 「ⓘ 本單採月結 30 天，需業務人工審核後才成立」 |
+| `CheckoutSuccessMockup.tsx` MonthlyReviewView | 顯示「目前未結金額 / 信用額度上限 / 本單後總額超過信用額度 NT$ 17,450」 | 改成「月結訂單一律需業務人工審核（依後台 SOP 設定）」 |
+| `CheckoutSuccessMockup.tsx` Q2 月結審核 SOP | 「超過信用額度自動進審核中」 | 「所有月結訂單一律進審核中」+ 信用額度自動檢查移到備註文件 |
+
+### 4. Q 序號對照（前 / 後）
+
+`CheckoutMockup.tsx`：
+
+| 舊 | 內容 | 新 | 內容 |
+|---|---|---|---|
+| Q1 | 月結信用額度（複雜版） | Q1 | 付款方式組合（列 + 建議匹配） |
+| Q2 | 多門市分送 | — | 移除（進備註文件） |
+| Q3 | 付款方式組合（指定式） | Q2 | 月結客戶 SOP（人工審核版） |
+| Q4 | 發票欄位 | Q3 | 發票欄位（不變） |
+
+`CartMockup.tsx`：Q1 / Q2 / Q3 編號不變，僅 Q1 內容改寫。
+`CheckoutSuccessMockup.tsx`：Q1 / Q2 編號不變，Q2 內容簡化。
+
+### 5. 給 Codex 審的問題
+
+請 Codex 依 §10、§11 一致的 quick scan 形式檢查：
+
+1. **驗證**：
+   - `npm run lint` / `npx tsc --noEmit` 是否仍綠燈？
+   - `/modules/cart`、`/modules/checkout`、`/modules/checkout/success` 是否仍 HTTP 200？
+2. **mockup 一致性**：
+   - CheckoutMockup 是否還有 splitDelivery / 多門市殘留？
+   - CheckoutSuccessMockup 是否還有信用額度自動扣的 UI 殘留？
+   - 月結 Q + Q 引用 + Q 序號是否對齊？
+3. **Q 措辭**：
+   - 新 Q1（付款方式）的「列 + 建議匹配」是否符合 Wayne 要的「不指定、由 HJ 決定」精神？
+   - 新 Q2（月結 SOP）是否避免了 Wayne 指出的「太複雜」問題？
+   - CartMockup Q1（公私版混單拆單）的問法是否清楚？是否真有對到 Wayne 的食品冷藏類比？
+4. **進階功能備註文件**：
+   - `discussions/advanced-features-memo.md` 內容是否完整且 actionable？
+   - 是否漏掉應該移到備註的進階功能？
+   - 「HJ 主動提時的話術」是否實用？
+5. **scope 邊界**：
+   - 是否仍有過度進階的功能殘留在主流程 Q / mockup 中？
+   - 是否有應該推薦但被誤刪的核心功能？
+6. **與已有 Q 的衝突**：
+   - 簡化後的月結 Q 是否與會員系統的 settings Q1 + Q5（LINE）一致？
+   - 與後續未做的「ERP / 金物流文件包」是否產生重複或衝突？
+
+### 6. 給 Claude 的結論預期格式
+
+請 Codex 用以下格式回覆，方便 Wayne quick scan：
+
+- ✅ 方向正確的部分。
+- ❌ 建議先修。
+- ⚠ 建議調整。
+- 可暫時接受。
+- 給 Claude 的結論。

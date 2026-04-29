@@ -13,42 +13,30 @@ import {
 
 const Q1 = {
   no: "Q1",
-  question: "月結客戶識別與信用額度檢查 — 哪些會員等級可用月結？訂單成立時是否要扣信用額度？額度不足如何處理？",
+  question: "付款方式組合 — 目前提案 4 種付款方式，HJ 想要怎麼分配給不同會員類型？",
   context:
-    "目前先以「合作 A 級」示意：①「月結 30 天」付款方式只在合作 A 級會員顯示 ② 訂單送出時系統檢查當前未結金額 + 本單金額 ≤ 信用額度，超過則顯示「需業務確認」並改成「月結審核中」狀態。想請 HJ 確認：哪些等級可月結（A 級？A+B？或其他規則）、額度由誰維護（ERP 還是網站）、超額 SOP。",
+    "目前提案的付款方式：\n• 信用卡（綠界）：刷卡完成即付款\n• ATM 虛擬帳號轉帳：14 天內到帳\n• 貨到付款：限黑貓 / 超商取貨\n• 月結 30 天：B2B 常見方式（業務人工審核）\n\n建議分配方式（請 HJ 微調）：\n• 一般會員適合：信用卡 / ATM / 貨到付款（一次性購買、收款明確）\n• 企業客戶適合：ATM / 月結 30 天（B2B 對帳方便、可月結）\n• 客製私版商品建議：僅 ATM / 月結（避免信用卡爭議款回扣）\n\n想請 HJ 確認：\n• 上述 4 種付款方式是否要增減？\n• 個人會員是否完全排除月結？\n• 客製私版是否要限制信用卡？",
   clientRef: {
-    source: "後台 / 顧客管理 (5) + 後台 / 金流 (7)",
-    quote: "客戶編號與凌越 ERP 同步、多層會員分級價；綠界、一般匯款、宅配/自取貨到付款",
-    note: "需求表寫了會員分級、金流方式，但月結這個 B2B 常見方式未明寫。本提案先示意，想請 HJ 確認是否要做。",
+    source: "後台 / 金流 (7) + 後台 / 顧客管理 (5)",
+    quote: "綠界、一般匯款、宅配/自取貨到付款；多層會員分級價",
+    note: "需求表寫了金流選項與會員分級。本提案先列出 4 種付款方式並提建議分配，由 HJ 決定要不要這樣分。",
   },
 };
 
 const Q2 = {
   no: "Q2",
-  question: "多門市分送 — 一張訂單能否分送多個地址？或要拆成多張訂單？",
+  question: "月結客戶 SOP — 哪些會員等級可月結？月結訂單是業務人工審核還是自動成立？",
   context:
-    "目前先以這樣示意：① 預設「全部送同一地址」② 點「分送多地址」可逐項指定收件門市（總店 / 信義分店 / 倉庫）③ 同一訂單但分送多地址時，運費依各門市材積分別計算。想請 HJ 確認：多門市分送是同一張訂單還是要拆單（影響 ERP 處理 + 物流單）？",
+    "目前先以「合作 A 級」示意：①「月結 30 天」付款方式只在合作 A 級會員顯示 ② 月結訂單送出後不直接成立，先進入「月結審核中」狀態 ③ HJ 業務人工確認後才轉「已成立」並送 ERP ④ 業務拒絕則通知會員改其他付款方式。\n\n想請 HJ 確認：\n• 哪些會員等級可用月結（只 A 級？A+B 級？或其他規則）？\n• 月結訂單是否每筆都人工審核，還是過去往來正常的可自動通過？\n• 月結延遲付款的提醒 / 催收流程要怎麼安排？\n\n（信用額度自動檢查、超額自動擋下單屬進階功能；HJ 確認需要再規劃，不在本輪示意中）",
   clientRef: {
-    source: "後台 / 顧客管理 (5) + 後台 / 物流 (8)",
-    quote: "多層會員分級價；四大超商、多家宅配、自取",
-    note: "需求表沒明寫多門市分送是否要做；本提案先以「同單分送」示意，避免客戶要分多次下單。",
+    source: "後台 / 顧客管理 (5) + 後台 / 金流 (7)",
+    quote: "客戶編號與凌越 ERP 同步、多層會員分級價",
+    note: "需求表寫了會員分級，但月結這個 B2B 常見方式未明寫。本提案以「人工審核版」示意；信用額度自動扣 / 自動擋是進階功能，HJ 提出再規劃。",
   },
 };
 
 const Q3 = {
   no: "Q3",
-  question: "付款方式組合與會員類型對應 — 個人會員 / 企業客戶各自能選哪些付款方式？",
-  context:
-    "目前先以這樣示意：① 個人會員：信用卡（綠界）、ATM 轉帳、貨到付款 ② 企業客戶 A 級：以上 + 月結 30 天 ③ 企業客戶其他級別：以上但無月結 ④ 部分商品（如客製私版）僅限 ATM / 月結，避免信用卡爭議款。想請 HJ 確認對應規則。",
-  clientRef: {
-    source: "後台 / 金流 (7) + 後台 / 顧客管理 (5)",
-    quote: "綠界、一般匯款、宅配/自取貨到付款；多層會員分級價",
-    note: "需求表寫了金流選項與分級，但兩者對應規則未細分。",
-  },
-};
-
-const Q4 = {
-  no: "Q4",
   question: "發票欄位需求 — 企業客戶三聯式（公司抬頭 / 統編 / 寄送方式）是否要每次手動確認？個人會員載具是否強制？",
   context:
     "目前先以這樣示意：① 企業客戶：預設帶入「帳號設定」存的發票資料，可在結帳時改 ② 個人會員：可選電子發票（雲端載具 / 手機條碼）/ 三聯式 / 捐贈發票 ③ 統編 / 載具一旦填過就記住，下次自動帶。想請 HJ 確認：發票欄位是否每次都要手動再確認？個人會員是否強制綁載具？",
@@ -112,7 +100,6 @@ export function CheckoutMockup({
   const [invoice, setInvoice] = useState<InvoiceType>(
     view === "personal" ? "ecpay-mobile" : "triplet",
   );
-  const [splitDelivery, setSplitDelivery] = useState(false);
 
   const subtotal = 22000;
   const shipping = delivery === "pickup" ? 0 : subtotal >= 3000 ? 0 : 150;
@@ -188,91 +175,46 @@ export function CheckoutMockup({
         <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[1fr_400px]">
           <div className="space-y-4">
             {/* 1. 收件人 / 地址 */}
-            <Questioned
-              show={annotations}
-              questions={[Q2]}
-              pageId={pageId}
-              position="top-right"
+            <Section
+              step="1"
+              title="收件資訊"
+              subtitle={
+                view === "personal"
+                  ? "收件人姓名、電話、地址"
+                  : "預設收件門市，可變更"
+              }
+              tone="default"
             >
-              <Section
-                step="1"
-                title="收件資訊"
-                subtitle={
-                  view === "personal"
-                    ? "收件人姓名、電話、地址"
-                    : "可選擇預設收件門市，或分送多個門市"
-                }
-                tone="default"
-              >
-                {view !== "personal" ? (
-                  <>
-                    <div className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white p-3 text-sm">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-bold text-indigo-800">
-                            總店
-                          </span>
-                          <span className="font-bold text-zinc-900">禾啟餐飲（總店）</span>
-                          <span className="rounded bg-amber-700 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                            預設
-                          </span>
-                        </div>
-                        <div className="mt-1 text-xs text-zinc-600">
-                          陳先生 0912-345-678 · 新北市五股區五權五路 10 號
-                        </div>
-                      </div>
-                      <button className="text-xs text-amber-700 hover:underline">
-                        變更
-                      </button>
+              {view !== "personal" ? (
+                <div className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white p-3 text-sm">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-bold text-indigo-800">
+                        總店
+                      </span>
+                      <span className="font-bold text-zinc-900">禾啟餐飲（總店）</span>
+                      <span className="rounded bg-amber-700 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                        預設
+                      </span>
                     </div>
-
-                    <label className="mt-3 flex items-center gap-2 text-sm text-zinc-700">
-                      <input
-                        type="checkbox"
-                        checked={splitDelivery}
-                        onChange={(e) => setSplitDelivery(e.target.checked)}
-                        className="size-4 rounded border-zinc-300 accent-amber-700"
-                      />
-                      分送多個門市
-                    </label>
-
-                    {splitDelivery && (
-                      <div className="mt-3 space-y-2 rounded-md border border-zinc-200 bg-zinc-50/70 p-3 text-xs">
-                        <div className="font-bold text-zinc-700">逐項指定收件門市：</div>
-                        {[
-                          { item: "12oz 公版瓦楞紙杯（白）× 5,000", store: "總店" },
-                          { item: "牛皮紙便當盒（M）× 2,000", store: "信義分店" },
-                          { item: "客製禮盒 × 200", store: "倉庫" },
-                        ].map((row) => (
-                          <div
-                            key={row.item}
-                            className="flex items-center justify-between gap-2 rounded border border-zinc-200 bg-white px-2.5 py-1.5"
-                          >
-                            <span className="truncate text-zinc-700">{row.item}</span>
-                            <select className="rounded border border-zinc-300 bg-white px-2 py-0.5">
-                              <option>總店</option>
-                              <option>信義分店</option>
-                              <option>倉庫</option>
-                            </select>
-                          </div>
-                        ))}
-                        <p className="mt-2 text-[11px] text-zinc-500">
-                          ※ 分送多門市時，運費依各門市材積分別計算
-                        </p>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Field label="收件人" value="陳先生" />
-                    <Field label="行動電話" value="0912-345-678" />
-                    <div className="sm:col-span-2">
-                      <Field label="收件地址" value="新北市五股區五權五路 10 號" />
+                    <div className="mt-1 text-xs text-zinc-600">
+                      陳先生 0912-345-678 · 新北市五股區五權五路 10 號
                     </div>
                   </div>
-                )}
-              </Section>
-            </Questioned>
+                  <button className="text-xs text-amber-700 hover:underline">
+                    變更
+                  </button>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="收件人" value="陳先生" />
+                  <Field label="行動電話" value="0912-345-678" />
+                  <div className="sm:col-span-2">
+                    <Field label="收件地址" value="新北市五股區五權五路 10 號" />
+                  </div>
+                </div>
+              )}
+            </Section>
 
             {/* 2. 物流 */}
             <Section step="2" title="物流方式" tone="default">
@@ -310,7 +252,7 @@ export function CheckoutMockup({
             {/* 3. 付款方式 */}
             <Questioned
               show={annotations}
-              questions={[Q3, ...(view !== "personal" ? [Q1] : [])]}
+              questions={[Q1, ...(view !== "personal" ? [Q2] : [])]}
               pageId={pageId}
               position="top-right"
             >
@@ -338,7 +280,7 @@ export function CheckoutMockup({
                     {
                       id: "monthly",
                       label: "月結 30 天",
-                      desc: "出貨後 30 天結帳；需檢查信用額度，超額需業務確認",
+                      desc: "出貨後 30 天結帳；訂單需業務人工審核",
                       shows: ["business-a"],
                       badge: "合作 A 級限定",
                     },
@@ -378,12 +320,9 @@ export function CheckoutMockup({
 
                 {payment === "monthly" && (
                   <div className="mt-3 rounded-md border border-amber-300 bg-amber-50/70 px-3 py-2 text-xs text-amber-900">
-                    <div className="font-bold">合作 A 級信用額度：</div>
-                    <div className="mt-1 flex justify-between">
-                      <span>已用：NT$ 38,500 / 上限 NT$ 200,000</span>
-                      <span className="text-emerald-700 font-bold">
-                        本單後：NT$ {(38500 + total).toLocaleString()} ✓ 額度充足
-                      </span>
+                    <div className="font-bold">月結訂單流程：</div>
+                    <div className="mt-1 text-amber-900">
+                      送出後不直接成立 → 進入「月結審核中」狀態 → HJ 業務確認後才轉「已成立」並送 ERP。
                     </div>
                   </div>
                 )}
@@ -393,7 +332,7 @@ export function CheckoutMockup({
             {/* 4. 發票 */}
             <Questioned
               show={annotations}
-              questions={[Q4]}
+              questions={[Q3]}
               pageId={pageId}
               position="top-right"
             >
@@ -486,8 +425,8 @@ export function CheckoutMockup({
               </div>
 
               {payment === "monthly" && (
-                <div className="mt-3 rounded-md bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
-                  ✓ 本單採月結 30 天，出貨後 5/28 結帳
+                <div className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                  ⓘ 本單採月結 30 天，需業務人工審核後才成立
                 </div>
               )}
 
