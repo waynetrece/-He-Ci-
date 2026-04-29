@@ -10,6 +10,14 @@
 
 Wayne 走過畫面後決定先用 LINE 問 HJ 窗口拿到實際業務面答案，再回頭調 mockup。
 
+### 2026-04-29 方向調整
+- 已讀 `/Users/waynechen/Downloads/HJ網站客製需求表_1150422.pdf`，它是 1 頁簡化需求架構，不是完整流程規格。
+- 客戶問題清單改為依需求表的核心系統提問。
+- 新增 `discussions/hj-customer-confirmation-questions.md` v3。
+- 新增 `memory/claude-direction-update.md`，給 Claude 的最新方向摘要。
+- 第一輪主軸：訂單管理、金流、物流、ERP、庫存。
+- 第一輪先問需求表已列的核心問題，不主動推月結、多門市分送、自動信用額度、自動拆單等進階功能。
+
 ### 暫停理由
 - CartMockup Q1（公私版混單）文字仍偏複雜
 - Wayne 業務直覺：私版有製作期，公版可即出，傾向「分開出單」，但需窗口確認 HJ 實際做法

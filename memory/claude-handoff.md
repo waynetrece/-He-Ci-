@@ -16,6 +16,28 @@
 
 Wayne 親自走過簡化版購物車 + 結帳閉環畫面後，決定先以 LINE 詢問 HJ 窗口拿到實際業務面答案，再回頭調 mockup。
 
+### 2026-04-29 方向調整
+
+Wayne 確認方向要改成：**先整理客戶確認問題，不再先由 Claude / Codex 自行設計功能方案**。
+
+原因：
+- 目前很多 Q 是我們自己想出來的流程與例外情境，容易把系統設計得過度複雜。
+- 正確順序應是先問 HJ 現況與第一版邊界，再依客戶回覆評估是否需要建議。
+- 進階功能仍保留在內部備案，不主動推給客戶。
+
+新增文件：
+- `discussions/hj-customer-confirmation-questions.md`：依 `HJ網站客製需求表_1150422.pdf` 重整的乾淨版客戶確認問題清單；v3 已改成核心系統優先。
+- `memory/claude-direction-update.md`：給 Claude 的最新方向摘要，可直接貼給 Claude。
+
+Claude 接手時：
+- 先讀 `memory/claude-direction-update.md`。
+- 先讀 `discussions/hj-customer-confirmation-questions.md`。
+- 不要再主動擴充 cart / checkout mockup。
+- 不要把 `advanced-features-memo.md` 內容混進客戶問題主體。
+- 若要整理給客戶，請以 HJ 原始需求表架構為主，問「目前 HJ 怎麼做 / 第一版是否照現況 / 誰確認」。
+- 特別注意：月結、多門市分送、自動信用額度、自動拆單不是 PDF 第一版明確架構，先不要主動放進客戶第一輪問題。
+- 第一輪問題主軸改成：訂單管理、金流、物流、ERP、庫存。前台頁面細節與會員問題等核心系統答案回來後再收斂。
+
 ### 已完成
 
 - 架構總覽首頁
