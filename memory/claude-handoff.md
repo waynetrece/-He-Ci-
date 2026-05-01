@@ -1,5 +1,40 @@
 # Claude Handoff - HJ Proposal
 
+## 2026-05-01 最新補充：窗口已回覆，先做架構/API 整理
+
+Wayne 已提供：
+
+- `/Users/waynechen/Downloads/HJ 網站需求確認問題清單.docx`
+- `/Users/waynechen/Downloads/凌越_最佳拍檔_API匯出入資料清單說明.pdf`
+- `/Users/waynechen/Downloads/最佳拍檔API.pdf`
+
+Codex 已先整理兩份新文件：
+
+- `discussions/hj-window-reply-api-architecture-review.md`
+- `discussions/hj-followup-questions-customer-maya-lingyue.md`
+
+目前階段不是 mockup 調整，而是：
+
+1. 先把窗口回覆轉成系統架構與資料流決策。
+2. 判斷凌越 API 文件是否足夠瑪雅直接製作。
+3. 把後續問題分成給 HJ 客戶、給瑪雅、給凌越三類。
+4. 先確認核心關鍵功能，避免之後才發現需要補畫面或補流程。
+
+Claude 目前不要做：
+
+- 不要先改 cart / checkout / member / product / private quote mockup。
+- 不要直接把 API 文件視為已可完整開發。
+- 不要把給凌越的 API 補件問題混成給 HJ 客戶的業務問題。
+
+Claude 若接手，先讀：
+
+1. `memory/autoresume.md`
+2. `memory/checkpoint.md`
+3. `discussions/hj-window-reply-api-architecture-review.md`
+4. `discussions/hj-followup-questions-customer-maya-lingyue.md`
+
+---
+
 日期：2026-04-29（晚）
 
 ## 專案

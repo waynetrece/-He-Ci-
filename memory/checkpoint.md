@@ -1,3 +1,39 @@
+# Checkpoint - 2026-05-01
+
+## 最新狀態：窗口已回覆，已收到凌越 API 文件，進入架構/API 判讀
+
+Wayne 提供三份新文件：
+
+- `/Users/waynechen/Downloads/HJ 網站需求確認問題清單.docx`
+- `/Users/waynechen/Downloads/凌越_最佳拍檔_API匯出入資料清單說明.pdf`
+- `/Users/waynechen/Downloads/最佳拍檔API.pdf`
+
+目前方向已從「等待窗口回覆」進入「先整理系統架構、核心關鍵功能、API 可行性、後續問題分流」。mockup 仍暫停，先不要改 cart / checkout / member / product / private quote 畫面。
+
+### 2026-05-01 新增文件
+
+- `discussions/hj-window-reply-api-architecture-review.md`
+  - 窗口回覆轉成系統架構決策。
+  - 判讀凌越 API 是否足夠瑪雅直接製作。
+  - 整理核心關鍵功能防漏清單。
+- `discussions/hj-followup-questions-customer-maya-lingyue.md`
+  - 分成給 HJ 客戶、給瑪雅、給凌越三種問題。
+  - 凌越補件獨立整理，不混在瑪雅技術問題裡。
+
+### 目前初步結論
+
+- 凌越 API 文件可作為開發評估起點，但不是 HJ 專案可直接開工的完整串接規格。
+- 還需要凌越補 endpoint / WSDL、測試環境、帳密、公司代號、HJ 實際欄位對照、XML 範例、權限、錯誤處理、狀態碼、庫存同步方式。
+- 需優先確認樣品與公版商品分流、私版詢價與 LINE、訂單即時進凌越、庫存即時更新、會員分級價、材積運費、超商寄件單、綠界金流與退刷。
+
+### 下一步
+
+1. Wayne 先 review 兩份新文件。
+2. 決定哪些問題要先發給 HJ、瑪雅、凌越。
+3. 等架構與 API 問題收斂後，再回頭調整 mockup。
+
+---
+
 # Checkpoint - 2026-04-29（晚）
 
 ## 分支
