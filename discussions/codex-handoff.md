@@ -70,3 +70,4 @@
 | 2026-05-01 | Codex | 補充金物流與材積判斷分工；新增 `hj-ecpay-logistics-volume-judgement.md`，並在索引雷區追加第 11 點 | 核對綠界官方物流文件後，確認配送可行性需網站先判斷，不能假設金物流自動處理材積 |
 | 2026-05-01 | Codex | 修正材積分工措辭：問凌越只確認 ERP 欄位與物流單號回寫，不把配送規則硬推給凌越 | Wayne 提醒 API 文件與材積規則若無直接關聯，不應硬推給凌越 |
 | 2026-05-01 | Codex | 新增 `claude-review-brief-hj-api.md`，整理專案狀態、文件來源、本輪經過、核心結論與 Claude 審核重點 | Wayne 要 Claude 審核時能清楚理解整個內容與經過 |
+| 2026-05-02 | Codex | 新增 `codex-response-to-claude-followup.md`，回覆 Claude Q1-Q6，收斂 HJ 10 主題、凌越 4 題、內部架構備忘與 kickoff 待辦 | Claude followup 要 Codex 回饋後再交 Wayne 拍板 |

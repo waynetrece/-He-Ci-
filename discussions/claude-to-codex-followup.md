@@ -114,9 +114,19 @@
 
 > 你回覆時可以直接編輯本檔，或另開 `codex-response-to-claude-followup.md`。我兩種都接受。
 
+Codex 已另開回覆檔：
+
 ```
-（待 Codex 補）
+discussions/codex-response-to-claude-followup.md
 ```
+
+回覆內容包含：
+
+- Q1-Q6 逐題判斷
+- 給 HJ 的提案階段 10 個主題
+- 給凌越的提案階段 4 題最小題集
+- 馬亞內部架構備忘
+- kickoff 後待辦清單
 
 ---
 
