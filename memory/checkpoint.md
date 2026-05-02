@@ -12,25 +12,49 @@ Wayne 提供三份新文件：
 
 ### 2026-05-01 新增文件
 
-- `discussions/hj-window-reply-api-architecture-review.md`
+- `discussions/lyserp-api-reference-index.md`
+  - Claude 建立的 LYSERP / 最佳拍檔 API 共同索引；Codex 已核對並追加金物流與材積分工雷區。
+- `discussions/codex-handoff.md`
+  - Claude/Codex 對齊規則與 API 索引變更紀錄。
+- `discussions/hj-api-207-full-read-reanalysis.md`
+  - 207 頁 API 完整重讀後的架構與需求重新判斷。
+- `discussions/hj-maya-to-hj-confirmation-items.md`
+  - 馬亞要再跟 HJ 確認的業務 / 流程問題。
+- `discussions/hj-maya-to-lingyue-api-confirmation-items.md`
+  - 馬亞要跟凌越確認的 API / 欄位 / 環境補件；已標明材積規則不硬推給凌越。
+- `discussions/hj-ecpay-logistics-volume-judgement.md`
+  - 綠界 ECPay 金物流與材積判斷分工補充。
+- 舊版第一輪草稿：`discussions/hj-window-reply-api-architecture-review.md`
   - 窗口回覆轉成系統架構決策。
-  - 判讀凌越 API 是否足夠瑪雅直接製作。
+  - 判讀凌越 API 是否足夠馬亞直接製作。
   - 整理核心關鍵功能防漏清單。
-- `discussions/hj-followup-questions-customer-maya-lingyue.md`
-  - 分成給 HJ 客戶、給瑪雅、給凌越三種問題。
-  - 凌越補件獨立整理，不混在瑪雅技術問題裡。
+- 舊版第一輪草稿：`discussions/hj-followup-questions-customer-maya-lingyue.md`
+  - 分成給 HJ 客戶、給馬亞、給凌越三種問題。
+  - 凌越補件獨立整理，不混在馬亞技術問題裡。
+
+### 2026-05-01 Obsidian 同步
+
+- `17-凌越API_207頁索引.md`
+- `18-HJ_API_207頁完整重讀與需求對照.md`
+- `19-HJ馬亞需向HJ確認項目.md`
+- `20-HJ馬亞需向凌越確認API項目.md`
+- `21-HJ金物流與材積判斷補充.md`
 
 ### 目前初步結論
 
 - 凌越 API 文件可作為開發評估起點，但不是 HJ 專案可直接開工的完整串接規格。
 - 還需要凌越補 endpoint / WSDL、測試環境、帳密、公司代號、HJ 實際欄位對照、XML 範例、權限、錯誤處理、狀態碼、庫存同步方式。
 - 需優先確認樣品與公版商品分流、私版詢價與 LINE、訂單即時進凌越、庫存即時更新、會員分級價、材積運費、超商寄件單、綠界金流與退刷。
+- 材積 / 重量能否配送不是凌越責任；凌越只確認商品材積/重量來源欄位與物流單號是否回寫。配送可行性由 HJ 規則 + 馬亞網站邏輯 + 金物流通路規範判斷。
+- 問凌越的重點已收斂為 API 文件可對接性：文件是否足夠馬亞直接寫對接程式；若不足，要補 endpoint / WSDL、帳密、公司代號、可用 `idakd`、必填欄位、XML 範例、錯誤碼、測試資料、欄位對照。SEO、商品文案、網站上下架不問凌越。
+- 等 Wayne 提供 Claude 的 API 分析後，再依 `discussions/codex-handoff.md` 做差異核對。
 
 ### 下一步
 
-1. Wayne 先 review 兩份新文件。
-2. 決定哪些問題要先發給 HJ、瑪雅、凌越。
-3. 等架構與 API 問題收斂後，再回頭調整 mockup。
+1. Wayne 先 review 新版主檔：`hj-api-207-full-read-reanalysis.md`、`hj-maya-to-hj-confirmation-items.md`、`hj-maya-to-lingyue-api-confirmation-items.md`、`hj-ecpay-logistics-volume-judgement.md`。
+2. Wayne 貼上或提供 Claude API 分析後，Codex 做差異核對。
+3. 決定哪些問題要先發給 HJ、馬亞、凌越。
+4. 等架構與 API 問題收斂後，再回頭調整 mockup。
 
 ---
 

@@ -9,6 +9,12 @@
 
 ## 主交付物
 
+若要先理解本輪 Codex 整理的背景、經過與審核重點，請先讀：
+
+```
+/Users/waynechen/01_開發專案/proposals/hj-proposal/discussions/claude-review-brief-hj-api.md
+```
+
 請直接讀這份索引檔：
 
 ```
@@ -61,4 +67,6 @@
 | 日期 | 修改人 | 變更摘要 | 原因 |
 |---|---|---|---|
 | 2026-05-01 | Claude | 建立 `lyserp-api-reference-index.md`（370 行） | 讀完 PDF 後初版 |
-| _待 Codex 補_ | _Codex_ | _…_ | _…_ |
+| 2026-05-01 | Codex | 補充金物流與材積判斷分工；新增 `hj-ecpay-logistics-volume-judgement.md`，並在索引雷區追加第 11 點 | 核對綠界官方物流文件後，確認配送可行性需網站先判斷，不能假設金物流自動處理材積 |
+| 2026-05-01 | Codex | 修正材積分工措辭：問凌越只確認 ERP 欄位與物流單號回寫，不把配送規則硬推給凌越 | Wayne 提醒 API 文件與材積規則若無直接關聯，不應硬推給凌越 |
+| 2026-05-01 | Codex | 新增 `claude-review-brief-hj-api.md`，整理專案狀態、文件來源、本輪經過、核心結論與 Claude 審核重點 | Wayne 要 Claude 審核時能清楚理解整個內容與經過 |

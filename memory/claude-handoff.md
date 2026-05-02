@@ -8,7 +8,16 @@ Wayne 已提供：
 - `/Users/waynechen/Downloads/凌越_最佳拍檔_API匯出入資料清單說明.pdf`
 - `/Users/waynechen/Downloads/最佳拍檔API.pdf`
 
-Codex 已先整理兩份新文件：
+Codex / Claude 目前已有新版主檔：
+
+- `discussions/codex-handoff.md`
+- `discussions/lyserp-api-reference-index.md`
+- `discussions/hj-api-207-full-read-reanalysis.md`
+- `discussions/hj-maya-to-hj-confirmation-items.md`
+- `discussions/hj-maya-to-lingyue-api-confirmation-items.md`
+- `discussions/hj-ecpay-logistics-volume-judgement.md`
+
+舊版第一輪草稿仍可參考：
 
 - `discussions/hj-window-reply-api-architecture-review.md`
 - `discussions/hj-followup-questions-customer-maya-lingyue.md`
@@ -16,9 +25,17 @@ Codex 已先整理兩份新文件：
 目前階段不是 mockup 調整，而是：
 
 1. 先把窗口回覆轉成系統架構與資料流決策。
-2. 判斷凌越 API 文件是否足夠瑪雅直接製作。
-3. 把後續問題分成給 HJ 客戶、給瑪雅、給凌越三類。
+2. 判斷凌越 API 文件是否足夠馬亞直接製作。
+3. 把後續問題分成給 HJ 客戶、給馬亞、給凌越三類。
 4. 先確認核心關鍵功能，避免之後才發現需要補畫面或補流程。
+
+重要補充：
+
+- `最佳拍檔API.pdf` 207 頁已完整重讀。
+- `lyserp-api-reference-index.md` 是 Claude / Codex API 共同基準；後續若改索引，請照 `codex-handoff.md` 在對齊紀錄追加一筆。
+- 金物流 / 材積判斷不要硬推給凌越。凌越只確認商品材積/重量來源欄位與物流單號是否回寫；配送可行性由 HJ 規則 + 馬亞網站邏輯 + 金物流通路規範判斷。
+- API 文件問題的核心不是問凌越網站功能，而是確認文件是否清楚到馬亞可直接對接。SEO、商品文案、網站上下架、畫面流程等網站功能不要放進給凌越的 API 補件問題。
+- Wayne 會再提供 Claude 的 API 分析，Codex 需做差異核對。
 
 Claude 目前不要做：
 
@@ -30,8 +47,12 @@ Claude 若接手，先讀：
 
 1. `memory/autoresume.md`
 2. `memory/checkpoint.md`
-3. `discussions/hj-window-reply-api-architecture-review.md`
-4. `discussions/hj-followup-questions-customer-maya-lingyue.md`
+3. `discussions/codex-handoff.md`
+4. `discussions/lyserp-api-reference-index.md`
+5. `discussions/hj-api-207-full-read-reanalysis.md`
+6. `discussions/hj-maya-to-hj-confirmation-items.md`
+7. `discussions/hj-maya-to-lingyue-api-confirmation-items.md`
+8. `discussions/hj-ecpay-logistics-volume-judgement.md`
 
 ---
 
