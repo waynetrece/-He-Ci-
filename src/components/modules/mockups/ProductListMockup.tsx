@@ -60,15 +60,6 @@ function GiftIcon() {
     </svg>
   );
 }
-function CompareIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10" />
-      <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6" y1="20" x2="6" y2="14" />
-    </svg>
-  );
-}
 function PlusIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -179,7 +170,6 @@ function renderCardInner(
     pageId: string;
     pricePins?: QItem[];
     samplePins?: QItem[];
-    annotateCompare?: boolean;
     annotateFields?: boolean;
   },
 ) {
@@ -188,12 +178,10 @@ function renderCardInner(
     pageId,
     pricePins,
     samplePins,
-    annotateCompare,
     annotateFields,
   } = opts;
   const showPrice = annotations && pricePins && pricePins.length > 0;
   const showSample = annotations && samplePins && samplePins.length > 0;
-  const showCompare = annotations && annotateCompare;
   const showFields = annotations && annotateFields;
 
   // 會員價對照表(範例:依等級不同呈現,以 8oz 公版瓦楞杯為例)
@@ -350,40 +338,6 @@ function renderCardInner(
             ))}
         </div>
 
-        {(() => {
-          const compareLabel = (
-            <label className="mt-3 inline-flex items-center gap-1.5 text-xs text-zinc-500 cursor-pointer">
-              <input
-                type="checkbox"
-                className="size-3.5 rounded border-zinc-300 accent-amber-700"
-              />
-              <span className="flex items-center gap-1">
-                <CompareIcon /> 加入比較
-              </span>
-            </label>
-          );
-          return showCompare ? (
-            <Annotated
-              show
-              source="ours"
-              label="加值功能"
-              title="加入比較功能"
-              rationale={
-                "客戶可勾選 2~4 件商品後一鍵進入「比較頁」，並排對照容量、材質、規格、價格與最低訂購量。\n\n" +
-                "原因：餐飲業採購包材時，常需要在 8oz / 12oz / 16oz 之間，或紙杯 / PLA / PET 不同材質之間做選擇。比較頁可減少切換頁面的次數，讓決策更快、轉換率更高。\n\n" +
-                "如不需要這個功能可以拿掉，整張卡會更簡潔。"
-              }
-              pageId={pageId}
-              elementId={`compare-${p.code}`}
-              elementLabel="加入比較"
-              position="top-right"
-            >
-              {compareLabel}
-            </Annotated>
-          ) : (
-            compareLabel
-          );
-        })()}
       </div>
     </>
   );
@@ -634,7 +588,6 @@ export function ProductListMockup({
                       pageId,
                       pricePins: pins?.price,
                       samplePins: pins?.sample,
-                      annotateCompare: idx === 4,
                       annotateFields: idx === 1,
                     })}
                   </article>
@@ -700,38 +653,6 @@ export function ProductListMockup({
           </main>
         </div>
       </div>
-
-      {/* Compare bar (sticky-style at bottom) */}
-      <Annotated
-        show={annotations}
-        source="ours"
-        label="加值功能"
-        pageId={pageId}
-        elementId="compare-bar"
-        elementLabel="商品比較功能"
-        position="top-right"
-      >
-        <div className="border-t border-zinc-200 bg-zinc-900 px-6 py-3 text-white">
-          <div className="mx-auto flex max-w-[1760px] items-center justify-between text-xs">
-            <span className="flex items-center gap-2">
-              <CompareIcon />
-              已選 <span className="font-bold mx-1">2</span> 件商品比較（最多 4 件）
-            </span>
-            <div className="flex items-center gap-3">
-              <div className="flex gap-1.5">
-                <span className="size-7 rounded bg-amber-100" />
-                <span className="size-7 rounded bg-emerald-100" />
-              </div>
-              <button className="rounded border border-zinc-700 px-3 py-1.5 text-zinc-300 hover:bg-zinc-800">
-                清空
-              </button>
-              <Link href="/modules/products/compare" className="rounded bg-amber-600 px-4 py-1.5 font-bold text-white hover:bg-amber-500">
-                開始比較 →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </Annotated>
 
       <MockupSiteFooter />
     </MockupShell>

@@ -12,7 +12,7 @@
 - 分支：`main`
 - 遠端狀態：`main...origin/main [ahead 6]`
 - 最新 HEAD：`4698925 docs(quote): v9 — 修正最新消息 = 行銷活動(HJ 原始需求只列行銷活動)`
-- 本機未提交檔案：`discussions/hj-quote-draft.md`、`memory/checkpoint.md`、`memory/autoresume.md`、`memory/claude-handoff.md`
+- 本機未提交檔案：`src/components/modules/mockups/ProductListMockup.tsx`、`src/app/preview/page.tsx`、`src/app/modules/products/compare/page.tsx`（已刪除）、`memory/checkpoint.md`、`memory/autoresume.md`、`memory/claude-handoff.md`
 
 ## 目前報價單狀態
 
@@ -23,7 +23,7 @@
 - 我們的服務：`$9,250`
 - 主案含稅：`NT$ 1,092,788`
 - 選配 A+B+C 全包後含稅：約 `NT$ 1,224,038`
-- v13 已修正：項目流水號、設計/程式小計、稅額、50/30/20 付款金額、樣品需登入、私版原始檔走 LINE；設計區改成頁面清單避免表格文字過長，程式區依 HJ 架構擴寫，公版商品前台收斂為列表頁 + 內容頁，不列商品比較功能。
+- v13 已修正：項目流水號、設計/程式小計、稅額、50/30/20 付款金額、樣品需登入、私版原始檔走 LINE；設計區改成頁面清單避免表格文字過長，程式區依 HJ 架構擴寫，公版商品前台收斂為列表頁 + 內容頁，不列商品比較功能。Mockup 也已清除商品比較入口與 `/modules/products/compare` 頁。
 
 ## 下次安全起手式
 
@@ -31,7 +31,7 @@
 2. 檢查 `git diff -- discussions/hj-quote-draft.md`。
 3. 請 Wayne 先 review v13 金額、模組拆法與文字語氣。
 4. Wayne 確認後，再輸出正式客戶版 Excel / Word / PDF 到 `exports/`。
-5. mockup 仍先不要主動改；目前主線是報價單 / scope / 金額收斂。
+5. 除已依 Wayne 明確回饋清除公版商品比較功能外，其他 mockup 仍先不要主動改；目前主線是報價單 / scope / 金額收斂。
 
 ## LINE 客製詢價目前定論
 
@@ -52,7 +52,7 @@
 
 - 不要回到舊 31 題或 `window-line-batch2.md` 擴寫。
 - 不要主動修改 cart / checkout / success mockup。
-- 不要主動修改會員、公版、私版 mockup 的問題文字。
+- 不要主動修改會員、私版 mockup 的問題文字；公版商品 mockup 僅清除 Wayne 指定不要的商品比較功能。
 - 不要把 `discussions/advanced-features-memo.md` 給客戶或混進客戶問題。
 - 不要再用「第一版」這個詞給客戶；客戶版統一用「網站正式上線時」或具體問法。
 - 不要把 LINE 描述成「已接第三方客服系統」或「LINE 自動報價」。

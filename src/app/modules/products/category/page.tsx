@@ -165,7 +165,7 @@ export default function ProductCategoryPage() {
         </div>
       </section>
       <ModuleFooterNav
-        prev={{ title: "公版商品分類入口", href: "/modules/products" }}
+        prev={{ title: "公版商品列表", href: "/modules/products" }}
         next={{ title: "商品詳情", href: "/modules/products/detail" }}
       />
     </main>

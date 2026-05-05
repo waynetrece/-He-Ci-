@@ -9,7 +9,7 @@
 - 分支：`main`
 - 遠端狀態：`main...origin/main [ahead 6]`
 - 最新 HEAD：`4698925 docs(quote): v9 — 修正最新消息 = 行銷活動(HJ 原始需求只列行銷活動)`
-- 目前未提交檔案：`discussions/hj-quote-draft.md`、`memory/checkpoint.md`、`memory/autoresume.md`、`memory/claude-handoff.md`
+- 目前未提交檔案：`src/components/modules/mockups/ProductListMockup.tsx`、`src/app/preview/page.tsx`、`src/app/modules/products/compare/page.tsx`（已刪除）、`memory/checkpoint.md`、`memory/autoresume.md`、`memory/claude-handoff.md`
 
 ### 報價單目前基準
 
@@ -26,13 +26,13 @@
   - 營業稅 5%：`$52,038`
   - 主案含稅：`NT$ 1,092,788`
   - 主案 + 選配 A+B+C 含稅：約 `NT$ 1,224,038`
-- v13 也修正樣品需登入、私版原始檔走 LINE、付款 50/30/20 金額；設計區改為頁面清單，程式區依 HJ 流程拆成前台/CMS、商品/樣品/私版、結帳/訂單/會員、共用模組、第三方整合。依 Wayne 回饋，公版商品前台收斂為商品列表頁 + 商品內容頁，不列商品比較功能。
+- v13 也修正樣品需登入、私版原始檔走 LINE、付款 50/30/20 金額；設計區改為頁面清單，程式區依 HJ 流程拆成前台/CMS、商品/樣品/私版、結帳/訂單/會員、共用模組、第三方整合。依 Wayne 回饋，公版商品前台收斂為商品列表頁 + 商品內容頁，不列商品比較功能；Mockup 已同步清除商品比較入口與 `/modules/products/compare` 頁。
 
 ### Claude / 下一位接手者不要做
 
 - 不要把 v13 工作稿直接視為可發送客戶版；仍待 Wayne review。
 - 不要在 Wayne 未確認前輸出正式 Word / PDF / Excel。
-- 不要主動回去改 cart / checkout / member / product / private quote mockup。
+- 不要主動回去改 cart / checkout / member / private quote mockup；product mockup 僅清除 Wayne 指定不要的商品比較功能。
 - 不要把 FAQ 加回主案，除非 Wayne 明確指示。
 
 ### 下一步

@@ -19,37 +19,36 @@ const A_CMS: Page[] = [
 ];
 
 const B_PRODUCTS: Page[] = [
-  { no: "F8", label: "公版商品分類入口", href: "/modules/products", desc: "(既有)入口頁 + Q1–Q7 已釘", status: "existing" },
-  { no: "F9", label: "分類列表(篩選)", href: "/modules/products/category", desc: "左側篩選 + 排序 + 9 商品卡 + 分頁", status: "new" },
-  { no: "F10", label: "商品詳情頁", href: "/modules/products/detail", desc: "(既有)規格選擇器 + 加購 + Q1/Q2", status: "existing" },
-  { no: "F11", label: "樣品申請流程", href: "/modules/products/sample", desc: "(既有)申請 → 審核 → 出樣", status: "existing" },
-  { no: "F12", label: "私版商品入口", href: "/modules/private-quote", desc: "(既有)私版報價系統入口", status: "existing" },
-  { no: "F13", label: "私版詢價表單", href: "/modules/private-quote/quote-form", desc: "(既有)客製規格 + 上傳檔", status: "existing" },
-  { no: "F14", label: "全站搜尋結果", href: "/modules/search", desc: "商品 + 消息 + Q&A 統一搜尋", status: "new" },
+  { no: "F8", label: "公版商品列表", href: "/modules/products", desc: "(既有)分類篩選 + 商品卡 + Q1–Q7 已釘", status: "existing" },
+  { no: "F9", label: "商品內容頁", href: "/modules/products/detail", desc: "(既有)規格選擇器 + 加購 + Q1/Q2", status: "existing" },
+  { no: "F10", label: "樣品申請流程", href: "/modules/products/sample", desc: "(既有)申請 → 審核 → 出樣", status: "existing" },
+  { no: "F11", label: "私版商品入口", href: "/modules/private-quote", desc: "(既有)私版報價系統入口", status: "existing" },
+  { no: "F12", label: "私版詢價表單", href: "/modules/private-quote/quote-form", desc: "(既有)客製規格 + 上傳檔", status: "existing" },
+  { no: "F13", label: "全站搜尋結果", href: "/modules/search", desc: "商品 + 消息 + Q&A 統一搜尋", status: "new" },
 ];
 
 const C_CHECKOUT: Page[] = [
-  { no: "F15", label: "購物車", href: "/modules/cart", desc: "(既有)公版+私版分區", status: "existing" },
-  { no: "F16", label: "結帳填寫資料", href: "/modules/checkout", desc: "(既有)收件 + 發票 + 配送", status: "existing" },
-  { no: "F17", label: "付款方式選擇", href: "/modules/checkout/payment", desc: "信用卡 / 匯款 / 貨到 / 自取(ATM/分期未開放)", status: "new" },
-  { no: "F18", label: "付款結果", href: "/modules/checkout/success", desc: "(既有)成功 / 失敗結果頁", status: "existing" },
+  { no: "F14", label: "購物車", href: "/modules/cart", desc: "(既有)公版+私版分區", status: "existing" },
+  { no: "F15", label: "結帳填寫資料", href: "/modules/checkout", desc: "(既有)收件 + 發票 + 配送", status: "existing" },
+  { no: "F16", label: "付款方式選擇", href: "/modules/checkout/payment", desc: "信用卡 / 匯款 / 貨到 / 自取(ATM/分期未開放)", status: "new" },
+  { no: "F17", label: "付款結果", href: "/modules/checkout/success", desc: "(既有)成功 / 失敗結果頁", status: "existing" },
 ];
 
 const D_MEMBER: Page[] = [
-  { no: "F19", label: "登入 / 註冊", href: "/modules/members/auth", desc: "(既有)Email + LINE 雙通道", status: "existing" },
-  { no: "F20", label: "忘記密碼", href: "/modules/members/auth/forgot", desc: "3 步驟 / Email 重設 / LINE 找回", status: "new" },
-  { no: "F21", label: "會員儀表板", href: "/modules/members", desc: "(既有)數字總覽 + 快速入口", status: "existing" },
-  { no: "F22", label: "訂單列表", href: "/modules/members/orders", desc: "(既有)新訂單 + 凌越歷史 + 再購買", status: "existing" },
-  { no: "F23", label: "訂單詳情", href: "/modules/members/orders/order-1", desc: "(既有)狀態 / 物流 / 退款", status: "existing" },
-  { no: "F24", label: "詢價單列表", href: "/modules/members/quote-list", desc: "(既有)私版詢價歷史", status: "existing" },
-  { no: "F25", label: "樣品申請列表", href: "/modules/members/samples", desc: "(既有)樣品歷史", status: "existing" },
-  { no: "F26", label: "個人資料", href: "/modules/members/settings", desc: "(既有)基本資料 + 密碼變更", status: "existing" },
-  { no: "F27", label: "收件地址簿", href: "/modules/members/addresses", desc: "多筆地址 + 預設 + 統編", status: "new" },
+  { no: "F18", label: "登入 / 註冊", href: "/modules/members/auth", desc: "(既有)Email + LINE 雙通道", status: "existing" },
+  { no: "F19", label: "忘記密碼", href: "/modules/members/auth/forgot", desc: "3 步驟 / Email 重設 / LINE 找回", status: "new" },
+  { no: "F20", label: "會員儀表板", href: "/modules/members", desc: "(既有)數字總覽 + 快速入口", status: "existing" },
+  { no: "F21", label: "訂單列表", href: "/modules/members/orders", desc: "(既有)新訂單 + 凌越歷史 + 再購買", status: "existing" },
+  { no: "F22", label: "訂單詳情", href: "/modules/members/orders/order-1", desc: "(既有)狀態 / 物流 / 退款", status: "existing" },
+  { no: "F23", label: "詢價單列表", href: "/modules/members/quote-list", desc: "(既有)私版詢價歷史", status: "existing" },
+  { no: "F24", label: "樣品申請列表", href: "/modules/members/samples", desc: "(既有)樣品歷史", status: "existing" },
+  { no: "F25", label: "個人資料", href: "/modules/members/settings", desc: "(既有)基本資料 + 密碼變更", status: "existing" },
+  { no: "F26", label: "收件地址簿", href: "/modules/members/addresses", desc: "多筆地址 + 預設 + 統編", status: "new" },
 ];
 
 const E_OTHER: Page[] = [
-  { no: "F28", label: "物流自動化(暫保留)", href: "/modules/logistics-automation", desc: "(既有)— 待 Wayne 確認是否要留", status: "existing" },
-  { no: "F29", label: "物流前台 demo(暫保留)", href: "/modules/logistics-front-demo", desc: "(既有)— 待 Wayne 確認是否要留", status: "existing" },
+  { no: "F27", label: "物流自動化(暫保留)", href: "/modules/logistics-automation", desc: "(既有)— 待 Wayne 確認是否要留", status: "existing" },
+  { no: "F28", label: "物流前台 demo(暫保留)", href: "/modules/logistics-front-demo", desc: "(既有)— 待 Wayne 確認是否要留", status: "existing" },
 ];
 
 const SECTIONS = [
