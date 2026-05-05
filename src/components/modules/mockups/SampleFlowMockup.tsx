@@ -15,8 +15,13 @@ import {
 // - 樣品申請單獨立(不能跟一般訂單同包出貨)
 // - 樣品入口 → 登入 → 選樣品(系統檢查 3/10/30 限制)→ 選配送 → 付運費 → 出貨
 
-const SHIPPING_FEE = 80; // 固定樣品運費(後台可調)
-const SAMPLE_LIMITS = { perRequest: 3, perMonth: 10, perYear: 30 };
+// 32 題 A 包確認(題 1):
+// - 每品項 ≤ 3 件
+// - 最多 10 款品項
+// - 總數 ≤ 30 件
+// - 樣品運費 = 固定金額,後台可調,不論幾件同價(NT$ 80 為示範值,實際金額 HJ 之後設定)
+const SHIPPING_FEE = 80;
+const SAMPLE_LIMITS = { perItem: 3, maxItems: 10, totalPieces: 30 };
 
 type SampleItem = {
   code: string;
@@ -31,7 +36,9 @@ const INITIAL_ITEMS: SampleItem[] = [
   { code: "PL-12", name: "12oz PLA 環保杯", spec: "12oz / 360cc · 可生物分解", qty: 1, bg: "bg-lime-100" },
 ];
 
-type ShippingMethod = "home" | "store" | "pickup";
+// 32 題 review 確認:樣品「選配送方式 → 固定運費」,但沒明確列自取。
+// 為避免擅自假設,樣品 mockup 暫只列宅配 + 超商。若 HJ 後續要加自取再開。
+type ShippingMethod = "home" | "store";
 
 const STEPS = [
   { id: 1, label: "選擇樣品", short: "選樣品" },
@@ -55,9 +62,13 @@ export function SampleFlowMockup({
   const [addr, setAddr] = useState("新北市五股區五權路 10 號 3 樓");
   const [purpose, setPurpose] = useState("");
 
-  const totalItems = items.reduce((s, i) => s + i.qty, 0);
-  const overLimit = totalItems > SAMPLE_LIMITS.perRequest;
-  const fee = shipping === "pickup" ? 0 : SHIPPING_FEE;
+  const totalPieces = items.reduce((s, i) => s + i.qty, 0);
+  const itemCount = items.length;
+  const overItem = items.some((i) => i.qty > SAMPLE_LIMITS.perItem);
+  const overItems = itemCount > SAMPLE_LIMITS.maxItems;
+  const overTotal = totalPieces > SAMPLE_LIMITS.totalPieces;
+  const overLimit = overItem || overItems || overTotal;
+  const fee = SHIPPING_FEE;
 
   return (
     <MockupShell url="https://hj.example.com/products/sample">
@@ -84,7 +95,8 @@ export function SampleFlowMockup({
             </span>
           </div>
           <p className="mt-2 max-w-3xl text-sm text-zinc-600">
-            樣品申請單獨立流程,不可與公版商品同訂單。本月可申請 {SAMPLE_LIMITS.perMonth} 件、本年 {SAMPLE_LIMITS.perYear} 件、單次最多 {SAMPLE_LIMITS.perRequest} 件。
+            樣品申請單獨立流程,不可與公版商品同訂單。
+            單次申請限制:每品項 ≤ {SAMPLE_LIMITS.perItem} 件、最多 {SAMPLE_LIMITS.maxItems} 款品項、總數 ≤ {SAMPLE_LIMITS.totalPieces} 件。
           </p>
         </div>
       </section>
@@ -127,51 +139,62 @@ export function SampleFlowMockup({
           <div className="lg:col-span-2 space-y-5">
             {/* Step 1: items */}
             <section className={`rounded-xl border bg-white p-6 ${step === 1 ? "border-amber-400" : "border-zinc-200"}`}>
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-bold text-zinc-900">1. 申請樣品(共 {totalItems} 件)</h2>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-base font-bold text-zinc-900">
+                  1. 申請樣品(共 {itemCount} / {SAMPLE_LIMITS.maxItems} 款 · {totalPieces} / {SAMPLE_LIMITS.totalPieces} 件)
+                </h2>
                 {overLimit && (
-                  <span className="rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-medium text-rose-700">
-                    ⚠ 已超過單次上限 {SAMPLE_LIMITS.perRequest} 件
-                  </span>
+                  <div className="flex flex-col items-end gap-1 text-xs text-rose-700">
+                    {overItem && <span className="rounded-full bg-rose-100 px-2.5 py-0.5 font-medium">⚠ 有品項超過 {SAMPLE_LIMITS.perItem} 件上限</span>}
+                    {overItems && <span className="rounded-full bg-rose-100 px-2.5 py-0.5 font-medium">⚠ 超過 {SAMPLE_LIMITS.maxItems} 款品項上限</span>}
+                    {overTotal && <span className="rounded-full bg-rose-100 px-2.5 py-0.5 font-medium">⚠ 超過 {SAMPLE_LIMITS.totalPieces} 件總數上限</span>}
+                  </div>
                 )}
               </div>
 
               <div className="mt-4 space-y-3">
-                {items.map((it) => (
-                  <div key={it.code} className="flex items-center gap-4 rounded-lg border border-zinc-100 p-3">
-                    <div className={`size-16 shrink-0 rounded-md ${it.bg}`} />
-                    <div className="flex-1">
-                      <div className="font-mono text-xs text-zinc-400">{it.code}</div>
-                      <div className="text-sm font-bold text-zinc-900">{it.name}</div>
-                      <div className="text-xs text-zinc-500">{it.spec}</div>
-                    </div>
-                    <div className="flex items-center rounded-md border border-zinc-300">
+                {items.map((it) => {
+                  const qtyOver = it.qty > SAMPLE_LIMITS.perItem;
+                  return (
+                    <div key={it.code} className={`flex items-center gap-4 rounded-lg border p-3 ${qtyOver ? "border-rose-300 bg-rose-50/40" : "border-zinc-100"}`}>
+                      <div className={`size-16 shrink-0 rounded-md ${it.bg}`} />
+                      <div className="flex-1">
+                        <div className="font-mono text-xs text-zinc-400">{it.code}</div>
+                        <div className="text-sm font-bold text-zinc-900">{it.name}</div>
+                        <div className="text-xs text-zinc-500">{it.spec}</div>
+                        {qtyOver && (
+                          <div className="mt-1 text-xs text-rose-700">超過每品項 {SAMPLE_LIMITS.perItem} 件上限</div>
+                        )}
+                      </div>
+                      <div className="flex items-center rounded-md border border-zinc-300">
+                        <button
+                          onClick={() =>
+                            setItems(items.map((i) => (i.code === it.code ? { ...i, qty: Math.max(1, i.qty - 1) } : i)))
+                          }
+                          className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100"
+                        >
+                          −
+                        </button>
+                        <span className={`w-10 border-x border-zinc-300 py-1.5 text-center text-sm ${qtyOver ? "text-rose-600 font-bold" : ""}`}>{it.qty}</span>
+                        <button
+                          onClick={() =>
+                            setItems(items.map((i) => (i.code === it.code ? { ...i, qty: Math.min(SAMPLE_LIMITS.perItem, i.qty + 1) } : i)))
+                          }
+                          className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100 disabled:opacity-30"
+                          disabled={it.qty >= SAMPLE_LIMITS.perItem}
+                        >
+                          +
+                        </button>
+                      </div>
                       <button
-                        onClick={() =>
-                          setItems(items.map((i) => (i.code === it.code ? { ...i, qty: Math.max(1, i.qty - 1) } : i)))
-                        }
-                        className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100"
+                        onClick={() => setItems(items.filter((i) => i.code !== it.code))}
+                        className="text-xs text-rose-600 hover:underline"
                       >
-                        −
-                      </button>
-                      <span className="w-10 border-x border-zinc-300 py-1.5 text-center text-sm">{it.qty}</span>
-                      <button
-                        onClick={() =>
-                          setItems(items.map((i) => (i.code === it.code ? { ...i, qty: i.qty + 1 } : i)))
-                        }
-                        className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100"
-                      >
-                        +
+                        移除
                       </button>
                     </div>
-                    <button
-                      onClick={() => setItems(items.filter((i) => i.code !== it.code))}
-                      className="text-xs text-rose-600 hover:underline"
-                    >
-                      移除
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <Link
@@ -211,11 +234,10 @@ export function SampleFlowMockup({
 
               <div className="mt-5">
                 <h3 className="text-sm font-medium text-zinc-900">寄送方式</h3>
-                <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="mt-3 grid grid-cols-2 gap-2">
                   {([
                     { id: "home" as const, name: "宅配到府", desc: "黑貓 / 嘉里 1–3 工作天", fee: SHIPPING_FEE },
                     { id: "store" as const, name: "超商取貨", desc: "7-11 / 全家 2–4 工作天", fee: SHIPPING_FEE },
-                    { id: "pickup" as const, name: "公司自取", desc: "新北五股 / 上班時段", fee: 0 },
                   ]).map((opt) => {
                     const active = shipping === opt.id;
                     return (
@@ -247,9 +269,9 @@ export function SampleFlowMockup({
             <section className="rounded-xl border border-amber-200 bg-amber-50/40 p-5 text-xs text-amber-900">
               <div className="font-bold">申請須知</div>
               <ul className="mt-2 space-y-1 list-disc list-inside text-zinc-700">
-                <li>樣品本身免費,需自付運費(NT$ {SHIPPING_FEE} 固定,自取免運)。</li>
-                <li>單次最多申請 {SAMPLE_LIMITS.perRequest} 件,本月最多 {SAMPLE_LIMITS.perMonth} 件,本年最多 {SAMPLE_LIMITS.perYear} 件。</li>
-                <li>送出後直接進出貨流程,3 個工作天內寄出(不需後台審核)。</li>
+                <li>樣品本身免費,需自付運費(固定 NT$ {SHIPPING_FEE},不論件數同價)。</li>
+                <li>單次申請限制:每品項 ≤ {SAMPLE_LIMITS.perItem} 件、最多 {SAMPLE_LIMITS.maxItems} 款品項、總數 ≤ {SAMPLE_LIMITS.totalPieces} 件。</li>
+                <li>送出後直接進出貨流程(不需後台審核)。</li>
                 <li>樣品申請單獨立流程,不可與一般訂單同包出貨。</li>
                 <li>進度可至 <Link href="/modules/members/samples" className="underline font-medium">會員中心 / 樣品申請列表</Link> 查詢。</li>
               </ul>
@@ -262,9 +284,15 @@ export function SampleFlowMockup({
 
             <div className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-zinc-600">樣品數量</span>
-                <span className={overLimit ? "text-rose-600 font-bold" : "text-zinc-900"}>
-                  {totalItems} 件 {overLimit && `/ 上限 ${SAMPLE_LIMITS.perRequest}`}
+                <span className="text-zinc-600">品項款數</span>
+                <span className={overItems ? "text-rose-600 font-bold" : "text-zinc-900"}>
+                  {itemCount} / {SAMPLE_LIMITS.maxItems} 款
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-600">總件數</span>
+                <span className={overTotal ? "text-rose-600 font-bold" : "text-zinc-900"}>
+                  {totalPieces} / {SAMPLE_LIMITS.totalPieces} 件
                 </span>
               </div>
               <div className="flex justify-between">
@@ -272,23 +300,13 @@ export function SampleFlowMockup({
                 <span className="text-emerald-600 font-medium">免費</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-600">運費({shipping === "home" ? "宅配" : shipping === "store" ? "超商" : "自取"})</span>
-                <span className={fee === 0 ? "text-emerald-600 font-medium" : "text-zinc-900"}>
-                  {fee === 0 ? "免運" : `NT$ ${fee}`}
-                </span>
+                <span className="text-zinc-600">運費({shipping === "home" ? "宅配" : "超商"})</span>
+                <span className="text-zinc-900">NT$ {fee}</span>
               </div>
               <div className="my-2 h-px bg-zinc-100" />
               <div className="flex justify-between text-base font-bold">
                 <span>應付金額</span>
                 <span className="text-amber-700">NT$ {fee}</span>
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-600">
-              <div className="font-medium text-zinc-900">本年累計</div>
-              <div className="mt-1">已申請 4 件 / 上限 {SAMPLE_LIMITS.perYear} 件</div>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-zinc-200">
-                <div className="h-full bg-amber-400" style={{ width: `${(4 / SAMPLE_LIMITS.perYear) * 100}%` }} />
               </div>
             </div>
 
@@ -301,7 +319,7 @@ export function SampleFlowMockup({
                   : "bg-amber-500 hover:bg-amber-600"
               }`}
             >
-              {overLimit ? "已超過件數上限" : items.length === 0 ? "請先選樣品" : "確認送出申請"}
+              {overLimit ? "請調整數量符合限制" : items.length === 0 ? "請先選樣品" : "確認送出申請"}
             </button>
             <p className="mt-2 text-center text-[11px] text-zinc-500">
               送出後將直接出貨,不需後台審核
