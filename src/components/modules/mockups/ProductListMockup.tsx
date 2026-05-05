@@ -725,9 +725,9 @@ export function ProductListMockup({
               <button className="rounded border border-zinc-700 px-3 py-1.5 text-zinc-300 hover:bg-zinc-800">
                 清空
               </button>
-              <button className="rounded bg-amber-600 px-4 py-1.5 font-bold text-white hover:bg-amber-500">
+              <Link href="/modules/products/compare" className="rounded bg-amber-600 px-4 py-1.5 font-bold text-white hover:bg-amber-500">
                 開始比較 →
-              </button>
+              </Link>
             </div>
           </div>
         </div>
