@@ -2,45 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ClipboardIcon,
-  CommentToolbar,
-  CommentTrigger,
-} from "@/components/modules/CommentSystem";
+import { CommentToolbar } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { CheckoutSuccessMockup } from "@/components/modules/mockups/CheckoutSuccessMockup";
 import { CART_MOCKUPS } from "@/lib/cart-mockups";
 
 const PAGE_ID = "checkout-success";
-const PAGE_LABEL = "購物車與結帳 — 訂單成立";
+const PAGE_LABEL = "購物車與結帳 — 付款結果";
 const ACTIVE_TAB = "success";
 
-const QUESTIONS = [
-  {
-    no: "Q1",
-    question: "訂單成立後 ERP 同步時機 — 即時 API 推送、批次同步（每 N 分鐘 / 每日）、還是業務手動匯入？同步失敗時的備援？",
-    context:
-      "依需求表「訂單即時匯入凌越 ERP」先示意：① 訂單送出 → 網站存「待確認」→ 推給凌越 ERP → ERP 回 ack 後狀態變「已成立」② 若 ERP 失敗 / 逾時，網站訂單先停在「待 ERP 同步」，背景重試（最多 3 次），仍失敗則通知 HJ 業務手動匯入。實際機制（即時 API / 批次 / 手動）與失敗備援待 HJ 與凌越廠商確認，對齊 scope-checklist #15。",
-    pinnedAt: "等待付款 / 月結審核狀態的『ERP 同步狀態』訊息",
-    clientRef: {
-      source: "後台 / 訂單管理 (3) + 後台 / 顧客管理 (5)",
-      quote: "訂單即時匯入凌越 ERP；網站客人需與原 ERP 客戶編號相同",
-      note: "需求表寫了「即時匯入凌越 ERP」但未細分機制（同步 API / 排程批次 / 手動），失敗備援也未寫。本提案先依需求表字面示意，待 HJ + 凌越確認後再定。",
-    },
-  },
-  {
-    no: "Q2",
-    question: "月結審核 SOP — 由誰審？多久內回覆？拒絕後如何處理？",
-    context:
-      "目前先以這樣示意：① 所有月結訂單一律進「月結審核中」狀態 ② HJ 業務在後台審核，可「核准」或「拒絕並請客戶改其他付款方式」③ 核准 → 訂單轉「已成立」並送 ERP，以 Email 通知會員 ④ 拒絕 → 通知會員回結帳改付款方式。想請 HJ 確認：審核權責（業務 / 主管 / 會計？）、審核 SLA（多久內回覆？例如 1 個工作天）、通知管道（Email？其他見 settings Q1 + Q5 LINE 整體規劃）。（信用額度自動扣 / 自動擋下單屬進階功能；HJ 提出再規劃）",
-    pinnedAt: "月結審核中狀態『後續流程』",
-    clientRef: {
-      source: "後台 / 訂單管理 (3) + 後台 / 金流 (7)",
-      quote: "訂單即時匯入凌越 ERP；綠界、一般匯款、宅配/自取貨到付款",
-      note: "需求表沒明寫月結，本提案以「人工審核版」示意；信用額度自動檢查屬進階功能，HJ 提出再規劃。",
-    },
-  },
-];
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 訂單付款完成才進凌越(E 包,B 方案)
+// - 訂單狀態 6 個(B 包 Q-B2)
+// - 訂單同步失敗 → 系統自動 retry 3 次,失敗通知管理員(E 包 Q-E15 default)
+// - 物流商選擇 = 客戶付款完成後業務後台勾選(B 包 Q-B11)
+// - 物流追蹤 = 系統依物流商產生查詢頁連結(B 包 Q-B3)
+// - LINE 通知:訂單成立 / 付款完成 / 出貨
 
 export default function CheckoutSuccessPage() {
   const [annotations, setAnnotations] = useState(true);
@@ -56,9 +33,7 @@ export default function CheckoutSuccessPage() {
 
       <section className="border-b-2 border-zinc-400 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-2">
-          <span className="mr-2 text-sm font-medium text-amber-900">
-            購物車與結帳 預覽：
-          </span>
+          <span className="mr-2 text-sm font-medium text-amber-900">購物車與結帳 預覽:</span>
           {CART_MOCKUPS.map((m) => {
             const active = m.id === ACTIVE_TAB;
             const cls = `rounded-full border-2 px-4 py-1.5 text-sm font-medium transition-colors ${
@@ -71,19 +46,13 @@ export default function CheckoutSuccessPage() {
             const content = (
               <>
                 {m.name}
-                {!m.ready && (
-                  <span className="ml-1 text-[10px] opacity-60">（製作中）</span>
-                )}
+                {!m.ready && <span className="ml-1 text-[10px] opacity-60">(製作中)</span>}
               </>
             );
             return m.ready && !active ? (
-              <Link key={m.id} href={m.href} className={cls}>
-                {content}
-              </Link>
+              <Link key={m.id} href={m.href} className={cls}>{content}</Link>
             ) : (
-              <button key={m.id} disabled={!m.ready} className={cls}>
-                {content}
-              </button>
+              <button key={m.id} disabled={!m.ready} className={cls}>{content}</button>
             );
           })}
         </div>
@@ -95,80 +64,40 @@ export default function CheckoutSuccessPage() {
         </div>
       </section>
 
-      <section className="border-t-2 border-zinc-400 bg-amber-50/40 px-6 py-16">
+      {/* Resolution summary */}
+      <section className="border-t-2 border-zinc-400 bg-emerald-50/40 px-6 py-12">
         <div className="mx-auto max-w-[1760px]">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold tracking-tight text-amber-900">
-              本頁待確認的項目（共 {QUESTIONS.length} 題）
-            </h2>
-            <p className="mt-3 max-w-3xl text-base text-zinc-700">
-              以下 {QUESTIONS.length} 題對應於 ERP 串接與月結審核流程，可在上方切換訂單狀態查看 pin 位置。
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {QUESTIONS.map((q) => (
-              <article
-                key={q.no}
-                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
-              >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
-                  {q.no}
+          <h2 className="text-2xl font-bold tracking-tight text-emerald-900">本頁需求已全部對齊</h2>
+          <p className="mt-2 max-w-3xl text-sm text-zinc-700">
+            32 題客戶需求 review 已完成,付款結果與訂單流程相關決議全部直接反映在 mockup 上。
+          </p>
+          <ul className="mt-5 grid max-w-4xl grid-cols-1 gap-2 text-sm text-zinc-700 lg:grid-cols-2">
+            {[
+              "訂單付款完成才進凌越 ERP(B 方案)",
+              "信用卡 → 綠界回呼自動切「已付款」",
+              "匯款 → 會計核對後手動切「已付款」",
+              "貨到付款 → 司機收款後切「已付款」",
+              "訂單狀態 6 個:待付款/已付款/備貨中/已出貨/已完成/已取消",
+              "已出貨後 7 天系統自動轉「已完成」",
+              "凌越同步失敗 → 系統 retry 3 次 + 通知管理員",
+              "LINE 推播:訂單成立 / 付款完成 / 出貨 三時點",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 </span>
-                <div className="flex-1">
-                  <h3 className="text-base font-bold leading-snug text-zinc-900">
-                    {q.question}
-                  </h3>
-                  {q.context && (
-                    <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
-                      {q.context}
-                    </p>
-                  )}
-                  {q.pinnedAt && (
-                    <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">
-                      <span aria-hidden>↑</span>
-                      已標註於：{q.pinnedAt}
-                    </p>
-                  )}
-                  {q.clientRef && (
-                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
-                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
-                          <ClipboardIcon /> 您的需求表
-                        </span>
-                        <span className="text-sky-300">·</span>
-                        <span className="font-medium text-sky-700">
-                          {q.clientRef.source}
-                        </span>
-                      </div>
-                      <div className="text-sm leading-relaxed text-zinc-800">
-                        「{q.clientRef.quote}」
-                      </div>
-                      {q.clientRef.note && (
-                        <div className="mt-1 text-xs text-zinc-500">
-                          {q.clientRef.note}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="shrink-0">
-                  <CommentTrigger
-                    pageId={PAGE_ID}
-                    elementId={`question-${q.no}`}
-                    elementLabel={`${q.no}：${q.question}`}
-                    variant="icon"
-                  />
-                </div>
-              </article>
+                <span>{t}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       <ModuleFooterNav
-        prev={{ title: "結帳", href: "/modules/checkout" }}
-        next={{ title: "歷史訂單", href: "/modules/members/orders" }}
+        prev={{ title: "選擇付款方式", href: "/modules/checkout/payment" }}
+        next={{ title: "會員 — 訂單列表", href: "/modules/members/orders" }}
       />
     </main>
   );
