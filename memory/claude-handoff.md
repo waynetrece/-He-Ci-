@@ -1,6 +1,6 @@
 # Claude Handoff - HJ Proposal
 
-## 2026-05-05 最新補充：報價單 v10 工作稿已更新，待 Wayne review
+## 2026-05-05 最新補充：報價單 v12 工作稿已依 HJ 架構重寫，待 Wayne review
 
 目前專案主線已從 API / 架構判讀推進到 HJ 報價單草案整理。
 
@@ -14,11 +14,11 @@
 ### 報價單目前基準
 
 - 主檔：`discussions/hj-quote-draft.md`
-- 工作稿版本：`status: 草案v10`、`draftedAt: 2026-05-05`
-- v10 已套馬亞既有報價單樣式，並參考：
+- 工作稿版本：`status: 草案v12`、`draftedAt: 2026-05-05`
+- v12 已參考馬亞既有報價單樣式，但以 HJ 架構重新撰寫設計與程式內容，並參考：
   - `日日欣報價單20250924.xls`
   - `富致科技報價單20240326.xls`
-- v10 金額：
+- v12 金額：
   - 設計區：`$161,500`
   - 程式設計與資料庫規劃：`$879,000`
   - 我們的服務：`$9,250`
@@ -26,18 +26,18 @@
   - 營業稅 5%：`$52,488`
   - 主案含稅：`NT$ 1,102,238`
   - 主案 + 選配 A+B+C 含稅：約 `NT$ 1,233,488`
-- v10 也修正樣品需登入、私版原始檔走 LINE、付款 50/30/20 金額。
+- v12 也修正樣品需登入、私版原始檔走 LINE、付款 50/30/20 金額；設計區改為頁面清單，程式區依 HJ 流程拆成前台/CMS、商品/樣品/私版、結帳/訂單/會員、共用模組、第三方整合。
 
 ### Claude / 下一位接手者不要做
 
-- 不要把 v10 工作稿直接視為可發送客戶版；仍待 Wayne review。
+- 不要把 v12 工作稿直接視為可發送客戶版；仍待 Wayne review。
 - 不要在 Wayne 未確認前輸出正式 Word / PDF / Excel。
 - 不要主動回去改 cart / checkout / member / product / private quote mockup。
 - 不要把 FAQ 加回主案，除非 Wayne 明確指示。
 
 ### 下一步
 
-1. Wayne review `discussions/hj-quote-draft.md` v10。
+1. Wayne review `discussions/hj-quote-draft.md` v12。
 2. 若金額與模組拆法 OK，再輸出客戶版 Excel / Word / PDF 到 `exports/`。
 3. 若 Wayne 要再壓金額，優先討論選配、LINE 通知、ERP 串接深度、運費/材積功能邊界。
 
