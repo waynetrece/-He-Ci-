@@ -7,22 +7,12 @@ import {
 } from "../MockupShell";
 
 /* ============== Questions pinned to elements ============== */
-// 32 題 review 已決議事項(直接反映在 mockup 上,不再列為待確認):
+// 32 題 review 已全部決議,本頁無待確認問題。決議事項直接反映在 mockup 上:
 // - 規格層數 → HJ 後台彈性配置(A 包 Q-A4)
 // - 規格組合庫存 → 各自獨立、凌越各自編號(D 包)
 // - 列表頁價格 → 訪客看一般價、會員看等級價(C 包)
+// - 會員價呈現 → default 依等級顯示;細節規劃階段再 final 確認
 // - 樣品申請 → 限會員、免費 + 收運費、不需後台審核(A 包)
-
-const Q_MEMBER_PRICE = {
-  no: "Q1",
-  question: "分級會員看到的價格如何呈現？",
-  context: "已決定:會員 4 等級 + 訪客看一般價。剩下 UI 呈現方式:(a) 只顯示該等級價、(b) 原價劃掉 + 會員價、(c) 原價 + 折扣 %。",
-  clientRef: {
-    source: "後台 / 顧客管理 (2)",
-    quote: "多層會員分級：商品會因顧客分級而有不同價",
-    note: "「分等級不同價」已定,呈現方式仍須選一種。",
-  },
-};
 
 type QItem = {
   no: string;
@@ -35,10 +25,7 @@ type QItem = {
   };
 };
 
-// 只剩第 1 張卡的價格區一個待確認問題
-const CARD_PINS: Record<number, { price?: QItem[]; sample?: QItem[] }> = {
-  0: { price: [Q_MEMBER_PRICE] },
-};
+const CARD_PINS: Record<number, { price?: QItem[]; sample?: QItem[] }> = {};
 
 /* ============== Icons ============== */
 function ChevronDown() {
