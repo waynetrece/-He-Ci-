@@ -24,7 +24,7 @@ const B_PRODUCTS: Page[] = [
   { no: "F10", label: "樣品申請流程", href: "/modules/products/sample", desc: "(既有)申請 → 審核 → 出樣", status: "existing" },
   { no: "F11", label: "私版商品入口", href: "/modules/private-quote", desc: "(既有)私版報價系統入口", status: "existing" },
   { no: "F12", label: "私版詢價表單", href: "/modules/private-quote/quote-form", desc: "(既有)客製規格 + 上傳檔", status: "existing" },
-  { no: "F13", label: "全站搜尋結果", href: "/modules/search", desc: "商品 + 消息 + Q&A 統一搜尋", status: "new" },
+  { no: "F13", label: "商品搜尋結果", href: "/modules/search", desc: "商品名稱 / 編號 / 分類 / 規格搜尋", status: "new" },
 ];
 
 const C_CHECKOUT: Page[] = [

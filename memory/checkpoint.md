@@ -1,6 +1,6 @@
 # Checkpoint - 2026-05-05
 
-## 最新狀態：報價單草案 v13 已依 Wayne 回饋收斂公版商品頁數，待 Wayne review
+## 最新狀態：報價單草案 v14 已補公告/彈跳/浮動前端元件設計，待 Wayne review
 
 目前專案已從 2026-05-01 的「凌越 API 判讀 / 問題分流」推進到「HJ 報價單草案整理」階段。
 
@@ -13,38 +13,40 @@
   - `src/components/modules/mockups/ProductListMockup.tsx`
   - `src/app/preview/page.tsx`
   - `src/app/modules/products/compare/page.tsx`（已刪除）
+  - `discussions/hj-quote-draft.md`
 
 ### 報價單目前基準
 
 - 主檔：`discussions/hj-quote-draft.md`
-- Front matter：`status: 草案v13`、`draftedAt: 2026-05-05`
+- Front matter：`status: 草案v14`、`draftedAt: 2026-05-05`
 - 依據：
   - `HJ網站客製需求表_1150422`
   - `HJ客戶需求確認紀錄_2026-05-04`
   - `日日欣報價單20250924.xls`
   - `富致科技報價單20240326.xls`
-- v13 修訂重點：
+- v14 修訂重點：
   - 參考馬亞既有報價單格式，但以 HJ 架構重新撰寫文字，不直接沿用前一版草稿。
-  - 設計區改成頁面清單 + 分點說明，避免長句塞在表格內造成閱讀溢出；設計小計 `$152,500`。
+  - 設計區改成頁面清單 + 分點說明，避免長句塞在表格內造成閱讀溢出；設計小計 `$157,000`。
   - 依 Wayne 回饋，公版商品前台收斂為「商品列表頁 + 商品內容頁」2 頁，不列商品比較功能。
+  - 依 Wayne 回饋，公告欄 / 彈跳視窗 / 浮動按鈕補為前端共用元件設計 1 組，並保留後台管理程式項目。
   - Mockup 同步清除公版商品比較入口與 `/modules/products/compare` 頁，避免報價與展示頁矛盾。
   - 程式區擴寫為前台/CMS、商品/樣品/私版、結帳/訂單/會員、共用模組、第三方整合五段；程式明細加總對齊 `$879,000`。
   - 高複雜度集中在公版商品、購物車/訂單、會員、運費/材積、凌越 ERP。
   - 修正樣品流程為會員登入後申請；私版原始檔走 LINE，不在網站上傳。
-  - 主案未稅 `$1,040,750`，營業稅 `$52,038`，含稅 `NT$ 1,092,788`。
-  - 主案 + 選配 A+B+C 含稅約 `NT$ 1,224,038`。
-  - 付款金額已更新為 50% / 30% / 20%：`546,394` / `327,836` / `218,558`。
+  - 主案未稅 `$1,045,250`，營業稅 `$52,263`，含稅 `NT$ 1,097,513`。
+  - 主案 + 選配 A+B+C 含稅約 `NT$ 1,228,763`。
+  - 付款金額已更新為 50% / 30% / 尾款：`548,757` / `329,254` / `219,502`。
 
 ### 下一步
 
-1. Wayne review `discussions/hj-quote-draft.md` 的 v13 金額、模組拆法與文字語氣。
+1. Wayne review `discussions/hj-quote-draft.md` 的 v14 金額、模組拆法與文字語氣。
 2. 若金額與範圍 OK，再輸出客戶版 Excel / Word / PDF 到 `exports/`。
 3. 若要更像正式 `.xls`，下一步用參考檔欄位順序產出 Excel。
 4. 除已依 Wayne 明確回饋清除公版商品比較功能外，其他 mockup 仍先不要主動改；目前主線是報價單與需求範圍收斂。
 
 ### 不要做的事
 
-- 不要把 v13 草案直接當作已可發送客戶版；仍待 Wayne 最終 review。
+- 不要把 v14 草案直接當作已可發送客戶版；仍待 Wayne 最終 review。
 - 不要在 Wayne 未確認前產出正式對外報價檔。
 - 不要主動回去改 cart / checkout / member / private quote mockup；product mockup 僅清除 Wayne 指定不要的商品比較功能。
 - 不要把 FAQ 加回主案，除非 Wayne 明確決定 FAQ 要重新納入。
