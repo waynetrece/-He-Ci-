@@ -24,18 +24,22 @@ import {
 //   超商:純箱不開放;條購 ≤ 1.5 才才可走,≥ 699 免運,< 699 = NT$ 65;箱+條不開放
 //   超商超規上限:45×30×30 cm + 5kg(同時檢查 1.5 才 + 5kg 取較嚴)
 
-type ShipMode = "home" | "store" | "pickup";
+// 32 題 review 列了「自取」為配送方式,但沒明確說「公版商品」也走自取
+// (自取常用於 B2B 大量 / 私版客製,公版未必開放)
+// 為避免擅自假設,公版購物車先只列宅配 + 超商。若 HJ 後續確認要加自取再開
+type ShipMode = "home" | "store";
 
 type CartItem = {
   code: string;
   name: string;
   spec: string;
-  unitPrice: number;
-  memberPrice: number;
-  quantity: number;
-  unit: string; // 條 / 箱
-  volumeRation: number; // 才(每單位)
-  isBox: boolean; // 是否「整箱」(影響超商可否走)
+  unitPrice: number;       // 單價(NT$ / 個)
+  memberPrice: number;     // 會員單價(NT$ / 個)
+  quantity: number;        // 客戶買幾「箱 / 條」
+  unit: string;            // "箱" / "條"
+  piecesPerUnit: number;   // 一箱/一條 = 幾個(影響線總價)
+  volumeRation: number;    // 才(每單位)
+  isBox: boolean;          // 是否「整箱」(影響超商可否走)
   bg: string;
 };
 
@@ -48,6 +52,7 @@ const INITIAL_ITEMS: CartItem[] = [
     memberPrice: 2.0,
     quantity: 2,
     unit: "箱",
+    piecesPerUnit: 1000,
     volumeRation: 1.2,
     isBox: true,
     bg: "bg-amber-100",
@@ -60,6 +65,7 @@ const INITIAL_ITEMS: CartItem[] = [
     memberPrice: 1.5,
     quantity: 5,
     unit: "條",
+    piecesPerUnit: 50,
     volumeRation: 0.3,
     isBox: false,
     bg: "bg-amber-100",
@@ -72,6 +78,7 @@ const INITIAL_ITEMS: CartItem[] = [
     memberPrice: 1.0,
     quantity: 5,
     unit: "條",
+    piecesPerUnit: 50,
     volumeRation: 0.2,
     isBox: false,
     bg: "bg-zinc-100",
@@ -119,8 +126,12 @@ export function CartMockup({
   const [empty, setEmpty] = useState(false);
 
   const isLoggedIn = true; // 預設已登入(會員看會員價)
-  const subtotal = items.reduce((s, i) => s + (isLoggedIn ? i.memberPrice : i.unitPrice) * i.quantity, 0);
+  const subtotal = items.reduce(
+    (s, i) => s + (isLoggedIn ? i.memberPrice : i.unitPrice) * i.quantity * i.piecesPerUnit,
+    0,
+  );
   const totalUnits = items.reduce((s, i) => s + i.quantity, 0);
+  const totalPieces = items.reduce((s, i) => s + i.quantity * i.piecesPerUnit, 0);
   const totalVolume = calcVolume(items);
 
   const home = calcHomeShipping(subtotal, items);
@@ -132,12 +143,9 @@ export function CartMockup({
   if (ship === "home") {
     shipFee = home.fee;
     shipReason = home.reason;
-  } else if (ship === "store") {
+  } else {
     shipFee = store.fee;
     shipReason = store.reason;
-  } else {
-    shipFee = 0;
-    shipReason = "公司自取免運(新北五股,客戶下單不選日期,HJ 備貨完成後通知)";
   }
 
   const total = subtotal + shipFee;
@@ -207,7 +215,7 @@ export function CartMockup({
                 <h1 className="text-2xl font-bold text-zinc-900">購物車</h1>
                 <div className="text-sm text-zinc-500">
                   共 <span className="font-bold text-zinc-900">{items.length}</span> 項商品 ·
-                  <span className="ml-1">{totalUnits} {items[0]?.unit ?? "件"}</span> ·
+                  <span className="ml-1">{totalUnits} 單位({totalPieces.toLocaleString()} 件)</span> ·
                   加總材積 <span className="font-bold text-zinc-900">{totalVolume.toFixed(1)} 才</span>
                 </div>
               </div>
@@ -222,7 +230,9 @@ export function CartMockup({
               {/* Items */}
               <div className="space-y-3">
                 {items.map((it) => {
-                  const linePrice = (isLoggedIn ? it.memberPrice : it.unitPrice) * it.quantity;
+                  const piecesInLine = it.quantity * it.piecesPerUnit;
+                  const pricePerPiece = isLoggedIn ? it.memberPrice : it.unitPrice;
+                  const linePrice = pricePerPiece * piecesInLine;
                   return (
                     <article key={it.code} className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-5">
                       <div className={`size-20 shrink-0 rounded-md ${it.bg}`} />
@@ -230,7 +240,7 @@ export function CartMockup({
                         <div className="flex items-baseline gap-2">
                           <div className="font-mono text-xs text-zinc-400">{it.code}</div>
                           <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-                            {it.isBox ? "箱購" : "條購"} · {it.volumeRation} 才/{it.unit}
+                            {it.isBox ? "箱購" : "條購"} · {it.piecesPerUnit} 入/{it.unit} · {it.volumeRation} 才/{it.unit}
                           </span>
                         </div>
                         <Link href="/modules/products/detail" className="mt-0.5 block text-base font-bold text-zinc-900 hover:text-amber-700">
@@ -243,10 +253,14 @@ export function CartMockup({
                             <>
                               <span className="font-mono text-emerald-700 font-bold">NT$ {it.memberPrice}</span>
                               <span className="text-zinc-400 line-through">NT$ {it.unitPrice}</span>
+                              <span className="text-zinc-400">/ 個</span>
                               <span className="rounded-full bg-emerald-100 px-1.5 text-[10px] text-emerald-700">會員</span>
                             </>
                           ) : (
-                            <span className="font-mono text-amber-700 font-bold">NT$ {it.unitPrice}</span>
+                            <>
+                              <span className="font-mono text-amber-700 font-bold">NT$ {it.unitPrice}</span>
+                              <span className="text-zinc-400">/ 個</span>
+                            </>
                           )}
                         </div>
                       </div>
@@ -268,8 +282,9 @@ export function CartMockup({
                         </div>
                         <span className="text-xs text-zinc-500">{it.unit}</span>
                       </div>
-                      <div className="w-28 text-right">
+                      <div className="w-32 text-right">
                         <div className="text-base font-bold text-zinc-900">NT$ {linePrice.toLocaleString()}</div>
+                        <div className="text-[10px] text-zinc-400">{piecesInLine.toLocaleString()} 個 × NT$ {pricePerPiece}</div>
                         <button
                           onClick={() => setItems(items.filter((i) => i.code !== it.code))}
                           className="mt-1 text-xs text-rose-600 hover:underline"
@@ -298,7 +313,6 @@ export function CartMockup({
                     {([
                       { id: "home" as const, name: "宅配", desc: "新航 / 嘉里 / 黑貓 / 新竹 / 大嘴鳥(業務後台勾選)" },
                       { id: "store" as const, name: "超商取貨", desc: "7-11 / 全家 / 萊爾富 / OK", disabled: !storeAvailability.ok, disableReason: storeAvailability.reason },
-                      { id: "pickup" as const, name: "公司自取", desc: "新北五股(備貨完成後通知挑時間)" },
                     ]).map((opt) => {
                       const active = ship === opt.id;
                       return (
