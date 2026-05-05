@@ -1,52 +1,58 @@
 # Checkpoint - 2026-05-05
 
-## 最新狀態：報價單草案 v14 已補公告/彈跳/浮動前端元件設計，待 Wayne review
+## 最新狀態：報價單草案 v16 已將搜尋內容明確收斂為公版商品搜尋，待 Wayne review
 
 目前專案已從 2026-05-01 的「凌越 API 判讀 / 問題分流」推進到「HJ 報價單草案整理」階段。
 
 ### Git / 工作區狀態
 
 - 分支：`main`
-- 與遠端：`main...origin/main [ahead 6]`
-- 最新 HEAD：`4698925 docs(quote): v9 — 修正最新消息 = 行銷活動(HJ 原始需求只列行銷活動)`
+- 與遠端：`main...origin/main`
+- 最新 HEAD：`2b1d7c1 docs(quote): v14-v15 — 加彈跳元件設計 $4,500;全站搜尋改商品搜尋 $25K→$15K`
 - 目前本機未提交檔案：
-  - `src/components/modules/mockups/ProductListMockup.tsx`
-  - `src/app/preview/page.tsx`
-  - `src/app/modules/products/compare/page.tsx`（已刪除）
+  - `memory/checkpoint.md`
+  - `memory/autoresume.md`
+  - `memory/claude-handoff.md`
   - `discussions/hj-quote-draft.md`
+  - `src/app/modules/search/page.tsx`
+  - `src/app/preview/page.tsx`
+  - `src/components/architecture/FrontendArchitectureMap.tsx`
+  - `src/app/modules/policy/page.tsx`
 
 ### 報價單目前基準
 
 - 主檔：`discussions/hj-quote-draft.md`
-- Front matter：`status: 草案v14`、`draftedAt: 2026-05-05`
+- Front matter：`status: 草案v16`、`draftedAt: 2026-05-05`
 - 依據：
   - `HJ網站客製需求表_1150422`
   - `HJ客戶需求確認紀錄_2026-05-04`
   - `日日欣報價單20250924.xls`
   - `富致科技報價單20240326.xls`
-- v14 修訂重點：
+- v16 修訂重點：
   - 參考馬亞既有報價單格式，但以 HJ 架構重新撰寫文字，不直接沿用前一版草稿。
   - 設計區改成頁面清單 + 分點說明，避免長句塞在表格內造成閱讀溢出；設計小計 `$157,000`。
   - 依 Wayne 回饋，公版商品前台收斂為「商品列表頁 + 商品內容頁」2 頁，不列商品比較功能。
   - 依 Wayne 回饋，公告欄 / 彈跳視窗 / 浮動按鈕補為前端共用元件設計 1 組，並保留後台管理程式項目。
+  - 依 Wayne 回饋，搜尋不做全站搜尋，改成公版商品搜尋；設計頁數從 CMS 移到公版商品，程式項目由 `$25,000` 收斂為 `$15,000`。
+  - 公版商品搜尋範圍明確限定商品名稱、商品編號、分類、容量、材質、顏色、箱 / 條規格；不含私版詢價單與內容文章。
   - Mockup 同步清除公版商品比較入口與 `/modules/products/compare` 頁，避免報價與展示頁矛盾。
-  - 程式區擴寫為前台/CMS、商品/樣品/私版、結帳/訂單/會員、共用模組、第三方整合五段；程式明細加總對齊 `$879,000`。
+  - 程式區擴寫為前台/CMS、商品/樣品/私版、結帳/訂單/會員、共用模組、第三方整合五段；程式明細加總對齊 `$869,000`。
   - 高複雜度集中在公版商品、購物車/訂單、會員、運費/材積、凌越 ERP。
   - 修正樣品流程為會員登入後申請；私版原始檔走 LINE，不在網站上傳。
-  - 主案未稅 `$1,045,250`，營業稅 `$52,263`，含稅 `NT$ 1,097,513`。
-  - 主案 + 選配 A+B+C 含稅約 `NT$ 1,228,763`。
-  - 付款金額已更新為 50% / 30% / 尾款：`548,757` / `329,254` / `219,502`。
+  - 主案未稅 `$1,035,250`，營業稅 `$51,763`，含稅 `NT$ 1,087,013`。
+  - 主案 + 選配 A+B+C 含稅約 `NT$ 1,218,263`。
+  - 付款金額已更新為 50% / 30% / 尾款：`543,507` / `326,104` / `217,402`。
 
 ### 下一步
 
-1. Wayne review `discussions/hj-quote-draft.md` 的 v14 金額、模組拆法與文字語氣。
+1. Wayne review `discussions/hj-quote-draft.md` 的 v16 金額、模組拆法與文字語氣。
 2. 若金額與範圍 OK，再輸出客戶版 Excel / Word / PDF 到 `exports/`。
 3. 若要更像正式 `.xls`，下一步用參考檔欄位順序產出 Excel。
 4. 除已依 Wayne 明確回饋清除公版商品比較功能外，其他 mockup 仍先不要主動改；目前主線是報價單與需求範圍收斂。
 
 ### 不要做的事
 
-- 不要把 v14 草案直接當作已可發送客戶版；仍待 Wayne 最終 review。
+- 不要把 v16 草案直接當作已可發送客戶版；仍待 Wayne 最終 review。
 - 不要在 Wayne 未確認前產出正式對外報價檔。
 - 不要主動回去改 cart / checkout / member / private quote mockup；product mockup 僅清除 Wayne 指定不要的商品比較功能。
 - 不要把 FAQ 加回主案，除非 Wayne 明確決定 FAQ 要重新納入。

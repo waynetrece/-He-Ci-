@@ -137,7 +137,7 @@ export default function PolicyPage() {
       </section>
       <ModuleFooterNav
         prev={{ title: "Q&A 常見問題", href: "/modules/faq" }}
-        next={{ title: "商品搜尋", href: "/modules/search" }}
+        next={{ title: "公版商品搜尋", href: "/modules/search" }}
       />
     </main>
   );

@@ -57,7 +57,7 @@ const COMMERCE: Item[] = [
 
 const SERVICE: Item[] = [
   { label: "聯絡我們", href: "/modules/contact" },
-  { label: "商品搜尋", href: "/modules/search" },
+  { label: "公版商品搜尋", href: "/modules/search" },
   {
     label: "會員中心",
     sub: "9 子頁",
