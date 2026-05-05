@@ -26,6 +26,9 @@ type Product = {
   bg: string;
 };
 
+// 比較頁:同系列不同規格(這裡示範:公版瓦楞紙杯系列 8/12/16 oz)
+const SERIES_NAME = "公版瓦楞紙杯系列";
+
 const PRODUCTS: Product[] = [
   {
     code: "PC-08-001",
@@ -44,36 +47,36 @@ const PRODUCTS: Product[] = [
     bg: "bg-amber-100",
   },
   {
-    code: "DC-12-001",
-    name: "12oz 雙層中空紙杯",
-    material: "雙層隔熱紙",
+    code: "PC-12-001",
+    name: "12oz 公版瓦楞紙杯",
+    material: "100% 食品級紙",
     capacity: "12oz / 360ml",
     diameter: "口徑 90mm",
-    height: "高 110mm",
-    colors: "白 / 棕",
-    pack: "500 入 / 箱",
-    basePrice: "NT$ 3.2",
-    memberPrice: "NT$ 2.6",
-    moq: "1 箱起",
-    hasSample: true,
-    cert: "—",
-    bg: "bg-orange-100",
-  },
-  {
-    code: "PL-08-001",
-    name: "8oz PLA 環保杯",
-    material: "可分解 PLA",
-    capacity: "8oz / 240ml",
-    diameter: "口徑 80mm",
-    height: "高 92mm",
-    colors: "白",
+    height: "高 108mm",
+    colors: "白 / 黑 / 棕",
     pack: "1,000 入 / 箱",
     basePrice: "NT$ 2.4",
     memberPrice: "NT$ 2.0",
     moq: "2 箱起",
     hasSample: true,
-    cert: "FSC 認證",
-    bg: "bg-lime-100",
+    cert: "—",
+    bg: "bg-amber-100",
+  },
+  {
+    code: "PC-16-001",
+    name: "16oz 公版瓦楞紙杯",
+    material: "100% 食品級紙",
+    capacity: "16oz / 480ml",
+    diameter: "口徑 90mm",
+    height: "高 130mm",
+    colors: "白 / 黑 / 棕",
+    pack: "1,000 入 / 箱",
+    basePrice: "NT$ 3.2",
+    memberPrice: "NT$ 2.6",
+    moq: "2 箱起",
+    hasSample: true,
+    cert: "—",
+    bg: "bg-amber-100",
   },
 ];
 
@@ -103,9 +106,9 @@ export default function ProductComparePage() {
     <main className="min-h-dvh bg-zinc-100">
       <ModuleHero
         no="F30"
-        title="商品比較"
-        subtitle="Compare"
-        desc="2–4 件商品並排對照規格、價格、容量,差異欄位自動標黃讓客戶秒看出不同"
+        title="商品比較(同系列)"
+        subtitle="Compare within Series"
+        desc="比較限同系列商品 — 例如 8oz / 12oz / 16oz 同款杯。規格軸線一致才有意義,跨系列比較會混淆判斷。"
         tone="amber"
       />
 
@@ -127,23 +130,32 @@ export default function ProductComparePage() {
 
             {/* Title bar */}
             <section className="border-b border-zinc-100 bg-white px-6 py-8">
-              <div className="mx-auto flex max-w-[1760px] items-end justify-between">
-                <div>
+              <div className="mx-auto flex max-w-[1760px] items-end justify-between gap-6">
+                <div className="flex-1">
                   <h1 className="text-3xl font-bold tracking-tight text-zinc-900">商品比較</h1>
-                  <p className="mt-2 text-sm text-zinc-500">
-                    並排對照 {PRODUCTS.length} 件商品 ·
-                    <span className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                    <span className="text-zinc-500">系列:</span>
+                    <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                      {SERIES_NAME}
+                    </span>
+                    <span className="text-zinc-300">·</span>
+                    <span className="text-zinc-500">並排 {PRODUCTS.length} 件</span>
+                    <span className="text-zinc-300">·</span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
                       <span className="size-1.5 rounded-full bg-yellow-500" />
                       差異欄位自動標黃
                     </span>
+                  </div>
+                  <p className="mt-2.5 text-xs text-zinc-500">
+                    比較功能限同系列商品,確保規格軸線一致(例如 8oz / 12oz / 16oz 同款杯,或同尺寸不同材質)。跨系列比較會混淆判斷。
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex shrink-0 gap-2">
                   <button className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-700 hover:border-amber-500">
                     匯出 PDF
                   </button>
                   <Link href="/modules/products" className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-700 hover:border-amber-500">
-                    + 加入更多商品
+                    + 加入同系列商品
                   </Link>
                   <button className="rounded-md border border-rose-300 bg-rose-50 px-4 py-2 text-sm text-rose-700 hover:bg-rose-100">
                     清空比較
@@ -173,14 +185,15 @@ export default function ProductComparePage() {
                           </button>
                         </th>
                       ))}
-                      {/* Empty slot for adding more */}
+                      {/* Empty slot for adding more — 限同系列 */}
                       {PRODUCTS.length < 4 && (
                         <th className="p-3 align-bottom">
                           <Link
-                            href="/modules/products"
-                            className="flex aspect-square w-full items-center justify-center rounded-xl border-2 border-dashed border-zinc-300 text-sm text-zinc-400 hover:border-amber-400 hover:bg-amber-50/30 hover:text-amber-700"
+                            href="/modules/products/category"
+                            className="flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-zinc-300 text-zinc-400 hover:border-amber-400 hover:bg-amber-50/30 hover:text-amber-700"
                           >
-                            + 加入第 {PRODUCTS.length + 1} 項
+                            <span className="text-sm">+ 加入第 {PRODUCTS.length + 1} 項</span>
+                            <span className="text-[10px]">(限同系列)</span>
                           </Link>
                         </th>
                       )}
@@ -287,12 +300,12 @@ export default function ProductComparePage() {
           <h2 className="text-2xl font-bold tracking-tight text-emerald-900">本頁設計重點</h2>
           <ul className="mt-4 grid max-w-4xl grid-cols-1 gap-2 text-sm text-zinc-700 lg:grid-cols-2">
             {[
-              "差異欄位自動標黃 — 客戶秒看出不同",
-              "支援 2–4 件商品並排比較",
+              "限同系列商品(規格軸線一致才有意義)",
+              "差異欄位自動標黃 + ! icon — 秒看不同",
+              "支援 2–4 件並排比較",
               "每欄獨立加購物車 / 申請樣品",
-              "Sticky 商品名(向下捲動仍可對照)",
-              "匯出 PDF 給內部 / 老闆看",
-              "「全部加入購物車」一鍵下單",
+              "Sticky 左欄(向下捲動仍可對照)",
+              "匯出 PDF / 全部加入購物車一鍵下單",
             ].map((t) => (
               <li key={t} className="flex items-start gap-2">
                 <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
