@@ -1,326 +1,229 @@
-import { Annotated, Questioned } from "../CommentSystem";
+"use client";
+
+import Link from "next/link";
 import {
   MockupShell,
   MockupSiteFooter,
   MockupSiteHeader,
 } from "../MockupShell";
 
-/* ============== Q ============== */
+// 32 題 review A 包已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 公版/私版規格機制統一,以「私版方式」為主(A 包 Q-A4)
+// - HJ 後台勾選要開放的客製規格(具體欄位 HJ 之後提供 Q-A7)
+// - 私版細節溝通、檔案傳遞、下單確認 全部走 LINE
+// - 私版商品頁設計「上傳檔案」按鈕直接跳 LINE
+// - 私版訂購流程:
+//   1. 私版商品頁選擇客製需求(HJ 後台勾選欄位機制)
+//   2. 成立私版詢價單
+//   3. LINE 溝通(客戶上傳 Logo / 確認設計細節)
+//   4. 業務報價 → 客戶確認 → 私下匯款訂金
+//   5. 業務在後台手動觸發「詢價單轉正式訂單」+ 進凌越
+// - 樣品 / 公版 / 私版 三條流程完全分開,不可同車(Q-A9)
+// - 訂金 = 私下匯款,業務後台手動觸發轉訂單(Q-A8)
+//
+// 已 deprecated 的舊概念(review 不採用):
+// - 「即時報價(jcolor 風格)」站內試算 — 全部改成 詢價單 + LINE
+// - 「即時報價 vs LINE 報價分流」 — 統一一條路徑
+// - 「起報金額顯示」 — 透過 LINE 議價,不顯示固定價
 
-const Q1 = {
-  no: "Q1",
-  question: "私版即時報價支援哪幾類商品？",
-  context:
-    "選項：① 全部公版 8 大類都做 ② 只做熱門類別（如紙杯、紙袋、印刷紙品）③ 由 HJ 自行配置。範圍越大，計價邏輯越複雜，且需提供對應價目表。",
-  clientRef: {
-    source: "前台 / 私版商品系列 (1) + 參考 jcolor BC-67",
-    quote: "客人在網站上點選需求選項得到報價；參考 jcolor.com.tw/product/BC-67",
-  },
-};
-
-const Q2 = {
-  no: "Q2",
-  question: "「即時報價」與「LINE 報價」如何分流？",
-  context:
-    "建議在每張商品卡上標示「即時報價」或「LINE 報價」標籤，客戶一眼看出能不能站內試算。標準依據可由貴司提供（例如 HJ 自行決定哪些品項、哪些規格組合走人工估價）。",
-  clientRef: {
-    source: "前台 / 私版商品系列 (1)(2)",
-    quote: "(1) 客人在網站上點選需求選項得到報價；(2) 複雜客製商品轉 LINE 客服報價",
-    note: "需求表寫了兩種模式並存，但「哪些算複雜需轉 LINE」的判斷規則想請 HJ 提供。",
-  },
-};
-
-const Q3 = {
-  no: "Q3",
-  question: "列表頁是否要顯示「起報金額」？",
-  context:
-    "如顯示「12oz 客製紙杯 起 $1.50/個」，可協助客戶第一眼判斷是否符合預算，但前提是價目表已建立。如不顯示，客戶須點進詳細頁才能看到價格。",
-};
-
-/* ============== Icons ============== */
-
-function FilterIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-    </svg>
-  );
-}
-
-function LineIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.197-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .627.285.627.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
-    </svg>
-  );
-}
-
-function ChevronRight() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  );
-}
-
-/* ============== Data ============== */
-
-const FILTERS = [
-  { id: "all", name: "全部", count: 11, active: true },
-  { id: "cup", name: "紙杯／膠杯類", count: 3 },
-  { id: "bag", name: "紙袋／提袋類", count: 2 },
-  { id: "box", name: "餐盒／容器類", count: 2 },
-  { id: "print", name: "印刷紙品類", count: 3 },
-  { id: "other", name: "特殊客製", count: 1 },
+const STEPS = [
+  { n: 1, title: "選擇客製商品", desc: "從下方分類選擇要客製的商品(全部公版商品都可客製化)" },
+  { n: 2, title: "填詢價單 + 上傳設計檔", desc: "選規格(尺寸 / 顏色 / 印刷)+ 跳轉 LINE 上傳 Logo / 設計檔" },
+  { n: 3, title: "LINE 溝通報價", desc: "業務於 1 工作天內回覆,確認規格、數量、價格、交期" },
+  { n: 4, title: "訂金匯款 → 開製", desc: "雙方確認後客戶匯訂金,業務在後台轉正式訂單,2-4 週製作出貨" },
 ];
 
-type Mode = "auto" | "line";
-
-type PrivateProduct = {
-  code: string;
-  name: string;
-  spec: string;
-  mode: Mode;
-  startPrice?: string;
-  badge?: string;
-};
-
-const PRIVATE_PRODUCTS: PrivateProduct[] = [
-  { code: "PC-CUP-12", name: "12oz 客製印 LOGO 紙杯", spec: "8/12/16 oz · 單面/雙面 · 全彩/單色", mode: "auto", startPrice: "$1.50 / 個" },
-  { code: "PC-CUP-16", name: "16oz 客製雙層中空紙杯", spec: "雙層隔熱 · 印刷可選", mode: "auto", startPrice: "$2.20 / 個" },
-  { code: "PC-PLA-12", name: "12oz 客製 PLA 環保杯", spec: "可生物分解 · 印 LOGO", mode: "auto", startPrice: "$2.80 / 個" },
-  { code: "PB-KRF-01", name: "客製牛皮紙袋", spec: "尺寸 / 印刷 / 提繩可選", mode: "auto", startPrice: "$2.80 / 入", badge: "熱銷" },
-  { code: "PB-CUS-01", name: "客製模切異形紙袋", spec: "刀模需先打樣", mode: "line" },
-  { code: "PX-PAP-01", name: "客製紙便當盒", spec: "防油 · 可印刷", mode: "auto", startPrice: "$3.20 / 個" },
-  { code: "PX-WIN-01", name: "客製開窗餐盒", spec: "牛卡紙 · 透明窗位置可調", mode: "line" },
-  { code: "PR-WRP-01", name: "客製餐盒腰封 / 封套", spec: "尺寸隨餐盒 · 印 LOGO", mode: "auto", startPrice: "$0.50 / 個" },
-  { code: "PR-MAT-01", name: "客製餐墊紙 / 防油背心", spec: "尺寸客製 · 全彩印刷", mode: "auto", startPrice: "$0.80 / 個" },
-  { code: "PR-CST-01", name: "客製杯墊", spec: "圓型/方型 · 100~200gsm", mode: "auto", startPrice: "$0.40 / 個" },
-  { code: "PS-GLD-01", name: "客製燙金禮盒", spec: "燙金 + 局部上光 + 模切", mode: "line", badge: "特殊處理" },
+const PRIVATE_CATEGORIES = [
+  { name: "客製紙杯", count: 18, examples: "8/12/16 oz · 印 Logo · 雙層 · PLA 環保", img: "bg-amber-100" },
+  { name: "客製紙袋", count: 12, examples: "牛皮紙袋 · 提袋 · 異形模切 · 印 Logo", img: "bg-orange-100" },
+  { name: "客製餐盒", count: 22, examples: "印 Logo 紙便當盒 · 開窗 · PLA · 五格", img: "bg-lime-100" },
+  { name: "客製禮盒", count: 8, examples: "燙金 · 局部上光 · 模切 · 天地蓋", img: "bg-rose-100", badge: "特殊處理" },
+  { name: "客製餐墊紙 / 腰封", count: 9, examples: "餐墊紙 · 杯腰封 · 餐盒封套 · 全彩印刷", img: "bg-stone-200" },
+  { name: "客製杯墊", count: 5, examples: "圓型 / 方型 · 100-200gsm · 全彩", img: "bg-zinc-100" },
 ];
 
-const MODE_LABEL: Record<Mode, { text: string; cls: string }> = {
-  auto: { text: "即時報價", cls: "border-emerald-300 bg-emerald-50 text-emerald-800" },
-  line: { text: "LINE 報價", cls: "border-zinc-300 bg-zinc-50 text-zinc-700" },
-};
-
-/* ============== Component ============== */
+const CASES = [
+  { brand: "○○咖啡", desc: "12oz 雙層杯 + Logo 印刷,5,000 個 / 月", color: "bg-amber-200" },
+  { brand: "△△手搖飲", desc: "16oz PLA 杯 + 全彩印刷,10,000 個 / 月", color: "bg-emerald-200" },
+  { brand: "□□便當品牌", desc: "客製五格餐盒 + 防油塗層,8,000 個 / 月", color: "bg-orange-200" },
+];
 
 export function PrivateQuoteListMockup({
-  annotations = false,
-  pageId = "private-quote-list",
+  annotations: _annotations,
+  pageId: _pageId,
 }: {
   annotations?: boolean;
   pageId?: string;
 }) {
   return (
-    <MockupShell url="https://hjhj.com.tw/private-quote">
+    <MockupShell url="https://hj.example.com/private-quote">
       <MockupSiteHeader />
 
+      {/* Breadcrumb */}
+      <div className="border-b border-zinc-100 bg-white px-6 py-3">
+        <div className="mx-auto max-w-[1760px] text-xs text-zinc-500">
+          <Link href="/modules/home" className="hover:text-zinc-900">首頁</Link>
+          <span className="mx-2 text-zinc-300">/</span>
+          <span className="text-zinc-900">私版商品客製</span>
+        </div>
+      </div>
+
       {/* Hero */}
-      <section className="border-b border-zinc-200 bg-white px-6 py-8">
+      <section className="bg-gradient-to-br from-violet-50 via-white to-amber-50 px-6 py-12">
         <div className="mx-auto max-w-[1760px]">
-          <h1 className="text-3xl font-bold text-zinc-900">
-            私版客製商品
-          </h1>
-        </div>
-      </section>
-
-      {/* Filters */}
-      <section className="border-b border-zinc-200 bg-white px-6 py-4">
-        <div className="mx-auto max-w-[1760px]">
-          <Annotated
-            show={annotations}
-            source="ours"
-            label="加值功能"
-            title="商品分類篩選"
-            rationale={
-              "依公版商品的 8 大類延伸，提供分類篩選 chips。讓客戶快速縮小範圍、避免一次看到 11 種商品而眼花。\n\n如不需要分類，可改為一頁全部展示。"
-            }
-            pageId={pageId}
-            elementId="filters"
-            elementLabel="分類篩選"
-            position="top-right"
-          >
-            <div className="flex items-center gap-2 overflow-x-auto">
-              <div className="mr-1 flex items-center gap-1.5 text-xs text-zinc-500">
-                <FilterIcon />
-                <span>分類</span>
+          <div className="grid grid-cols-2 gap-10 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-violet-300 bg-violet-100/60 px-3 py-1 text-xs font-medium text-violet-900">
+                <span className="size-1.5 rounded-full bg-violet-500" />
+                專業客製服務
+              </span>
+              <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-zinc-900">
+                Logo 印刷 / 客製規格<br />
+                量身打造您的品牌包裝
+              </h1>
+              <p className="mt-4 max-w-md text-base leading-relaxed text-zinc-600">
+                所有公版商品都可客製化:Logo 印刷、容量調整、顏色客製、特殊模切。
+                透過 LINE 一對一溝通,業務專員報價,訂金匯款後 2-4 週交貨。
+              </p>
+              <div className="mt-6 flex gap-3">
+                <Link href="/modules/private-quote/quote-form" className="rounded-lg bg-violet-600 px-6 py-3 text-sm font-medium text-white hover:bg-violet-700">
+                  填詢價單 →
+                </Link>
+                <a className="inline-flex items-center gap-2 rounded-lg border border-emerald-500 bg-emerald-50 px-6 py-3 text-sm font-medium text-emerald-700 hover:bg-emerald-100">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zM12 .572C5.385.572 0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314c0-5.371-5.385-9.742-12-9.742z" />
+                  </svg>
+                  直接 LINE 客服
+                </a>
               </div>
-              {FILTERS.map((f) => (
-                <button
-                  key={f.id}
-                  className={`flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                    f.active
-                      ? "border-amber-700 bg-amber-700 text-white"
-                      : "border-zinc-300 bg-white text-zinc-700 hover:border-amber-400"
-                  }`}
-                >
-                  <span>{f.name}</span>
-                  <span
-                    className={`rounded-full px-1.5 py-0.5 text-[10px] ${f.active ? "bg-white/20" : "bg-zinc-100 text-zinc-500"}`}
-                  >
-                    {f.count}
-                  </span>
-                </button>
-              ))}
+              <p className="mt-3 text-xs text-zinc-500">最低 1,000 件起製(部分品項 500 件起,依規格而定)</p>
             </div>
-          </Annotated>
-        </div>
-      </section>
-
-      {/* Product Grid */}
-      <section className="bg-zinc-50/40 px-6 py-10">
-        <div className="mx-auto max-w-[1760px]">
-          {/* Top bar */}
-          <div className="mb-5 flex items-center justify-between rounded-lg bg-white px-5 py-3 shadow-sm border border-zinc-100">
-            <div className="text-sm text-zinc-600">
-              共 <span className="font-bold text-zinc-900">{PRIVATE_PRODUCTS.length}</span> 款客製商品
+            <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-violet-200 via-purple-100 to-amber-100 shadow-xl flex items-center justify-center">
+              <div className="text-center text-violet-700">
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="13.5" cy="6.5" r=".5" />
+                  <circle cx="17.5" cy="10.5" r=".5" />
+                  <circle cx="8.5" cy="7.5" r=".5" />
+                  <circle cx="6.5" cy="12.5" r=".5" />
+                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+                </svg>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <select className="rounded-md border border-zinc-300 bg-white px-3 py-1.5">
-                <option>排序：熱銷優先</option>
-                <option>價格低到高</option>
-                <option>最新上架</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {PRIVATE_PRODUCTS.map((p, idx) => {
-              // Q3 直接釘在金額，不是整張卡
-              const priceBlockRaw = p.startPrice ? (
-                <div className="mb-2 flex items-baseline justify-between">
-                  <span className="text-xs text-zinc-500">起報</span>
-                  <span className="font-mono text-sm font-bold text-emerald-800">
-                    {p.startPrice}
-                  </span>
-                </div>
-              ) : (
-                <div className="mb-2 text-xs text-zinc-500">
-                  需 LINE 客服估價
-                </div>
-              );
-
-              const priceBlock =
-                idx === 3 ? (
-                  <Questioned
-                    show={annotations}
-                    questions={[Q3]}
-                    pageId={pageId}
-                    position="top-right"
-                  >
-                    {priceBlockRaw}
-                  </Questioned>
-                ) : (
-                  priceBlockRaw
-                );
-
-              const cardInner = (
-                <article className="group flex h-full flex-col rounded-xl bg-white shadow-sm border border-zinc-100 transition-all hover:shadow-lg hover:-translate-y-0.5">
-                  {/* Image */}
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-zinc-100">
-                    <div className="absolute inset-0 flex items-center justify-center text-zinc-300 text-xs">
-                      商品圖
-                    </div>
-                    <span
-                      className={`absolute top-3 left-3 rounded-md border px-2 py-0.5 text-[10px] font-bold ${MODE_LABEL[p.mode].cls}`}
-                    >
-                      {p.mode === "line" && (
-                        <LineIcon className="mr-1 inline-block" />
-                      )}
-                      {MODE_LABEL[p.mode].text}
-                    </span>
-                    {p.badge && (
-                      <span className="absolute top-3 right-3 rounded-md bg-amber-700 px-2 py-0.5 text-[10px] font-bold text-white">
-                        {p.badge}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex flex-1 flex-col p-4">
-                    <div className="text-xs font-mono text-zinc-400">{p.code}</div>
-                    <h3 className="mt-1 text-base font-bold text-zinc-900 leading-snug">
-                      {p.name}
-                    </h3>
-                    <p className="mt-1 text-xs text-zinc-500 leading-relaxed">
-                      {p.spec}
-                    </p>
-
-                    <div className="mt-auto pt-3">
-                      {priceBlock}
-                      <button
-                        className={`flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-bold transition-colors ${
-                          p.mode === "auto"
-                            ? "bg-amber-700 text-white hover:bg-amber-800"
-                            : "border border-emerald-600 bg-white text-emerald-700 hover:bg-emerald-50"
-                        }`}
-                      >
-                        {p.mode === "auto" ? (
-                          <>
-                            開始試算
-                            <ChevronRight />
-                          </>
-                        ) : (
-                          <>
-                            <LineIcon />
-                            LINE 詢價
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              );
-
-              // Q1 釘第 1 張代表性入口、Q2 釘第 5 張示範 LINE 報價標籤
-              if (idx === 0) {
-                return (
-                  <Questioned
-                    key={p.code}
-                    show={annotations}
-                    questions={[Q1]}
-                    pageId={pageId}
-                    position="top-right"
-                  >
-                    {cardInner}
-                  </Questioned>
-                );
-              }
-              if (idx === 4) {
-                return (
-                  <Questioned
-                    key={p.code}
-                    show={annotations}
-                    questions={[Q2]}
-                    pageId={pageId}
-                    position="top-right"
-                  >
-                    {cardInner}
-                  </Questioned>
-                );
-              }
-              return <div key={p.code}>{cardInner}</div>;
-            })}
           </div>
         </div>
       </section>
 
-      {/* No-match section */}
-      <section className="border-t border-zinc-200 bg-emerald-50/40 px-6 py-12">
+      {/* Process steps */}
+      <section className="bg-white px-6 py-12">
         <div className="mx-auto max-w-[1760px]">
-          <div className="rounded-xl border-2 border-emerald-300 bg-white p-6 text-center shadow-sm md:p-10">
-            <h2 className="text-xl font-bold text-zinc-900 md:text-2xl">
-              找不到您要的客製商品？
-            </h2>
-            <p className="mx-auto mt-2 max-w-2xl text-sm text-zinc-600">
-              若您的需求不在以上品項（例如全新材質、特殊用途、極大量訂製），歡迎直接 LINE 客服，由業務專人為您報價。
-            </p>
-            <button className="mx-auto mt-5 flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-6 py-3 text-sm font-bold text-white hover:bg-emerald-700">
-              <LineIcon />
-              直接 LINE 客服 →
-            </button>
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 text-center">客製流程 4 步驟</h2>
+          <p className="mt-2 text-center text-sm text-zinc-500">
+            私版客製採詢價單 + LINE 溝通模式 — 不是即時試算,需業務專員報價
+          </p>
+          <div className="mt-8 grid grid-cols-4 gap-4">
+            {STEPS.map((s, i) => (
+              <div key={s.n} className="relative">
+                <div className="rounded-xl border-2 border-violet-200 bg-violet-50/40 p-5 h-full">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 items-center justify-center rounded-full bg-violet-600 text-white font-bold">{s.n}</div>
+                    <div className="text-base font-bold text-zinc-900">{s.title}</div>
+                  </div>
+                  <p className="mt-3 text-xs leading-relaxed text-zinc-600">{s.desc}</p>
+                </div>
+                {i < STEPS.length - 1 && (
+                  <div className="absolute right-[-8px] top-1/2 z-10 hidden lg:block text-violet-400 -translate-y-1/2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="bg-zinc-50 px-6 py-12">
+        <div className="mx-auto max-w-[1760px]">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-zinc-900">客製商品分類</h2>
+              <p className="mt-1 text-sm text-zinc-500">點選分類進入填寫詢價單</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-5">
+            {PRIVATE_CATEGORIES.map((c) => (
+              <Link
+                key={c.name}
+                href="/modules/private-quote/quote-form"
+                className="group cursor-pointer rounded-xl border border-zinc-200 bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-lg hover:border-violet-300"
+              >
+                <div className={`mb-4 aspect-video rounded-lg ${c.img}`} />
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-base font-bold text-zinc-900 group-hover:text-violet-700">{c.name}</h3>
+                  {c.badge && <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-medium text-rose-700">{c.badge}</span>}
+                </div>
+                <p className="mt-2 text-xs text-zinc-500 line-clamp-2">{c.examples}</p>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-xs text-violet-600 font-medium">{c.count} 種規格可選</span>
+                  <span className="text-xs text-violet-600">填詢價單 →</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sample cases */}
+      <section className="bg-white px-6 py-12">
+        <div className="mx-auto max-w-[1760px]">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900">合作案例</h2>
+          <p className="mt-1 text-sm text-zinc-500">超過 500 個餐飲品牌信賴選擇</p>
+          <div className="mt-6 grid grid-cols-3 gap-5">
+            {CASES.map((c) => (
+              <article key={c.brand} className="rounded-xl border border-zinc-200 bg-white p-5">
+                <div className={`aspect-video rounded-lg ${c.color}`} />
+                <div className="mt-3 text-base font-bold text-zinc-900">{c.brand}</div>
+                <div className="mt-1 text-xs text-zinc-600">{c.desc}</div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why HJ */}
+      <section className="bg-violet-50 px-6 py-12">
+        <div className="mx-auto max-w-[1760px]">
+          <h2 className="text-2xl font-bold tracking-tight text-violet-900 text-center">為什麼選禾啟客製?</h2>
+          <div className="mt-8 grid grid-cols-4 gap-5 text-center">
+            {[
+              { num: "30+", label: "年餐飲包材經驗" },
+              { num: "500+", label: "合作餐飲品牌" },
+              { num: "1,000", label: "件起製,門檻低" },
+              { num: "2-4 週", label: "標準交期" },
+            ].map((s) => (
+              <div key={s.label}>
+                <div className="text-4xl font-bold text-violet-700">{s.num}</div>
+                <div className="mt-2 text-xs text-zinc-600">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="bg-zinc-900 px-6 py-12 text-white">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-2xl font-bold">準備好開始客製了嗎?</h2>
+          <p className="mt-2 text-sm opacity-80">填寫詢價單後業務會在 1 個工作天內透過 LINE 回覆。</p>
+          <div className="mt-6 flex justify-center gap-3">
+            <Link href="/modules/private-quote/quote-form" className="rounded-lg bg-violet-500 px-6 py-3 text-sm font-bold text-white hover:bg-violet-600">
+              填詢價單 →
+            </Link>
+            <a className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-bold text-white hover:bg-emerald-600">
+              LINE 直接諮詢
+            </a>
           </div>
         </div>
       </section>
