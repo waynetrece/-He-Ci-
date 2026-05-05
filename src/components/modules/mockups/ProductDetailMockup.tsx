@@ -107,11 +107,12 @@ const PRODUCT = {
   tagline: "紙杯再升級! 雙面 PE 淋膜,冷熱共用不受限,紙杯外層可耐水珠濕氣,維持杯身硬挺!",
 };
 
-// 規格選項(後台 HJ 自行勾選要開放的層,公版/私版機制統一)
+// 規格選項 — 公版只列「現貨可選的規格」(容量、顏色)
+// 客製印刷 = 私版,走獨立詢價流程,公版頁不放(避免混淆)
+// 後台 HJ 自行勾選要開放的層,公版/私版機制統一(A 包 Q-A4)
 const VARIANTS: { label: string; key: string; options: string[] }[] = [
   { label: "容量", key: "capacity", options: ["8oz", "12oz", "16oz", "22oz"] },
   { label: "顏色", key: "color", options: ["白", "黑", "棕"] },
-  { label: "印刷", key: "printing", options: ["無印刷", "Logo 印刷(私版)"] },
 ];
 
 // 規格組合 SKU 各自獨立(D 包確認):每個 SKU 獨立庫存 + 價格 + 凌越編號
@@ -164,7 +165,6 @@ export function ProductDetailMockup({
 }) {
   const [capacity, setCapacity] = useState("12oz");
   const [color, setColor] = useState("白");
-  const [printing, setPrinting] = useState("無印刷");
   const [qty, setQty] = useState(50);
   const [activeThumb, setActiveThumb] = useState(0);
 
@@ -172,8 +172,7 @@ export function ProductDetailMockup({
   const stockOverride = STOCK_OVERRIDE[`${capacity}_${color}`];
   const stock = stockOverride !== undefined ? stockOverride : sku.stock;
   const inStock = stock > 0;
-  const isPrivate = printing.startsWith("Logo");
-  const fullCode = `${sku.code}-${color}-${isPrivate ? "P" : "B"}`;
+  const fullCode = `${sku.code}-${color}`;
   const specTable = SPEC_TABLE(capacity);
   const totalPrice = (sku.base * qty).toFixed(0);
   const memberTotal = (sku.member * qty).toFixed(0);
@@ -213,7 +212,7 @@ export function ProductDetailMockup({
               <div className="absolute inset-0 flex items-center justify-center text-zinc-300">
                 <div className="text-center">
                   <div className="text-base font-medium">{THUMBNAILS[activeThumb]}</div>
-                  <div className="mt-1 text-xs">{capacity} · {color}{isPrivate ? " · Logo 印刷" : ""}</div>
+                  <div className="mt-1 text-xs">{capacity} · {color}</div>
                 </div>
               </div>
               <span className="absolute left-3 top-3 rounded-full bg-zinc-900 px-2.5 py-0.5 text-[10px] font-medium text-white">
@@ -283,8 +282,8 @@ export function ProductDetailMockup({
               </div>
 
               {VARIANTS.map((v) => {
-                const current = v.key === "capacity" ? capacity : v.key === "color" ? color : printing;
-                const setter = v.key === "capacity" ? setCapacity : v.key === "color" ? setColor : setPrinting;
+                const current = v.key === "capacity" ? capacity : color;
+                const setter = v.key === "capacity" ? setCapacity : setColor;
                 return (
                   <div key={v.key}>
                     <div className="mb-2 flex items-center justify-between text-xs">
@@ -294,7 +293,6 @@ export function ProductDetailMockup({
                     <div className="flex flex-wrap gap-2">
                       {v.options.map((opt) => {
                         const active = opt === current;
-                        // Out of stock check (only for capacity_color combo)
                         let oos = false;
                         if (v.key === "capacity") {
                           const tempStock = STOCK_OVERRIDE[`${opt}_${color}`] ?? SKU_BY_CAPACITY[opt]?.stock;
@@ -326,14 +324,6 @@ export function ProductDetailMockup({
                   </div>
                 );
               })}
-
-              {isPrivate && (
-                <div className="rounded-md border border-amber-200 bg-amber-50/60 p-3 text-xs text-amber-800">
-                  <span className="font-bold">Logo 印刷 = 私版客製</span>:
-                  選擇此選項會引導至「私版詢價單」,業務報價後出貨,流程不同於公版。
-                  <Link href="/modules/private-quote" className="ml-1 underline font-medium">前往私版詢價 →</Link>
-                </div>
-              )}
             </div>
 
             {/* Selected SKU spec table */}
