@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconMail } from "@/components/modules/Icons";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { ModuleHero } from "@/components/modules/ModuleHero";
 import {
@@ -77,8 +78,8 @@ export default function ForgotPasswordPage() {
                   )}
                   {step === "sent" && (
                     <>
-                      <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 text-2xl">
-                        ✉
+                      <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                        <IconMail size={28} />
                       </div>
                       <h2 className="mt-5 text-center text-2xl font-bold text-zinc-900">郵件已寄出</h2>
                       <p className="mt-3 text-center text-sm text-zinc-600">

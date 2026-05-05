@@ -115,8 +115,8 @@ export function MockupSiteHeader() {
         <div className="mx-auto flex max-w-[1760px] items-center justify-between text-xs text-zinc-500">
           <span>歡迎來到禾啟｜全台滿 NT$ 3,000 免運</span>
           <div className="flex items-center gap-4">
-            <span>常見問題</span>
-            <span>聯絡我們</span>
+            <a href="/modules/faq" className="hover:text-zinc-900">常見問題</a>
+            <a href="/modules/contact" className="hover:text-zinc-900">聯絡我們</a>
             <span className="border-l border-zinc-300 pl-4">中文 | English</span>
           </div>
         </div>
@@ -170,17 +170,17 @@ export function MockupSiteHeader() {
       <nav className="border-t border-zinc-100">
         <div className="mx-auto flex max-w-[1760px] items-center gap-7 px-6">
           {[
-            { label: "首頁" },
-            { label: "關於我們" },
-            { label: "公版商品", active: true },
-            { label: "私版商品" },
-            { label: "作品集" },
-            { label: "設計服務" },
-            { label: "行銷動態" },
-            { label: "聯絡我們" },
+            { label: "首頁", href: "/modules/home" },
+            { label: "關於我們", href: "/modules/about" },
+            { label: "公版商品", href: "/modules/products", active: true },
+            { label: "私版商品", href: "/modules/private-quote" },
+            { label: "最新消息", href: "/modules/news" },
+            { label: "Q&A", href: "/modules/faq" },
+            { label: "聯絡我們", href: "/modules/contact" },
           ].map((n) => (
             <a
               key={n.label}
+              href={n.href}
               className={`relative py-3 text-sm transition-colors ${
                 n.active
                   ? "font-bold text-zinc-900"

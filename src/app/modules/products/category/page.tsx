@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { IconHeart } from "@/components/modules/Icons";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { ModuleHero } from "@/components/modules/ModuleHero";
 import {
@@ -117,24 +119,33 @@ export default function ProductCategoryPage() {
 
                 <div className="grid grid-cols-3 gap-5">
                   {PRODUCTS.map((p) => (
-                    <article key={p.name} className="group overflow-hidden rounded-xl border border-zinc-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg">
-                      <div className={`relative aspect-square ${p.img}`}>
-                        {p.tag && (
-                          <span className="absolute left-3 top-3 rounded-full bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-white">{p.tag}</span>
-                        )}
-                        <button className="absolute right-3 top-3 size-8 rounded-full bg-white/90 text-zinc-600 hover:bg-amber-100">♡</button>
-                      </div>
-                      <div className="p-4">
-                        <div className="text-sm font-bold leading-snug text-zinc-900">{p.name}</div>
-                        <div className="mt-2 flex items-baseline justify-between">
-                          <span className="text-base font-bold text-amber-700">{p.price} <span className="text-xs text-zinc-400">/ 個起</span></span>
-                          <span className={`text-xs ${p.stock === "現貨" ? "text-emerald-600" : "text-amber-600"}`}>● {p.stock}</span>
+                    <article key={p.name} className="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white transition-all hover:-translate-y-1 hover:shadow-lg">
+                      <Link href="/modules/products/detail" className="block">
+                        <div className={`relative aspect-square ${p.img}`}>
+                          {p.tag && (
+                            <span className="absolute left-3 top-3 rounded-full bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-white">{p.tag}</span>
+                          )}
                         </div>
-                        <div className="mt-3 flex gap-2">
-                          <button className="flex-1 rounded-md bg-amber-500 py-2 text-xs font-medium text-white">加購</button>
-                          <button className="rounded-md border border-zinc-300 px-3 py-2 text-xs">樣品</button>
+                        <div className="p-4">
+                          <div className="text-sm font-bold leading-snug text-zinc-900 group-hover:text-amber-700">{p.name}</div>
+                          <div className="mt-2 flex items-baseline justify-between">
+                            <span className="text-base font-bold text-amber-700">{p.price} <span className="text-xs text-zinc-400">/ 個起</span></span>
+                            <span className={`inline-flex items-center gap-1 text-xs ${p.stock === "現貨" ? "text-emerald-600" : "text-amber-600"}`}>
+                              <span className={`inline-block size-1.5 rounded-full ${p.stock === "現貨" ? "bg-emerald-500" : "bg-amber-500"}`} />
+                              {p.stock}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                      <div className="px-4 pb-4">
+                        <div className="flex gap-2">
+                          <button className="flex-1 rounded-md bg-amber-500 py-2 text-xs font-medium text-white hover:bg-amber-600">加入購物車</button>
+                          <Link href="/modules/products/sample" className="rounded-md border border-zinc-300 px-3 py-2 text-xs hover:border-amber-500">樣品</Link>
                         </div>
                       </div>
+                      <button aria-label="收藏" className="absolute right-3 top-3 size-8 rounded-full bg-white/90 text-zinc-600 hover:bg-amber-100 hover:text-amber-700">
+                        <IconHeart size={16} className="mx-auto" />
+                      </button>
                     </article>
                   ))}
                 </div>

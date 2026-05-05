@@ -1,5 +1,6 @@
 "use client";
 
+import { IconHandshake, IconLeaf, IconTarget } from "@/components/modules/Icons";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { ModuleHero } from "@/components/modules/ModuleHero";
 import { MockupCmsPage } from "@/components/modules/MockupCmsPage";
@@ -13,9 +14,9 @@ const MILESTONES = [
 ];
 
 const VALUES = [
-  { icon: "🌱", title: "永續環保", desc: "材料端優先考量可分解、可回收材質,降低餐飲業包裝負擔。" },
-  { icon: "🎯", title: "專業耕耘", desc: "30 年餐飲包材經驗,從食品法規到出貨包裝細節都有深度。" },
-  { icon: "🤝", title: "夥伴關係", desc: "客戶不只是客戶,我們陪你從 100 件試水到百萬件量產。" },
+  { Icon: IconLeaf, title: "永續環保", desc: "材料端優先考量可分解、可回收材質,降低餐飲業包裝負擔。" },
+  { Icon: IconTarget, title: "專業耕耘", desc: "30 年餐飲包材經驗,從食品法規到出貨包裝細節都有深度。" },
+  { Icon: IconHandshake, title: "夥伴關係", desc: "客戶不只是客戶,我們陪你從 100 件試水到百萬件量產。" },
 ];
 
 export default function AboutPage() {
@@ -80,7 +81,9 @@ export default function AboutPage() {
               <div className="mt-6 grid grid-cols-3 gap-5">
                 {VALUES.map((v) => (
                   <div key={v.title} className="rounded-xl border border-zinc-200 bg-white p-6">
-                    <div className="mb-3 text-3xl">{v.icon}</div>
+                    <div className="mb-3 inline-flex size-12 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                      <v.Icon size={24} />
+                    </div>
                     <div className="text-base font-bold text-zinc-900">{v.title}</div>
                     <div className="mt-2 text-sm leading-relaxed text-zinc-600">{v.desc}</div>
                   </div>
