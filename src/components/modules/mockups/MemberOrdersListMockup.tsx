@@ -2,333 +2,319 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
   MockupSiteFooter,
   MockupSiteHeader,
 } from "../MockupShell";
 
-/* ============== Q definitions ============== */
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 訂單狀態 6 個:待付款/已付款/備貨中/已出貨/已完成/已取消(B 包 Q-B2)
+// - 已退款狀態 = 第 7 個(B 包 Q-B2 / E 包 Q-E10)
+// - 凌越歷史訂單 default 近 2 年(C 包 Q-C3)— 與網站訂單合併顯示
+// - 「再購買」按鈕(C 包)
+// - 物流追蹤連結 = 系統依物流商產生查詢頁連結模板,客戶點過去到物流商官網(B 包 Q-B3)
+// - 公版 / 私版 / 樣品 三類訂單後台分開列(A 包 Q-A2 / Q-A9)
+// - 已出貨後 7 天系統自動跳「已完成」(B 包)
 
-const Q1 = {
-  no: "Q1",
-  question: "會員中心的歷史訂單預設顯示哪些資料？例如：近 30 天 / 近 3 個月 / 全部訂單，以及是否要依狀態篩選？",
-  context:
-    "目前先以這樣示意：① 預設顯示「近 30 天」② 提供時間範圍切換（近 7 天 / 近 30 天 / 近 3 個月 / 全部）③ 提供狀態篩選（待確認 / 已成立 / 備貨中 / 已出貨 / 已完成 / 已取消）。想請 HJ 確認預設範圍與篩選需求。匯出 Excel 屬於後台訂單管理功能，會員前台不放。",
-  clientRef: {
-    source: "前台 / 會員 (1)",
-    quote: "查詢歷史訂單，可再購買一次按鈕",
-    note: "需求表寫了「訂單資料匯出」，但匯出屬後台管理員功能，不是會員前台功能；會員前台只保留查詢、篩選、查看詳情、再訂一次。",
-  },
+type OrderStatus = "unpaid" | "paid" | "preparing" | "shipped" | "completed" | "cancelled" | "refunded";
+
+const STATUS_META: Record<OrderStatus, { label: string; cls: string; dot: string }> = {
+  unpaid: { label: "待付款", cls: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
+  paid: { label: "已付款", cls: "bg-sky-100 text-sky-800", dot: "bg-sky-500" },
+  preparing: { label: "備貨中", cls: "bg-violet-100 text-violet-800", dot: "bg-violet-500" },
+  shipped: { label: "已出貨", cls: "bg-emerald-100 text-emerald-800", dot: "bg-emerald-500" },
+  completed: { label: "已完成", cls: "bg-zinc-200 text-zinc-700", dot: "bg-zinc-500" },
+  cancelled: { label: "已取消", cls: "bg-rose-100 text-rose-700", dot: "bg-rose-500" },
+  refunded: { label: "已退款", cls: "bg-indigo-100 text-indigo-700", dot: "bg-indigo-500" },
 };
 
-const Q2 = {
-  no: "Q2",
-  question: "「再訂一次」遇到混合公版＋私版的訂單，是否要分項處理（公版直接加購、私版重新詢價）？",
-  context:
-    "目前先以這樣示意：列表頁的「再訂一次」按鈕點下會跳到訂單詳情頁，再由詳情頁的逐項按鈕分流（公版加購物車 / 私版重新詢價）。原因：在列表只能看到摘要，無法判斷哪些是公版哪些是私版。",
-  clientRef: {
-    source: "前台 / 會員 (1) + 私版商品系列 (1)(2)",
-    quote: "可再購買一次按鈕；複雜客製商品轉 LINE 客服報價",
-    note: "需求表寫了「再購買一次」但未細分混合訂單的處理方式。",
-  },
+type Source = "site" | "lyserp"; // 網站新訂單 vs 凌越歷史
+
+type Order = {
+  id: string;
+  date: string;
+  source: Source;
+  itemSummary: string;
+  itemCount: number;
+  type: "公版" | "私版" | "樣品";
+  amount: number;
+  status: OrderStatus;
+  hasShipping?: boolean;
+  shippingCarrier?: string;
+  shippingTracking?: string;
 };
 
-/* ============== Icons ============== */
+const ORDERS: Order[] = [
+  // 網站新訂單
+  { id: "HJ-2026-0505-0042", date: "2026/05/05", source: "site", itemSummary: "12oz 公版瓦楞紙杯 × 2 箱 + 8oz × 5 條 + 90mm 平蓋 × 5 條", itemCount: 3, type: "公版", amount: 4856, status: "paid" },
+  { id: "HJ-2026-0501-0023", date: "2026/05/01", source: "site", itemSummary: "PLA 環保杯 12oz × 1 箱", itemCount: 1, type: "公版", amount: 2100, status: "shipped", hasShipping: true, shippingCarrier: "黑貓宅配", shippingTracking: "T20260501234" },
+  { id: "HJ-2026-0428-0011", date: "2026/04/28", source: "site", itemSummary: "客製禮盒 × 200(私版)", itemCount: 1, type: "私版", amount: 18000, status: "preparing" },
+  { id: "HJ-2026-0425-0008", date: "2026/04/25", source: "site", itemSummary: "牛皮紙提袋 × 5 條", itemCount: 1, type: "公版", amount: 1050, status: "completed" },
+  { id: "HJ-2026-0418-0003", date: "2026/04/18", source: "site", itemSummary: "16oz PLA 杯 × 2 箱", itemCount: 1, type: "公版", amount: 5200, status: "refunded" },
+  { id: "HJ-2026-0410-0001", date: "2026/04/10", source: "site", itemSummary: "8oz 公版紙杯 × 1 箱", itemCount: 1, type: "公版", amount: 1800, status: "cancelled" },
 
-function FilterIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-
-function RepeatIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="17 1 21 5 17 9" />
-      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-      <polyline points="7 23 3 19 7 15" />
-      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-    </svg>
-  );
-}
-
-function ChevronLeft({ className = "" }: { className?: string }) {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  );
-}
-
-/* ============== Data ============== */
-
-type OrderStatus = "pending" | "confirmed" | "preparing" | "shipped" | "completed" | "cancelled";
-
-const STATUS_META: Record<OrderStatus, { label: string; cls: string }> = {
-  pending: { label: "待確認", cls: "bg-zinc-100 text-zinc-700" },
-  confirmed: { label: "已成立", cls: "bg-sky-100 text-sky-800" },
-  preparing: { label: "備貨中", cls: "bg-amber-100 text-amber-800" },
-  shipped: { label: "已出貨", cls: "bg-emerald-100 text-emerald-800" },
-  completed: { label: "已完成", cls: "bg-zinc-100 text-zinc-700" },
-  cancelled: { label: "已取消", cls: "bg-rose-100 text-rose-700" },
-};
-
-const ORDERS = [
-  { id: "HJ-20260427-001", date: "2026/04/27", items: "12oz 客製紙杯 × 5,000 + 客製紙杯 × 3,000", types: ["公版", "私版"] as const, amount: 13903, status: "shipped" as OrderStatus },
-  { id: "HJ-20260420-008", date: "2026/04/20", items: "牛皮紙便當盒 × 2,000 + 餐具組 × 1,000", types: ["公版"] as const, amount: 12800, status: "completed" as OrderStatus },
-  { id: "HJ-20260415-003", date: "2026/04/15", items: "客製模切紙袋 × 500", types: ["私版"] as const, amount: 0, status: "preparing" as OrderStatus, note: "客服報價中" },
-  { id: "HJ-20260408-012", date: "2026/04/08", items: "PLA 環保杯 × 2,000", types: ["公版"] as const, amount: 5600, status: "completed" as OrderStatus },
-  { id: "HJ-20260330-005", date: "2026/03/30", items: "客製腰封 × 5,000", types: ["私版"] as const, amount: 2500, status: "completed" as OrderStatus },
-  { id: "HJ-20260322-001", date: "2026/03/22", items: "8oz 紙杯 × 10,000", types: ["公版"] as const, amount: 15000, status: "cancelled" as OrderStatus },
+  // 凌越歷史訂單(近 2 年,default)
+  { id: "LY-2025-1208-1003", date: "2025/12/08", source: "lyserp", itemSummary: "公版便當盒 × 5 箱", itemCount: 1, type: "公版", amount: 27000, status: "completed" },
+  { id: "LY-2025-1015-0892", date: "2025/10/15", source: "lyserp", itemSummary: "客製紙杯 5,000 個 + 杯蓋 5,000 個", itemCount: 2, type: "私版", amount: 35000, status: "completed" },
+  { id: "LY-2025-0820-0612", date: "2025/08/20", source: "lyserp", itemSummary: "公版紙杯 8oz × 10 箱", itemCount: 1, type: "公版", amount: 18000, status: "completed" },
 ];
 
 const TIME_RANGES = [
-  { id: "7d", label: "近 7 天" },
-  { id: "30d", label: "近 30 天", active: true },
+  { id: "30d", label: "近 30 天" },
   { id: "3m", label: "近 3 個月" },
+  { id: "1y", label: "近 1 年" },
+  { id: "2y", label: "近 2 年", default: true }, // C 包 default
   { id: "all", label: "全部" },
 ];
 
-/* ============== Component ============== */
-
 export function MemberOrdersListMockup({
-  annotations = false,
-  pageId = "members-orders",
+  annotations: _annotations,
+  pageId: _pageId,
 }: {
   annotations?: boolean;
   pageId?: string;
 }) {
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
-  const filteredOrders = statusFilter === "all"
-    ? ORDERS
-    : ORDERS.filter((o) => o.status === statusFilter);
+  const [typeFilter, setTypeFilter] = useState<"all" | "公版" | "私版" | "樣品">("all");
+  const [sourceFilter, setSourceFilter] = useState<"all" | Source>("all");
+  const [search, setSearch] = useState("");
+  const [timeRange, setTimeRange] = useState("2y");
+
+  const filtered = ORDERS.filter((o) => {
+    if (statusFilter !== "all" && o.status !== statusFilter) return false;
+    if (typeFilter !== "all" && o.type !== typeFilter) return false;
+    if (sourceFilter !== "all" && o.source !== sourceFilter) return false;
+    if (search && !o.id.toLowerCase().includes(search.toLowerCase()) && !o.itemSummary.includes(search)) return false;
+    return true;
+  });
+
+  const statusCounts: Record<OrderStatus | "all", number> = {
+    all: ORDERS.length,
+    unpaid: 0, paid: 0, preparing: 0, shipped: 0, completed: 0, cancelled: 0, refunded: 0,
+  };
+  ORDERS.forEach((o) => { statusCounts[o.status]++; });
 
   return (
-    <MockupShell url="https://hjhj.com.tw/members/orders">
+    <MockupShell url="https://hj.example.com/member/orders">
       <MockupSiteHeader />
 
-      {/* Breadcrumb */}
-      <section className="border-b border-zinc-200 bg-white px-6 py-3">
-        <div className="mx-auto max-w-[1760px] text-xs text-zinc-500">
-          <Link href="/modules/members" className="hover:text-zinc-900">
-            會員首頁
-          </Link>
-          <span className="mx-2 text-zinc-300">/</span>
-          <span className="font-semibold text-zinc-900">歷史訂單</span>
-        </div>
-      </section>
+      <div className="bg-zinc-50 px-6 py-8">
+        <div className="mx-auto grid max-w-[1760px] grid-cols-4 gap-6">
+          {/* Sidebar */}
+          <aside className="rounded-xl border border-zinc-200 bg-white p-5">
+            <div className="mb-4 flex items-center gap-3 border-b border-zinc-100 pb-4">
+              <div className="flex size-10 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-700">陳</div>
+              <div>
+                <div className="text-sm font-bold text-zinc-900">陳老闆</div>
+                <div className="text-xs text-zinc-500">北部直客 · VIP</div>
+              </div>
+            </div>
+            <nav className="space-y-1 text-sm">
+              {[
+                { l: "會員儀表板", h: "/modules/members" },
+                { l: "訂單列表", h: "/modules/members/orders", active: true },
+                { l: "詢價單", h: "/modules/members/quote-list" },
+                { l: "樣品申請", h: "/modules/members/samples" },
+                { l: "收件地址簿", h: "/modules/members/addresses" },
+                { l: "個人資料", h: "/modules/members/settings" },
+              ].map((n) => (
+                <Link key={n.l} href={n.h} className={`block rounded px-3 py-2 ${n.active ? "bg-amber-50 font-medium text-amber-700" : "text-zinc-700 hover:bg-zinc-50"}`}>
+                  {n.l}
+                </Link>
+              ))}
+            </nav>
+          </aside>
 
-      {/* Header */}
-      <section className="border-b border-zinc-200 bg-white px-6 py-5">
-        <div className="mx-auto max-w-[1760px]">
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-900">歷史訂單</h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              共 <span className="font-bold text-zinc-900">{filteredOrders.length}</span> 筆訂單
-            </p>
-          </div>
-        </div>
-      </section>
+          {/* Body */}
+          <div className="col-span-3">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-zinc-900">訂單列表</h1>
+                <p className="mt-1 text-xs text-zinc-500">
+                  顯示網站新訂單 + 凌越歷史訂單(default 近 2 年)。共 {filtered.length} / {ORDERS.length} 筆。
+                </p>
+              </div>
+            </div>
 
-      {/* Filters */}
-      <section className="border-b border-zinc-200 bg-zinc-50/50 px-6 py-4">
-        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-4">
-          {/* Time range */}
-          <div className="flex items-center gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
-            {TIME_RANGES.map((r) => (
-              <button
-                key={r.id}
-                className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
-                  r.active
-                    ? "bg-amber-700 text-white"
-                    : "text-zinc-600 hover:bg-zinc-50"
-                }`}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
+            {/* Filters */}
+            <div className="rounded-xl border border-zinc-200 bg-white p-4 space-y-3">
+              {/* Search */}
+              <div className="flex gap-2">
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="搜尋訂單編號 / 商品名稱..."
+                  className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                />
+                <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="rounded-md border border-zinc-300 px-3 py-2 text-sm">
+                  {TIME_RANGES.map((r) => (
+                    <option key={r.id} value={r.id}>{r.label}{r.default && "(預設)"}</option>
+                  ))}
+                </select>
+              </div>
 
-          <span className="text-zinc-300">|</span>
-
-          {/* Status filter */}
-          <Questioned
-            show={annotations}
-            questions={[Q1]}
-            pageId={pageId}
-            position="top-right"
-          >
-            <div className="flex items-center gap-1.5 text-xs">
-              <FilterIcon />
-              <span className="text-zinc-500">狀態：</span>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "all")}
-                className="rounded-md border border-zinc-300 bg-white px-2 py-1"
-              >
-                <option value="all">全部</option>
-                {Object.entries(STATUS_META).map(([key, m]) => (
-                  <option key={key} value={key}>{m.label}</option>
+              {/* Type + Source filters */}
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-zinc-500">類型:</span>
+                {([
+                  { id: "all" as const, l: "全部" },
+                  { id: "公版" as const, l: "公版" },
+                  { id: "私版" as const, l: "私版" },
+                  { id: "樣品" as const, l: "樣品" },
+                ]).map((f) => (
+                  <button key={f.id} onClick={() => setTypeFilter(f.id)} className={`rounded-full border px-3 py-1 ${typeFilter === f.id ? "border-amber-500 bg-amber-50 text-amber-800 font-medium" : "border-zinc-300 bg-white text-zinc-700 hover:border-amber-300"}`}>
+                    {f.l}
+                  </button>
                 ))}
-              </select>
+                <span className="ml-3 text-zinc-500">來源:</span>
+                {([
+                  { id: "all" as const, l: "全部" },
+                  { id: "site" as const, l: "網站訂單" },
+                  { id: "lyserp" as const, l: "凌越歷史" },
+                ]).map((f) => (
+                  <button key={f.id} onClick={() => setSourceFilter(f.id)} className={`rounded-full border px-3 py-1 ${sourceFilter === f.id ? "border-amber-500 bg-amber-50 text-amber-800 font-medium" : "border-zinc-300 bg-white text-zinc-700 hover:border-amber-300"}`}>
+                    {f.l}
+                  </button>
+                ))}
+              </div>
+
+              {/* Status pills */}
+              <div className="flex flex-wrap gap-2 border-t border-zinc-100 pt-3 text-xs">
+                <button
+                  onClick={() => setStatusFilter("all")}
+                  className={`rounded-full px-3 py-1 ${statusFilter === "all" ? "bg-zinc-900 text-white font-bold" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"}`}
+                >
+                  全部({statusCounts.all})
+                </button>
+                {(Object.entries(STATUS_META) as [OrderStatus, typeof STATUS_META[OrderStatus]][]).map(([key, meta]) => (
+                  <button
+                    key={key}
+                    onClick={() => setStatusFilter(key)}
+                    className={`flex items-center gap-1.5 rounded-full px-3 py-1 ${statusFilter === key ? `${meta.cls} font-bold ring-2 ring-amber-400` : `${meta.cls} hover:opacity-80`}`}
+                  >
+                    <span className={`size-1.5 rounded-full ${meta.dot}`} />
+                    {meta.label}({statusCounts[key]})
+                  </button>
+                ))}
+              </div>
             </div>
-          </Questioned>
 
-          {/* Search */}
-          <div className="ml-auto flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs w-72">
-            <SearchIcon />
-            <input
-              type="text"
-              placeholder="搜尋訂單號 / 商品名稱"
-              className="flex-1 bg-transparent placeholder:text-zinc-400 focus:outline-none"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Orders table */}
-      <section className="bg-white px-6 py-6">
-        <div className="mx-auto max-w-[1760px]">
-          <div className="overflow-hidden rounded-lg border border-zinc-200">
-            <table className="w-full text-sm">
-              <thead className="bg-zinc-50 text-xs text-zinc-500 border-b border-zinc-200">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium">訂單號</th>
-                  <th className="px-4 py-3 text-left font-medium">日期</th>
-                  <th className="px-4 py-3 text-left font-medium">商品摘要</th>
-                  <th className="px-4 py-3 text-left font-medium">類型</th>
-                  <th className="px-4 py-3 text-right font-medium">金額</th>
-                  <th className="px-4 py-3 text-center font-medium">狀態</th>
-                  <th className="px-4 py-3 text-right font-medium">動作</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {filteredOrders.map((o, idx) => {
-                  const statusMeta = STATUS_META[o.status];
-                  const reorderBtn = (
-                    <Link
-                      href={`/modules/members/orders/${o.id}`}
-                      className="inline-flex items-center gap-1 rounded-md border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 hover:bg-emerald-100"
-                    >
-                      <RepeatIcon />
-                      再訂一次
-                    </Link>
-                  );
-
+            {/* Order cards */}
+            <div className="mt-4 space-y-3">
+              {filtered.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center">
+                  <div className="text-sm font-medium text-zinc-900">沒有符合條件的訂單</div>
+                  <p className="mt-1 text-xs text-zinc-500">嘗試調整篩選條件</p>
+                </div>
+              ) : (
+                filtered.map((o) => {
+                  const meta = STATUS_META[o.status];
                   return (
-                    <tr key={o.id} className="hover:bg-zinc-50/60">
-                      <td className="px-4 py-3 font-mono text-xs">
-                        <Link
-                          href={`/modules/members/orders/${o.id}`}
-                          className="text-zinc-700 hover:text-amber-700 hover:underline"
-                        >
-                          {o.id}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3 text-zinc-600">{o.date}</td>
-                      <td className="px-4 py-3 text-zinc-800 max-w-[280px] truncate">
-                        {o.items}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1">
-                          {o.types.map((t) => (
-                            <span
-                              key={t}
-                              className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${
-                                t === "公版"
-                                  ? "bg-emerald-100 text-emerald-800"
-                                  : "bg-indigo-100 text-indigo-800"
-                              }`}
-                            >
-                              {t}
+                    <article key={o.id} className="rounded-xl border border-zinc-200 bg-white p-5 hover:border-amber-300 hover:shadow-sm transition-colors">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          {/* Header */}
+                          <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <Link href={`/modules/members/orders/${o.id}`} className="font-mono font-bold text-zinc-900 hover:text-amber-700">
+                              {o.id}
+                            </Link>
+                            <span className="text-zinc-300">·</span>
+                            <span className="text-zinc-500">{o.date}</span>
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${meta.cls}`}>
+                              <span className={`size-1.5 rounded-full ${meta.dot}`} />
+                              {meta.label}
                             </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right font-mono text-zinc-700">
-                        {o.amount > 0
-                          ? `NT$ ${o.amount.toLocaleString()}`
-                          : <span className="text-zinc-400 text-xs">{o.note ?? "—"}</span>}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span
-                          className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${statusMeta.cls}`}
-                        >
-                          {statusMeta.label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex justify-end gap-2">
-                          {idx === 0 ? (
-                            <Questioned
-                              show={annotations}
-                              questions={[Q2]}
-                              pageId={pageId}
-                              position="top-right"
-                            >
-                              {reorderBtn}
-                            </Questioned>
-                          ) : (
-                            o.status !== "cancelled" && reorderBtn
+                            <span className={`rounded-full border px-2 py-0.5 ${o.type === "公版" ? "border-amber-300 text-amber-700" : o.type === "私版" ? "border-violet-300 text-violet-700" : "border-emerald-300 text-emerald-700"}`}>
+                              {o.type}
+                            </span>
+                            {o.source === "lyserp" && (
+                              <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-indigo-700">凌越歷史</span>
+                            )}
+                          </div>
+
+                          {/* Items */}
+                          <div className="mt-2 text-sm text-zinc-700">
+                            {o.itemSummary}
+                          </div>
+
+                          {/* Shipping tracking */}
+                          {o.hasShipping && o.status === "shipped" && (
+                            <div className="mt-2 flex items-center gap-2 text-xs">
+                              <span className="text-zinc-500">物流:</span>
+                              <span className="text-zinc-700">{o.shippingCarrier}</span>
+                              <span className="font-mono text-zinc-500">{o.shippingTracking}</span>
+                              <a className="rounded-md border border-zinc-300 bg-zinc-50 px-2 py-0.5 text-xs text-zinc-700 hover:border-amber-400 hover:text-amber-700">
+                                查詢運送狀態 →
+                              </a>
+                            </div>
                           )}
-                          <Link
-                            href={`/modules/members/orders/${o.id}`}
-                            className="text-xs text-amber-700 hover:underline"
-                          >
-                            查看 →
-                          </Link>
                         </div>
-                      </td>
-                    </tr>
+
+                        {/* Right: amount + actions */}
+                        <div className="text-right shrink-0">
+                          <div className="text-xs text-zinc-500">總金額</div>
+                          <div className="text-lg font-bold text-zinc-900">NT$ {o.amount.toLocaleString()}</div>
+                          <div className="mt-3 flex flex-col gap-1.5">
+                            <Link
+                              href={`/modules/members/orders/${o.id}`}
+                              className="rounded-md bg-amber-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
+                            >
+                              查看詳情
+                            </Link>
+                            {o.status === "completed" && o.type === "公版" && (
+                              <Link
+                                href="/modules/cart"
+                                className="rounded-md border border-zinc-300 bg-white px-4 py-1.5 text-xs text-zinc-700 hover:border-amber-400 hover:text-amber-700"
+                              >
+                                再訂一次
+                              </Link>
+                            )}
+                            {o.status === "completed" && o.type === "私版" && (
+                              <Link
+                                href="/modules/private-quote"
+                                className="rounded-md border border-zinc-300 bg-white px-4 py-1.5 text-xs text-zinc-700 hover:border-amber-400 hover:text-amber-700"
+                              >
+                                再次詢價
+                              </Link>
+                            )}
+                            {o.status === "unpaid" && (
+                              <Link
+                                href="/modules/checkout/payment"
+                                className="rounded-md border border-amber-400 bg-amber-50 px-4 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100"
+                              >
+                                完成付款
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Notice for unpaid */}
+                      {o.status === "unpaid" && (
+                        <div className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                          ⚠ 此訂單尚未付款,請於 7 天內完成匯款,逾期將自動取消。
+                        </div>
+                      )}
+                    </article>
                   );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="mt-5 flex items-center justify-between text-sm">
-            <span className="text-xs text-zinc-500">
-              顯示 1-{filteredOrders.length} / 共 {filteredOrders.length} 筆
-            </span>
-            <div className="flex items-center gap-1">
-              <button className="flex size-8 items-center justify-center rounded border border-zinc-200 text-zinc-400">
-                <ChevronLeft />
-              </button>
-              <button className="size-8 rounded bg-amber-700 font-bold text-white">1</button>
-              <button className="size-8 rounded border border-zinc-200 text-zinc-700 hover:bg-zinc-50">2</button>
-              <button className="size-8 rounded border border-zinc-200 text-zinc-700 hover:bg-zinc-50">3</button>
-              <button className="flex size-8 items-center justify-center rounded border border-zinc-200 text-zinc-700 hover:bg-zinc-50">
-                <ChevronLeft className="rotate-180" />
-              </button>
+                })
+              )}
             </div>
-          </div>
 
-          {/* Back link */}
-          <div className="mt-6 flex justify-center">
-            <Link
-              href="/modules/members"
-              className="flex items-center gap-1.5 text-sm text-zinc-600 hover:text-zinc-900"
-            >
-              <ChevronLeft />
-              返回會員首頁
-            </Link>
+            {/* Pagination */}
+            {filtered.length > 0 && (
+              <div className="mt-6 flex items-center justify-center gap-2">
+                <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-500">←</button>
+                {[1, 2, 3].map((p) => (
+                  <button key={p} className={`size-9 rounded-md text-sm font-medium ${p === 1 ? "bg-amber-500 text-white" : "border border-zinc-300 bg-white text-zinc-700"}`}>{p}</button>
+                ))}
+                <button className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700">→</button>
+              </div>
+            )}
           </div>
         </div>
-      </section>
+      </div>
 
       <MockupSiteFooter />
     </MockupShell>

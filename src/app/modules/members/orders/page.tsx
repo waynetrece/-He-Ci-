@@ -2,45 +2,21 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ClipboardIcon,
-  CommentToolbar,
-  CommentTrigger,
-} from "@/components/modules/CommentSystem";
+import { CommentToolbar } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { MemberOrdersListMockup } from "@/components/modules/mockups/MemberOrdersListMockup";
 import { MEMBER_MOCKUPS } from "@/lib/members-mockups";
 
 const PAGE_ID = "members-orders";
-const PAGE_LABEL = "會員系統 — 歷史訂單";
+const PAGE_LABEL = "會員系統 — 訂單列表";
 const ACTIVE_TAB = "orders";
 
-const QUESTIONS = [
-  {
-    no: "Q1",
-    question: "會員中心的歷史訂單預設顯示哪些資料？例如：近 30 天 / 近 3 個月 / 全部訂單，以及是否要依狀態篩選？",
-    context:
-      "目前先以這樣示意：① 預設顯示「近 30 天」② 提供時間範圍切換（近 7 天 / 近 30 天 / 近 3 個月 / 全部）③ 提供狀態篩選（待確認 / 已成立 / 備貨中 / 已出貨 / 已完成 / 已取消）。想請 HJ 確認預設範圍與篩選需求。匯出 Excel 屬後台訂單管理功能，會員前台不放。",
-    pinnedAt: "篩選列『狀態：…』下拉選單",
-    clientRef: {
-      source: "前台 / 會員 (1)",
-      quote: "查詢歷史訂單，可再購買一次按鈕",
-      note: "需求表寫了「訂單資料匯出」，但匯出屬後台管理員功能，不是會員前台功能；會員前台只保留查詢、篩選、查看詳情、再訂一次。後台另有匯出題待 HJ 確認欄位、時間範圍與權限。",
-    },
-  },
-  {
-    no: "Q2",
-    question: "「再訂一次」遇到混合公版＋私版的訂單，是否要分項處理（公版直接加購、私版重新詢價）？",
-    context:
-      "目前先以這樣示意：列表頁的「再訂一次」會跳到訂單詳情頁，再由詳情頁的逐項按鈕分流（公版加購物車 / 私版重新詢價）。原因：列表只能看到摘要，無法判斷哪些是公版哪些是私版。",
-    pinnedAt: "第 1 列訂單『再訂一次』按鈕",
-    clientRef: {
-      source: "前台 / 會員 (1) + 私版商品系列 (1)(2)",
-      quote: "可再購買一次按鈕；複雜客製商品轉 LINE 客服報價",
-      note: "需求表寫了「再購買一次」但未細分混合訂單的處理方式。",
-    },
-  },
-];
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 訂單狀態 6 個 + 已退款 = 7 個(B 包 Q-B2 / E 包 Q-E10)
+// - 凌越歷史訂單 default 近 2 年(C 包 Q-C3,內部 default,HJ 提出再調整)
+// - 公版 / 私版 / 樣品 三類分開列(A 包)
+// - 「再購買」按鈕(C 包)
+// - 物流追蹤連結 = 系統依物流商產生查詢頁連結模板(B 包 Q-B3)
 
 export default function MembersOrdersPage() {
   const [annotations, setAnnotations] = useState(true);
@@ -56,9 +32,7 @@ export default function MembersOrdersPage() {
 
       <section className="border-b-2 border-zinc-400 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-2">
-          <span className="mr-2 text-sm font-medium text-amber-900">
-            會員系統 預覽：
-          </span>
+          <span className="mr-2 text-sm font-medium text-amber-900">會員系統 預覽:</span>
           {MEMBER_MOCKUPS.map((m) => {
             const active = m.id === ACTIVE_TAB;
             const cls = `rounded-full border-2 px-4 py-1.5 text-sm font-medium transition-colors ${
@@ -71,19 +45,13 @@ export default function MembersOrdersPage() {
             const content = (
               <>
                 {m.name}
-                {!m.ready && (
-                  <span className="ml-1 text-[10px] opacity-60">（製作中）</span>
-                )}
+                {!m.ready && <span className="ml-1 text-[10px] opacity-60">(製作中)</span>}
               </>
             );
             return m.ready && !active ? (
-              <Link key={m.id} href={m.href} className={cls}>
-                {content}
-              </Link>
+              <Link key={m.id} href={m.href} className={cls}>{content}</Link>
             ) : (
-              <button key={m.id} disabled={!m.ready} className={cls}>
-                {content}
-              </button>
+              <button key={m.id} disabled={!m.ready} className={cls}>{content}</button>
             );
           })}
         </div>
@@ -95,87 +63,40 @@ export default function MembersOrdersPage() {
         </div>
       </section>
 
-      <section className="border-t-2 border-zinc-400 bg-amber-50/40 px-6 py-16">
+      {/* Resolution summary */}
+      <section className="border-t-2 border-zinc-400 bg-emerald-50/40 px-6 py-12">
         <div className="mx-auto max-w-[1760px]">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold tracking-tight text-amber-900">
-              本頁待確認的項目（共 {QUESTIONS.length} 題）
-            </h2>
-            <p className="mt-3 max-w-3xl text-base text-zinc-700">
-              以下 {QUESTIONS.length} 題都已用紅圈
-              <span className="mx-1 inline-flex items-center gap-1 rounded-full border-2 border-rose-600 bg-rose-500 py-0.5 pl-1 pr-2 text-xs font-bold text-white align-middle">
-                <span className="flex size-4 items-center justify-center rounded-full bg-white text-[10px] font-black text-rose-600">
-                  ?
+          <h2 className="text-2xl font-bold tracking-tight text-emerald-900">本頁需求已全部對齊</h2>
+          <p className="mt-2 max-w-3xl text-sm text-zinc-700">
+            32 題客戶需求 review 已完成,訂單列表規則全部直接反映在 mockup 上。
+          </p>
+          <ul className="mt-5 grid max-w-4xl grid-cols-1 gap-2 text-sm text-zinc-700 lg:grid-cols-2">
+            {[
+              "訂單狀態 7 個:待付款/已付款/備貨中/已出貨/已完成/已取消/已退款",
+              "顯示網站新訂單 + 凌越歷史(default 近 2 年)",
+              "凌越歷史訂單以 indigo badge 區分",
+              "公版 / 私版 / 樣品 類型 badge 區分",
+              "已出貨訂單 → 顯示物流商 + 單號 + 「查詢運送狀態」按鈕(連物流商官網)",
+              "已完成公版 → 「再訂一次」加進購物車",
+              "已完成私版 → 「再次詢價」進詢價系統",
+              "待付款訂單 → 「完成付款」CTA + 7 天自動取消提示",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 </span>
-                Q
-              </span>
-              標註於上方畫面對應的元件上，您可以直接點畫面上的紅圈留言；下方為對照表，方便整體檢視。
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {QUESTIONS.map((q) => (
-              <article
-                key={q.no}
-                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
-              >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
-                  {q.no}
-                </span>
-                <div className="flex-1">
-                  <h3 className="text-base font-bold leading-snug text-zinc-900">
-                    {q.question}
-                  </h3>
-                  {q.context && (
-                    <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
-                      {q.context}
-                    </p>
-                  )}
-                  {q.pinnedAt && (
-                    <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">
-                      <span aria-hidden>↑</span>
-                      已標註於：{q.pinnedAt}
-                    </p>
-                  )}
-                  {q.clientRef && (
-                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
-                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
-                          <ClipboardIcon /> 您的需求表
-                        </span>
-                        <span className="text-sky-300">·</span>
-                        <span className="font-medium text-sky-700">
-                          {q.clientRef.source}
-                        </span>
-                      </div>
-                      <div className="text-sm leading-relaxed text-zinc-800">
-                        「{q.clientRef.quote}」
-                      </div>
-                      {q.clientRef.note && (
-                        <div className="mt-1 text-xs text-zinc-500">
-                          {q.clientRef.note}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="shrink-0">
-                  <CommentTrigger
-                    pageId={PAGE_ID}
-                    elementId={`question-${q.no}`}
-                    elementLabel={`${q.no}：${q.question}`}
-                    variant="icon"
-                  />
-                </div>
-              </article>
+                <span>{t}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       <ModuleFooterNav
-        prev={{ title: "會員首頁", href: "/modules/members" }}
-        next={{ title: "訂單詳情", href: "/modules/members/orders/HJ-20260427-001" }}
+        prev={{ title: "會員儀表板", href: "/modules/members" }}
+        next={{ title: "訂單詳情", href: "/modules/members/orders/HJ-2026-0505-0042" }}
       />
     </main>
   );
