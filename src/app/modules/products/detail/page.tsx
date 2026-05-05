@@ -15,28 +15,22 @@ const PAGE_ID = "products-detail";
 const PAGE_LABEL = "公版商品系統 — 商品詳情頁";
 const ACTIVE_TAB = "detail";
 
+// 32 題 review 已決議事項(直接反映在 mockup 上,不再列為待確認):
+// - 同頁切換規格選擇器(A 包 Q-A4)
+// - 規格組合 SKU 各自獨立 + 庫存分開(D 包)
+// - 訪客看一般價、會員看等級價(C 包)
+// - 樣品申請限會員、免費 + 收運費(A 包)
+
 const QUESTIONS = [
   {
     no: "Q1",
-    question: "商品影片來源？",
-    context: "選項：後台直接上傳影片檔 / 嵌入 YouTube、Vimeo 連結",
+    question: "商品影片來源?",
+    context: "選項:(a) 後台直接上傳影片檔(佔伺服器空間,但完全自主) / (b) 嵌入 YouTube、Vimeo 連結(省空間)。3D 圖延用 pacdora 模板連結。",
     pinnedAt: "圖片區下方「商品影片」按鈕",
     clientRef: {
       source: "後台 / 公版商品 (5)",
       quote: "商品頁可+影片 or 3D 圖（連結 pacdora.com 模板）",
-      note: "您有寫要有影片或 3D 圖，並給了 pacdora 範例（為 3D 模板），但「影片」是上傳檔還是 YouTube/Vimeo 嵌入未指定。",
-    },
-  },
-  {
-    no: "Q2",
-    question: "詳情頁是否顯示「會員專屬價」？非會員看到什麼？",
-    context:
-      "HJ 現網站做法：未登入只看到「立即登入/註冊」，登入後才看到價格。要保留這做法、還是改成「非會員看零售價、會員看折扣價」？",
-    pinnedAt: "價格區",
-    clientRef: {
-      source: "前台 / 公版商品系列 (1) + 後台 / 顧客管理 (2)",
-      quote: "提供給客人下單；多層會員分級：商品會因顧客分級而有不同價",
-      note: "您有寫要讓客人下單、會員分級不同價，但「非會員看零售價 vs 必須登入才看價」這個常見岔路未指定。",
+      note: "3D 已給 pacdora 範例;影片來源仍須選 (a) 或 (b)。",
     },
   },
 ];
