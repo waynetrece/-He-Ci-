@@ -1,51 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
   MockupSiteFooter,
   MockupSiteHeader,
 } from "../MockupShell";
 
-/* ============== Q definitions ============== */
-
-const Q1 = {
-  no: "Q1",
-  question: "一般會員與企業客戶是否共用同一套等級系統，還是各自獨立？各有幾級、等級名稱、升降級規則、價格生效時間？當會員等級價、企業合約價、ERP 客戶特殊價同時存在時，價格優先順序如何判定？",
-  context:
-    "目前先以這樣示意：個人會員顯示「VIP 銀級」、企業客戶顯示「合作客戶 A 級」當示意。實際命名與分級數想請 HJ 提供。價格優先順序也是計價邏輯核心，需確認。",
-  clientRef: {
-    source: "後台 / 顧客管理 (2)",
-    quote: "多層會員分級：商品會因顧客分級而有不同價",
-    note: "需求表寫了「多層分級」，但兩種會員的等級系統是否共用、命名、升降級規則、與 ERP / 合約價的優先順序皆未提供。",
-  },
-};
-
-const Q2 = {
-  no: "Q2",
-  question: "會員首頁依會員類型顯示什麼差異？個人會員的會員首頁要隱藏哪些區塊（公司資料卡 / 詢價紀錄 / 多門市等）？ERP 客戶編號是否在會員自己看的畫面顯示？",
-  context:
-    "目前先以這樣示意：企業客戶頂部有「公司資料卡」（公司名 / 統編 / ERP 客戶編號 / 等級 / 價格級距）；個人會員此區塊隱藏，改顯示精簡版會員資料。想請 HJ 確認顯示策略。",
-  clientRef: {
-    source: "後台 / 顧客管理 (1)(2)",
-    quote: "API 串接：網站客人需與原 ERP 客戶編號相同；多層會員分級",
-    note: "需求表沒有指定 ERP 客戶編號是否要對會員自己顯示，也沒有規定會員首頁在兩種會員間的差異。",
-  },
-};
-
-const Q3 = {
-  no: "Q3",
-  question: "價格顯示規則 — 未登入訪客 / 個人會員 / 企業客戶分別看到什麼價格？顯示原價、會員價、企業價、請洽詢，還是隱藏價格？",
-  context:
-    "目前先以這樣示意：個人會員顯示「會員價」+「原價劃掉」；企業客戶顯示「合約價」+「等級價」。實際是否顯示、要顯示什麼數字、未登入訪客看到的版本，想請 HJ 確認。",
-  clientRef: {
-    source: "後台 / 顧客管理 (2)",
-    quote: "多層會員分級：商品會因顧客分級而有不同價",
-    note: "需求表寫了「不同價」，但「不同身份看到什麼版本」未指定。",
-  },
-};
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 會員 4 等級 = 北部直客 / 北部盤商 / 中南部直客 / 中南部盤商(由業務指派 — C 包)
+// - 不分「個人 / 企業」分流(統一一個流程,等級由業務後台指派)
+// - 凌越客編綁定 = 內部處理,等簽約後對齊(Q-C1 / Q-C2),不直接對會員顯示
+// - 註冊後業務 1 個工作天聯繫設定等級,設定前可瀏覽公版、申請樣品
+//
+// 已 deprecated 概念(原 mockup 有,review 不採用):
+// - 個人會員 / 企業客戶 切換(原 demo toggle)
+// - VIP 銀級 / 合作客戶 A 級(舊命名)
+// - ERP 客戶編號對會員顯示(改為內部處理)
 
 /* ============== Icons ============== */
 
@@ -118,85 +89,59 @@ function LogOutIcon() {
   );
 }
 
+function PhoneIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
+
+function MessageIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
 /* ============== Component ============== */
 
-type ViewType = "personal" | "business";
-
 export function MemberDashboardMockup({
-  annotations = false,
-  pageId = "members-dashboard",
+  annotations: _annotations,
+  pageId: _pageId,
 }: {
   annotations?: boolean;
   pageId?: string;
 }) {
-  const [view, setView] = useState<ViewType>("business");
-
-  const profile =
-    view === "business"
-      ? {
-          greeting: "禾啟餐飲有限公司",
-          subGreeting: "聯絡人：陳先生",
-          tier: "合作客戶 A 級",
-          tierColor: "bg-amber-600",
-          companyName: "禾啟餐飲有限公司",
-          taxId: "12345678",
-          erpCode: "HJC-A-00231",
-          priceLevel: "A 級價（合約價優先）",
-        }
-      : {
-          greeting: "陳先生",
-          subGreeting: "歡迎回來",
-          tier: "VIP 銀級",
-          tierColor: "bg-zinc-500",
-          companyName: null,
-          taxId: null,
-          erpCode: null,
-          priceLevel: "VIP 銀級價",
-        };
+  // 統一一個流程 — 4 等級由業務後台指派,demo 用「北部直客」當示意
+  const profile = {
+    name: "陳先生",
+    company: "禾啟餐飲",
+    tier: "北部直客",
+    tierColor: "bg-amber-600",
+    salesContact: {
+      name: "王業務",
+      phone: "0912-345-678",
+      lineId: "@hj-sales-wang",
+    },
+  };
 
   return (
     <MockupShell url="https://hjhj.com.tw/members">
       <MockupSiteHeader />
-
-      {/* Mockup Demo Toggle (B2B vs Personal preview) — 不在實際網站，是 demo 用 */}
-      {/* Demo toggle — 不加 Annotated，因為這條本身就是 demo 工具，標題已自說明 */}
-      <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
-        <div className="mx-auto flex max-w-[1760px] items-center gap-3 text-xs">
-          <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">
-            預覽
-          </span>
-          <span className="text-zinc-700">
-            切換會員類型，確認不同會員看到的內容：
-          </span>
-          <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
-            {(["personal", "business"] as ViewType[]).map((v) => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                className={`rounded px-3 py-1 font-medium transition-colors ${
-                  view === v
-                    ? "bg-amber-700 text-white"
-                    : "text-zinc-600 hover:bg-zinc-50"
-                }`}
-              >
-                {v === "personal" ? "個人會員" : "企業客戶"}
-              </button>
-            ))}
-          </div>
-          <span className="ml-auto text-zinc-500 italic">
-            （實際網站會依登入身份自動顯示對應版本）
-          </span>
-        </div>
-      </div>
 
       {/* Hero with greeting + tier badge */}
       <section className="border-b border-zinc-200 bg-gradient-to-br from-amber-50 to-white px-6 py-7">
         <div className="mx-auto max-w-[1760px]">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="text-xs text-zinc-500">{profile.subGreeting}</div>
+              <div className="text-xs text-zinc-500">歡迎回來</div>
               <h1 className="mt-1 text-2xl font-bold text-zinc-900">
-                {profile.greeting}
+                {profile.name}
+                <span className="ml-2 text-base font-normal text-zinc-500">
+                  / {profile.company}
+                </span>
               </h1>
             </div>
             <div className="flex items-center gap-2">
@@ -218,119 +163,137 @@ export function MemberDashboardMockup({
         </div>
       </section>
 
-      {/* B2B 專屬：公司資料卡（個人會員隱藏） */}
-      {view === "business" && (
-        <section className="border-b border-zinc-200 bg-white px-6 py-6">
-          <div className="mx-auto max-w-[1760px]">
-            <Questioned
-              show={annotations}
-              questions={[Q2]}
-              pageId={pageId}
-              position="top-right"
-            >
-              <div className="rounded-xl border-2 border-amber-300 bg-amber-50/30 p-5 shadow-sm">
-                <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
-                    公司資料
-                  </h2>
-                  <Link
-                    href="/modules/members/settings"
-                    className="text-xs text-amber-700 hover:underline flex items-center gap-1"
-                  >
-                    編輯資料
-                    <ChevronRight />
-                  </Link>
+      {/* 帳戶資訊卡 — 等級 / 業務窗口 */}
+      <section className="border-b border-zinc-200 bg-white px-6 py-6">
+        <div className="mx-auto max-w-[1760px]">
+          <div className="grid gap-4 lg:grid-cols-2">
+            {/* 等級 + 適用價格 */}
+            <div className="rounded-xl border-2 border-amber-200 bg-amber-50/40 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-amber-900">
+                  您的會員等級
+                </h2>
+                <span className="text-[10px] font-medium text-amber-700">
+                  由 HJ 業務依採購地區與通路指派
+                </span>
+              </div>
+              <div className="grid gap-4 text-sm md:grid-cols-2">
+                <div>
+                  <div className="text-xs text-zinc-500">目前等級</div>
+                  <div className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-2.5 py-1 text-xs font-bold text-white">
+                    <CrownIcon />
+                    {profile.tier}
+                  </div>
                 </div>
-                <div className="grid gap-4 text-sm md:grid-cols-2 lg:grid-cols-4">
-                  <Field label="公司名稱" value={profile.companyName!} />
-                  <Field label="統一編號" value={profile.taxId!} mono />
-                  <Field label="ERP 客戶編號" value={profile.erpCode!} mono highlight />
-                  <Questioned
-                    show={annotations}
-                    questions={[Q1, Q3]}
-                    pageId={pageId}
-                    position="top-right"
-                  >
-                    <Field label="目前價格級距" value={profile.priceLevel} />
-                  </Questioned>
+                <div>
+                  <div className="text-xs text-zinc-500">適用價格</div>
+                  <div className="mt-1 font-bold text-zinc-900">
+                    北部直客專屬價(會員價)
+                  </div>
                 </div>
               </div>
-            </Questioned>
-          </div>
-        </section>
-      )}
+              <p className="mt-3 text-xs leading-relaxed text-zinc-600">
+                會員 4 等級:
+                <span className="mx-1 font-semibold text-amber-800">
+                  北部直客 / 北部盤商 / 中南部直客 / 中南部盤商
+                </span>
+                。等級由業務指派,如需調整請聯繫專屬業務。
+              </p>
+            </div>
 
-      {/* 個人會員：簡化版 profile bar（價格級距還是顯示） */}
-      {view === "personal" && (
-        <section className="border-b border-zinc-200 bg-white px-6 py-4">
-          <div className="mx-auto max-w-[1760px]">
-            <Questioned
-              show={annotations}
-              questions={[Q1, Q3]}
-              pageId={pageId}
-              position="top-right"
-            >
-              <div className="rounded-lg bg-zinc-50/60 p-4 text-sm flex flex-wrap items-center gap-x-6 gap-y-2">
-                <span className="text-zinc-600">您目前的會員等級：</span>
-                <span className="font-bold text-zinc-900">{profile.tier}</span>
-                <span className="text-zinc-300">|</span>
-                <span className="text-zinc-600">適用價格：</span>
-                <span className="font-bold text-zinc-900">{profile.priceLevel}</span>
+            {/* 專屬業務窗口 */}
+            <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/30 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-emerald-900">
+                  您的專屬業務
+                </h2>
+                <span className="text-[10px] font-medium text-emerald-700">
+                  訂單、報價、樣品問題請聯繫
+                </span>
               </div>
-            </Questioned>
+              <div className="flex items-center gap-3">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-base font-bold text-white">
+                  {profile.salesContact.name.slice(0, 1)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-base font-bold text-zinc-900">
+                    {profile.salesContact.name}
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-3 text-xs text-zinc-600">
+                    <span className="inline-flex items-center gap-1">
+                      <PhoneIcon />
+                      <span className="font-mono">
+                        {profile.salesContact.phone}
+                      </span>
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <MessageIcon />
+                      <span className="font-mono">
+                        LINE {profile.salesContact.lineId}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <a
+                  href="https://line.me/R/ti/p/@hj-sales-wang"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg bg-emerald-500 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-600"
+                >
+                  LINE 聯繫
+                </a>
+              </div>
+            </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
+
+      {/* 統計快覽 */}
+      <section className="border-b border-zinc-200 bg-white px-6 py-5">
+        <div className="mx-auto max-w-[1760px]">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Stat label="進行中訂單" value="3" suffix="筆" tone="amber" />
+            <Stat label="待付款" value="1" suffix="筆" tone="rose" />
+            <Stat label="詢價單進行中" value="2" suffix="筆" tone="violet" />
+            <Stat label="樣品已寄出" value="2" suffix="筆" tone="emerald" />
+          </div>
+        </div>
+      </section>
 
       {/* Cards grid */}
       <section className="bg-zinc-50/40 px-6 py-8">
         <div className="mx-auto max-w-[1760px]">
-          <h2 className="mb-4 text-base font-bold text-zinc-700">
-            快速功能
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {/* 歷史訂單 */}
+          <h2 className="mb-4 text-base font-bold text-zinc-700">快速功能</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card
               icon={<PackageIcon />}
               title="歷史訂單"
-              subtitle="近 30 天 5 筆"
-              meta="最近：HJ-20260427-001 已出貨"
+              subtitle="網站訂單 + 凌越歷史"
+              meta="近 30 天 5 筆;凌越歷史預設近 2 年"
               href="/modules/members/orders"
               tone="amber"
             />
-
-            {/* 詢價紀錄（B2B 專屬，個人視 Q11） */}
-            {view === "business" && (
-              <Card
-                icon={<FileTextIcon />}
-                title="我的詢價紀錄"
-                subtitle="3 筆進行中"
-                meta="2 筆等客服回覆"
-                href="/modules/members/quote-list"
-                tone="indigo"
-                badge="企業專屬"
-              />
-            )}
-
-            {/* 樣品紀錄 */}
+            <Card
+              icon={<FileTextIcon />}
+              title="詢價紀錄"
+              subtitle="2 筆進行中"
+              meta="私版客製詢價單,業務透過 LINE 報價"
+              href="/modules/members/quote-list"
+              tone="violet"
+            />
             <Card
               icon={<GiftIcon />}
               title="樣品申請紀錄"
               subtitle="2 筆已寄出"
-              meta="1 筆已送達"
+              meta="每品項 ≤ 3、最多 10 款、總數 ≤ 30"
               href="/modules/members/samples"
               tone="emerald"
             />
-
-            {/* 帳號設定 */}
             <Card
               icon={<SettingsIcon />}
-              title={view === "business" ? "帳號與公司資料" : "帳號設定"}
-              subtitle={
-                view === "business"
-                  ? "公司 / 發票 / 多門市地址"
-                  : "基本資料 / 收件地址"
-              }
+              title="帳號設定"
+              subtitle="基本資料 / 收件地址 / 發票"
+              meta="LINE 綁定狀態、密碼變更"
               href="/modules/members/settings"
               tone="zinc"
             />
@@ -345,7 +308,7 @@ export function MemberDashboardMockup({
             <h2 className="text-base font-bold text-zinc-900">最近訂單</h2>
             <Link
               href="/modules/members/orders"
-              className="text-sm text-amber-700 hover:underline flex items-center gap-1"
+              className="flex items-center gap-1 text-sm text-amber-700 hover:underline"
             >
               查看全部
               <ChevronRight />
@@ -358,6 +321,7 @@ export function MemberDashboardMockup({
                   <th className="px-4 py-2.5 text-left font-medium">訂單號</th>
                   <th className="px-4 py-2.5 text-left font-medium">日期</th>
                   <th className="px-4 py-2.5 text-left font-medium">商品</th>
+                  <th className="px-4 py-2.5 text-left font-medium">來源</th>
                   <th className="px-4 py-2.5 text-right font-medium">金額</th>
                   <th className="px-4 py-2.5 text-center font-medium">狀態</th>
                   <th className="px-4 py-2.5"></th>
@@ -368,26 +332,32 @@ export function MemberDashboardMockup({
                   {
                     id: "HJ-20260427-001",
                     date: "2026/04/27",
-                    items: "12oz 客製紙杯 × 5,000",
-                    amount: "9,250",
+                    items: "12oz 公版瓦楞紙杯 × 2 箱",
+                    source: "網站",
+                    sourceTone: "emerald",
+                    amount: "8,400",
                     status: "已出貨",
-                    tone: "emerald",
+                    statusTone: "emerald",
                   },
                   {
                     id: "HJ-20260420-008",
                     date: "2026/04/20",
-                    items: "牛皮紙便當盒 × 2,000 + 餐具組",
+                    items: "牛皮紙便當盒 × 5 條 + 餐具組 × 3 條",
+                    source: "網站",
+                    sourceTone: "emerald",
                     amount: "12,800",
                     status: "已完成",
-                    tone: "zinc",
+                    statusTone: "zinc",
                   },
                   {
-                    id: "HJ-20260415-003",
-                    date: "2026/04/15",
-                    items: "客製模切紙袋 × 500",
-                    amount: "—（客服報價中）",
-                    status: "備貨中",
-                    tone: "amber",
+                    id: "LY-20251218-417",
+                    date: "2025/12/18",
+                    items: "客製模切紙袋 × 1,000 + 杯蓋 × 2 條",
+                    source: "凌越歷史",
+                    sourceTone: "indigo",
+                    amount: "23,500",
+                    status: "已完成",
+                    statusTone: "zinc",
                   },
                 ].map((o) => (
                   <tr key={o.id} className="hover:bg-zinc-50/60">
@@ -401,15 +371,26 @@ export function MemberDashboardMockup({
                     </td>
                     <td className="px-4 py-3 text-zinc-600">{o.date}</td>
                     <td className="px-4 py-3 text-zinc-800">{o.items}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                          o.sourceTone === "indigo"
+                            ? "bg-indigo-100 text-indigo-800"
+                            : "bg-emerald-100 text-emerald-800"
+                        }`}
+                      >
+                        {o.source}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-right font-mono text-zinc-700">
                       NT$ {o.amount}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                          o.tone === "emerald"
+                          o.statusTone === "emerald"
                             ? "bg-emerald-100 text-emerald-800"
-                            : o.tone === "amber"
+                            : o.statusTone === "amber"
                               ? "bg-amber-100 text-amber-800"
                               : "bg-zinc-100 text-zinc-700"
                         }`}
@@ -438,24 +419,30 @@ export function MemberDashboardMockup({
   );
 }
 
-function Field({
+function Stat({
   label,
   value,
-  mono,
-  highlight,
+  suffix,
+  tone,
 }: {
   label: string;
   value: string;
-  mono?: boolean;
-  highlight?: boolean;
+  suffix?: string;
+  tone: "amber" | "rose" | "violet" | "emerald";
 }) {
+  const toneCls = {
+    amber: "border-amber-200 bg-amber-50/40 text-amber-900",
+    rose: "border-rose-200 bg-rose-50/40 text-rose-900",
+    violet: "border-violet-200 bg-violet-50/40 text-violet-900",
+    emerald: "border-emerald-200 bg-emerald-50/40 text-emerald-900",
+  }[tone];
+
   return (
-    <div>
-      <div className="text-xs text-zinc-500">{label}</div>
-      <div
-        className={`mt-1 ${mono ? "font-mono" : ""} ${highlight ? "rounded bg-amber-100 px-2 py-0.5 inline-block text-amber-900" : "text-zinc-900"} font-bold`}
-      >
-        {value}
+    <div className={`rounded-lg border-2 px-4 py-3 ${toneCls}`}>
+      <div className="text-xs font-medium opacity-80">{label}</div>
+      <div className="mt-1 flex items-baseline gap-1">
+        <span className="text-2xl font-bold">{value}</span>
+        {suffix && <span className="text-sm font-medium opacity-70">{suffix}</span>}
       </div>
     </div>
   );
@@ -468,22 +455,21 @@ function Card({
   meta,
   href,
   tone,
-  badge,
-  dot,
 }: {
   icon: React.ReactNode;
   title: string;
   subtitle: string;
   meta?: string;
   href: string;
-  tone: "amber" | "indigo" | "emerald" | "zinc";
-  badge?: string;
-  dot?: "ok" | "warn";
+  tone: "amber" | "violet" | "emerald" | "zinc";
 }) {
   const toneCls = {
-    amber: "border-amber-200 bg-white hover:border-amber-400 [&_.icon-bg]:bg-amber-100 [&_.icon-bg]:text-amber-700",
-    indigo: "border-indigo-200 bg-white hover:border-indigo-400 [&_.icon-bg]:bg-indigo-100 [&_.icon-bg]:text-indigo-700",
-    emerald: "border-emerald-200 bg-white hover:border-emerald-400 [&_.icon-bg]:bg-emerald-100 [&_.icon-bg]:text-emerald-700",
+    amber:
+      "border-amber-200 bg-white hover:border-amber-400 [&_.icon-bg]:bg-amber-100 [&_.icon-bg]:text-amber-700",
+    violet:
+      "border-violet-200 bg-white hover:border-violet-400 [&_.icon-bg]:bg-violet-100 [&_.icon-bg]:text-violet-700",
+    emerald:
+      "border-emerald-200 bg-white hover:border-emerald-400 [&_.icon-bg]:bg-emerald-100 [&_.icon-bg]:text-emerald-700",
     zinc: "border-zinc-200 bg-white hover:border-zinc-400 [&_.icon-bg]:bg-zinc-100 [&_.icon-bg]:text-zinc-700",
   }[tone];
 
@@ -496,21 +482,13 @@ function Card({
         <span className="icon-bg flex size-10 items-center justify-center rounded-lg">
           {icon}
         </span>
-        {badge && (
-          <span className="rounded-full bg-zinc-900 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-            {badge}
-          </span>
-        )}
-        {dot && (
-          <span
-            className={`size-2.5 rounded-full ${dot === "ok" ? "bg-emerald-500" : "bg-amber-500"}`}
-          />
-        )}
       </div>
       <div className="font-bold text-zinc-900">{title}</div>
       <div className="mt-1 text-sm font-medium text-zinc-700">{subtitle}</div>
       {meta && (
-        <div className="mt-1.5 text-xs text-zinc-500 leading-relaxed">{meta}</div>
+        <div className="mt-1.5 text-xs leading-relaxed text-zinc-500">
+          {meta}
+        </div>
       )}
       <div className="mt-3 flex items-center text-xs font-medium text-amber-700 group-hover:text-amber-900">
         前往

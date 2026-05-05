@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ClipboardIcon,
-  CommentToolbar,
-  CommentTrigger,
-} from "@/components/modules/CommentSystem";
+import { CommentToolbar } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { MemberDashboardMockup } from "@/components/modules/mockups/MemberDashboardMockup";
 import { MEMBER_MOCKUPS } from "@/lib/members-mockups";
@@ -15,44 +11,13 @@ const PAGE_ID = "members-dashboard";
 const PAGE_LABEL = "會員系統 — 會員首頁";
 const ACTIVE_TAB = "dashboard";
 
-const QUESTIONS = [
-  {
-    no: "Q1",
-    question: "一般會員與企業客戶是否共用同一套等級系統？各有幾級、等級名稱、升降級規則、價格生效時間？會員等級價、合約價、ERP 客戶特殊價的優先順序？",
-    context:
-      "目前先以這樣示意：個人會員顯示「VIP 銀級」；企業客戶顯示「合作客戶 A 級 + 合約價」。實際命名、層級數、升降級邏輯、與 ERP / 合約價的優先順序皆想請 HJ 提供。這是計價邏輯核心。",
-    pinnedAt: "會員首頁『快速功能』+ 等級徽章區",
-    clientRef: {
-      source: "後台 / 顧客管理 (2)",
-      quote: "多層會員分級：商品會因顧客分級而有不同價",
-      note: "需求表寫了「多層分級」，但兩種會員的等級系統是否共用、命名、升降級規則、與 ERP / 合約價的優先順序皆未提供。",
-    },
-  },
-  {
-    no: "Q2",
-    question: "會員首頁依會員類型顯示什麼差異？個人會員的會員首頁要隱藏哪些區塊（公司資料卡 / 詢價紀錄 / 多門市等）？ERP 客戶編號是否在會員自己看的畫面顯示？",
-    context:
-      "目前先以這樣示意：企業客戶頂部有「公司資料卡」（公司名 / 統編 / ERP 客戶編號 / 等級 / 價格級距）；個人會員此區塊隱藏，改顯示精簡版。想請 HJ 確認顯示策略。",
-    pinnedAt: "公司資料卡（企業版）",
-    clientRef: {
-      source: "後台 / 顧客管理 (1)(2)",
-      quote: "API 串接：網站客人需與原 ERP 客戶編號相同；多層會員分級",
-      note: "需求表沒有指定 ERP 客戶編號是否要對會員自己顯示，也沒有規定會員首頁在兩種會員間的差異。",
-    },
-  },
-  {
-    no: "Q3",
-    question: "價格顯示規則 — 未登入訪客 / 個人會員 / 企業客戶分別看到什麼價格？顯示原價、會員價、企業價、請洽詢，還是隱藏價格？",
-    context:
-      "目前先以這樣示意：個人會員顯示「會員價」+「原價劃掉」；企業客戶顯示「合約價」+「等級價」。實際是否顯示、要顯示什麼數字、未登入訪客看到的版本，想請 HJ 確認。",
-    pinnedAt: "個人會員精簡資料列『適用價格』",
-    clientRef: {
-      source: "後台 / 顧客管理 (2)",
-      quote: "多層會員分級：商品會因顧客分級而有不同價",
-      note: "需求表寫了「不同價」，但「不同身份看到什麼版本」未指定。",
-    },
-  },
-];
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 會員 4 等級 = 北部直客 / 北部盤商 / 中南部直客 / 中南部盤商(由業務指派 — C 包)
+// - 不分「個人 / 企業」分流(統一一個流程,等級由業務後台指派)
+// - 凌越客編綁定 = 內部處理,等簽約後對齊(Q-C1 / Q-C2),不直接對會員顯示
+// - 訂單來源 = 網站訂單 + 凌越歷史(預設近 2 年)— B 包
+// - 詢價單 = 私版客製,業務透過 LINE 報價(A 包)
+// - 樣品 = 每品項 ≤ 3、最多 10 款、總數 ≤ 30(A 包)
 
 export default function MembersDashboardPage() {
   const [annotations, setAnnotations] = useState(true);
@@ -66,11 +31,10 @@ export default function MembersDashboardPage() {
         setAnnotations={setAnnotations}
       />
 
-      {/* Mockup tabs */}
       <section className="border-b-2 border-zinc-400 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-2">
           <span className="mr-2 text-sm font-medium text-amber-900">
-            會員系統 預覽：
+            會員系統 預覽:
           </span>
           {MEMBER_MOCKUPS.map((m) => {
             const active = m.id === ACTIVE_TAB;
@@ -85,7 +49,7 @@ export default function MembersDashboardPage() {
               <>
                 {m.name}
                 {!m.ready && (
-                  <span className="ml-1 text-[10px] opacity-60">（製作中）</span>
+                  <span className="ml-1 text-[10px] opacity-60">(製作中)</span>
                 )}
               </>
             );
@@ -102,95 +66,57 @@ export default function MembersDashboardPage() {
         </div>
       </section>
 
-      {/* Mockup */}
       <section className="bg-zinc-200/70 px-6 py-10">
         <div className="mx-auto max-w-[1760px]">
           <MemberDashboardMockup annotations={annotations} pageId={PAGE_ID} />
         </div>
       </section>
 
-      {/* Confirmation section */}
-      <section className="border-t-2 border-zinc-400 bg-amber-50/40 px-6 py-16">
+      {/* Resolution summary */}
+      <section className="border-t-2 border-zinc-400 bg-emerald-50/40 px-6 py-12">
         <div className="mx-auto max-w-[1760px]">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold tracking-tight text-amber-900">
-              本頁待確認的項目（共 {QUESTIONS.length} 題）
-            </h2>
-            <p className="mt-3 max-w-3xl text-base text-zinc-700">
-              以下 {QUESTIONS.length} 題都已用紅圈
-              <span className="mx-1 inline-flex items-center gap-1 rounded-full border-2 border-rose-600 bg-rose-500 py-0.5 pl-1 pr-2 text-xs font-bold text-white align-middle">
-                <span className="flex size-4 items-center justify-center rounded-full bg-white text-[10px] font-black text-rose-600">
-                  ?
+          <h2 className="text-2xl font-bold tracking-tight text-emerald-900">
+            本頁需求已全部對齊
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm text-zinc-700">
+            32 題 review C 包已決議,會員系統不分個人/企業,統一一個流程;等級由業務後台指派,凌越客編內部處理。
+          </p>
+          <ul className="mt-5 grid max-w-4xl grid-cols-1 gap-2 text-sm text-zinc-700 lg:grid-cols-2">
+            {[
+              "會員 4 等級 = 北部直客 / 北部盤商 / 中南部直客 / 中南部盤商",
+              "等級由 HJ 業務依採購地區與通路指派(C 包)",
+              "不分「個人 / 企業」分流,統一一個流程",
+              "凌越客編綁定 = 內部處理,不直接對會員顯示(Q-C1 / Q-C2)",
+              "註冊後業務 1 工作天內聯繫設定等級",
+              "歷史訂單 = 網站訂單 + 凌越歷史(預設近 2 年)",
+              "詢價單 = 私版客製,LINE 報價(A 包)",
+              "樣品申請限額:每品項 ≤ 3、最多 10 款、總數 ≤ 30",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 </span>
-                Q
-              </span>
-              標註於上方畫面對應的元件上，您可以直接點畫面上的紅圈留言；下方為對照表，方便整體檢視。
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {QUESTIONS.map((q) => (
-              <article
-                key={q.no}
-                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
-              >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
-                  {q.no}
-                </span>
-                <div className="flex-1">
-                  <h3 className="text-base font-bold leading-snug text-zinc-900">
-                    {q.question}
-                  </h3>
-                  {q.context && (
-                    <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
-                      {q.context}
-                    </p>
-                  )}
-                  {q.pinnedAt && (
-                    <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">
-                      <span aria-hidden>↑</span>
-                      已標註於：{q.pinnedAt}
-                    </p>
-                  )}
-                  {q.clientRef && (
-                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
-                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
-                          <ClipboardIcon /> 您的需求表
-                        </span>
-                        <span className="text-sky-300">·</span>
-                        <span className="font-medium text-sky-700">
-                          {q.clientRef.source}
-                        </span>
-                      </div>
-                      <div className="text-sm leading-relaxed text-zinc-800">
-                        「{q.clientRef.quote}」
-                      </div>
-                      {q.clientRef.note && (
-                        <div className="mt-1 text-xs text-zinc-500">
-                          {q.clientRef.note}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="shrink-0">
-                  <CommentTrigger
-                    pageId={PAGE_ID}
-                    elementId={`question-${q.no}`}
-                    elementLabel={`${q.no}：${q.question}`}
-                    variant="icon"
-                  />
-                </div>
-              </article>
+                <span>{t}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       <ModuleFooterNav
         prev={{ title: "註冊／登入", href: "/modules/members/auth" }}
-        next={{ title: "訂單詳情", href: "/modules/members/orders/HJ-20260427-001" }}
+        next={{ title: "歷史訂單", href: "/modules/members/orders" }}
       />
     </main>
   );
