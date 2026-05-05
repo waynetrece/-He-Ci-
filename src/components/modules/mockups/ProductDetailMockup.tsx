@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Annotated, Questioned } from "../CommentSystem";
+import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
   MockupSiteFooter,
@@ -74,22 +74,6 @@ function BellIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
       <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
-  );
-}
-function PencilIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-    </svg>
-  );
-}
-function ArrowRightIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
     </svg>
   );
 }
@@ -444,28 +428,6 @@ export function ProductDetailMockup({
               </div>
             </div>
 
-            {/* 私版客製入口 */}
-            {annotations ? (
-              <Annotated
-                show
-                source="ours"
-                label="加值功能(jcolor 啟發)"
-                title="按需客製 / 私版報價入口"
-                rationale={
-                  "在公版商品詳情頁加一個明顯的「私版報價」按鈕,導到「私版客製商品報價系統」。\n\n" +
-                  "原因:企業會員看公版商品時,常會想到「我要印自家 logo / 改尺寸 / 改材質」。如果沒有明確入口,他們只能離開或寄信問業務,轉換率降低。\n\n" +
-                  "範例:[jcolor BC-67](https://www.jcolor.com.tw/product/BC-67) 在公版商品旁就有「按需客製」按鈕,是公版→客製的橋。"
-                }
-                pageId={pageId}
-                elementId="custom-cta"
-                elementLabel="按需客製入口"
-                position="top-right"
-              >
-                <CustomCtaButton />
-              </Annotated>
-            ) : (
-              <CustomCtaButton />
-            )}
           </div>
         </div>
       </div>
@@ -517,19 +479,6 @@ export function ProductDetailMockup({
 
       <MockupSiteFooter />
     </MockupShell>
-  );
-}
-
-function CustomCtaButton() {
-  return (
-    <Link
-      href="/modules/private-quote"
-      className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-amber-700 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800 hover:bg-amber-100"
-    >
-      <PencilIcon />
-      需要客製印刷？走「私版客製報價系統」
-      <ArrowRightIcon />
-    </Link>
   );
 }
 
