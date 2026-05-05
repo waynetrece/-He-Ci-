@@ -7,76 +7,20 @@ import {
 } from "../MockupShell";
 
 /* ============== Questions pinned to elements ============== */
-const Q_SPEC = [
-  {
-    no: "Q1",
-    question: "多層規格選項要支援幾層？",
-    context: "例：紙杯 → 容量（8oz/12oz）→ 材質（PE/PLA）→ 印刷（單面/雙面）= 3 層",
-    clientRef: {
-      source: "前台 / 公版商品系列 (3)",
-      quote: "多層 規格&選項",
-      note: "您有寫「多層」，但未指定支援幾層 → 我們需要您確認層數上限。",
-    },
-  },
-  {
-    no: "Q2",
-    question: "不同規格組合要分開算庫存嗎？",
-    context: "例：「8oz 白色紙杯」賣完了，「12oz 白色紙杯」還能不能賣？分開算 → 各自獨立、其中一款缺貨不影響其他款；合併算 → 同款商品共用一個庫存數字，其中一個沒了全部都擋下。",
-    clientRef: {
-      source: "後台 / 庫存管理 (1)(2)(3) + 顧客管理 (1)（隱含）",
-      quote: "API 串接：庫存即時更新／部分商品需要預留庫存／缺貨提醒；網站客人需與原 ERP 客戶編號相同",
-      note: "您有寫要串 ERP 即時庫存，但未說明「庫存的最小單位是商品還是規格組合」→ 影響網站如何擋缺貨。",
-    },
-  },
-];
+// 32 題 review 已決議事項(直接反映在 mockup 上,不再列為待確認):
+// - 規格層數 → HJ 後台彈性配置(A 包 Q-A4)
+// - 規格組合庫存 → 各自獨立、凌越各自編號(D 包)
+// - 列表頁價格 → 訪客看一般價、會員看等級價(C 包)
+// - 樣品申請 → 限會員、免費 + 收運費、不需後台審核(A 包)
 
-const Q3 = {
-  no: "Q3",
-  question: "商品列表頁是否顯示價格？",
-  context: "許多企業電商會選擇隱藏價格，需登入才看得到。或一律顯示「請洽詢」字樣。",
-  clientRef: {
-    source: "前台 / 公版商品系列 (1)",
-    quote: "提供給客人下單",
-    note: "您有寫要讓客人下單（隱含要看得到價格），但未指定「列表頁直接顯示／詳情頁才顯示／必須登入才看得到」。",
-  },
-};
-const Q4 = {
-  no: "Q4",
+const Q_MEMBER_PRICE = {
+  no: "Q1",
   question: "分級會員看到的價格如何呈現？",
-  context: "選項：只顯示該等級價、原價劃掉+會員價、原價+折扣 % 等。",
+  context: "已決定:會員 4 等級 + 訪客看一般價。剩下 UI 呈現方式:(a) 只顯示該等級價、(b) 原價劃掉 + 會員價、(c) 原價 + 折扣 %。",
   clientRef: {
     source: "後台 / 顧客管理 (2)",
     quote: "多層會員分級：商品會因顧客分級而有不同價",
-    note: "您有寫「不同價」，但未指定呈現方式 → 我們需要您選一種。",
-  },
-};
-const Q5 = {
-  no: "Q5",
-  question: "樣品申請是否要收費？",
-  context: "選項：完全免費 / 樣品免費但運費自付 / 限金額或會員等級",
-  clientRef: {
-    source: "前台 / 公版商品系列 (2)",
-    quote: "樣品申請：每個商品頁增加樣品按鈕",
-    note: "您有寫要有樣品按鈕，但未提收費規則。",
-  },
-};
-const Q6 = {
-  no: "Q6",
-  question: "樣品申請是否限會員才能申請？",
-  clientRef: {
-    source: "前台 / 公版商品系列 (2)",
-    quote: "樣品申請：每個商品頁增加樣品按鈕",
-    note: "您有寫要有樣品按鈕，但未提資格限制。",
-  },
-};
-const Q7 = {
-  no: "Q7",
-  question: "樣品申請是否要後台審核才寄出？",
-  context: "選項：客戶送出即自動寄出 / 業務後台審核通過才寄出。後者可避免濫用，但會增加處理時間。",
-  clientRef: {
-    source: "前台 / 公版商品系列 (2)",
-    quote: "樣品申請：每個商品頁增加樣品按鈕",
-    note: "您有寫要有樣品按鈕，但未提審核流程。",
+    note: "「分等級不同價」已定,呈現方式仍須選一種。",
   },
 };
 
@@ -91,10 +35,9 @@ type QItem = {
   };
 };
 
-// 同主題的問題合併到同一個 pin，分散到不同卡片
+// 只剩第 1 張卡的價格區一個待確認問題
 const CARD_PINS: Record<number, { price?: QItem[]; sample?: QItem[] }> = {
-  0: { price: [Q3, Q4] },        // 第 1 張：價格區 Q3+Q4
-  2: { sample: [Q5, Q6, Q7] },   // 第 3 張：樣品按鈕 Q5+Q6+Q7
+  0: { price: [Q_MEMBER_PRICE] },
 };
 
 /* ============== Icons ============== */
@@ -266,24 +209,40 @@ function renderCardInner(
   const showCompare = annotations && annotateCompare;
   const showFields = annotations && annotateFields;
 
+  // 會員價對照表(範例:依等級不同呈現,以 8oz 公版瓦楞杯為例)
+  const memberPriceMap: Record<string, { base: string; member?: string }> = {
+    "PC-08-001": { base: "NT$ 1.8", member: "NT$ 1.5" },
+    "PC-12-001": { base: "NT$ 2.4", member: "NT$ 2.0" },
+    "PC-16-001": { base: "NT$ 3.2", member: "NT$ 2.6" },
+  };
+  const pricing = memberPriceMap[p.code] ?? { base: "NT$ 2.5" };
+
   const priceBlock = (
     <div className="mt-3 flex items-baseline justify-between border-t border-zinc-100 pt-3">
       <div>
-        <div className="text-lg font-bold text-zinc-900">請洽詢</div>
-        <div className="text-xs text-emerald-700 font-medium">
-          會員價請登入
+        <div className="flex items-baseline gap-2">
+          <span className="text-lg font-bold text-amber-700">{pricing.base}</span>
+          <span className="text-xs text-zinc-400">/ 個起</span>
         </div>
+        {pricing.member ? (
+          <div className="mt-0.5 text-xs font-medium text-emerald-700">
+            會員價 {pricing.member} <span className="text-zinc-400">(登入後顯示)</span>
+          </div>
+        ) : (
+          <div className="mt-0.5 text-xs text-zinc-500">登入查看會員價</div>
+        )}
       </div>
     </div>
   );
 
   const sampleBtn = (
-    <button
+    <Link
+      href="/modules/products/sample"
       className="flex items-center justify-center gap-1 rounded-md border border-emerald-400 bg-emerald-50 px-3 py-2.5 text-xs font-bold text-emerald-700 hover:bg-emerald-100 whitespace-nowrap"
-      title="申請樣品"
+      title="樣品申請(免費 + 收運費,限會員)"
     >
       申請樣品
-    </button>
+    </Link>
   );
 
   return (
@@ -319,8 +278,10 @@ function renderCardInner(
           const fieldsBlock = (
             <div>
               <div className="text-xs font-mono text-zinc-400">{p.code}</div>
-              <h3 className="mt-1 text-base font-bold text-zinc-900 leading-snug">
-                {p.name}
+              <h3 className="mt-1 text-base font-bold leading-snug">
+                <Link href="/modules/products/detail" className="text-zinc-900 hover:text-amber-700">
+                  {p.name}
+                </Link>
               </h3>
               <p className="mt-1.5 text-sm text-zinc-500">{p.spec}</p>
 
@@ -466,11 +427,11 @@ export function ProductListMockup({
       {/* Breadcrumb */}
       <div className="border-b border-zinc-100 bg-white px-6 py-2.5">
         <div className="mx-auto max-w-[1760px] text-xs text-zinc-500">
-          <a className="hover:text-zinc-900">首頁</a>
+          <Link href="/modules/home" className="hover:text-zinc-900">首頁</Link>
           <span className="mx-2 text-zinc-300">/</span>
-          <a className="hover:text-zinc-900">公版商品</a>
+          <Link href="/modules/products" className="hover:text-zinc-900">公版商品</Link>
           <span className="mx-2 text-zinc-300">/</span>
-          <a className="hover:text-zinc-900">紙杯／膠杯類</a>
+          <Link href="/modules/products/category" className="hover:text-zinc-900">紙杯／膠杯類</Link>
           <span className="mx-2 text-zinc-300">/</span>
           <span className="font-semibold text-zinc-900">公版瓦楞杯</span>
         </div>
@@ -548,30 +509,23 @@ export function ProductListMockup({
                   </div>
                 </div>
 
-                <Questioned
-                  show={annotations}
-                  questions={Q_SPEC}
-                  pageId={pageId}
-                  position="top-right"
-                >
-                  <div className="border-t border-zinc-100 pt-4">
-                    <div className="mb-2 font-semibold text-zinc-700">材質</div>
-                    <div className="space-y-2">
-                      {[
-                        { v: "紙", c: 8 },
-                        { v: "PLA", c: 4 },
-                        { v: "PET", c: 3 },
-                        { v: "PP", c: 2 },
-                      ].map((m) => (
-                        <label key={m.v} className="flex items-center gap-2 text-zinc-700 cursor-pointer">
-                          <input type="checkbox" className="size-4 rounded border-zinc-300 accent-amber-700" />
-                          {m.v}
-                          <span className="ml-auto text-xs text-zinc-400">({m.c})</span>
-                        </label>
-                      ))}
-                    </div>
+                <div className="border-t border-zinc-100 pt-4">
+                  <div className="mb-2 font-semibold text-zinc-700">材質</div>
+                  <div className="space-y-2">
+                    {[
+                      { v: "紙", c: 8 },
+                      { v: "PLA", c: 4 },
+                      { v: "PET", c: 3 },
+                      { v: "PP", c: 2 },
+                    ].map((m) => (
+                      <label key={m.v} className="flex items-center gap-2 text-zinc-700 cursor-pointer">
+                        <input type="checkbox" className="size-4 rounded border-zinc-300 accent-amber-700" />
+                        {m.v}
+                        <span className="ml-auto text-xs text-zinc-400">({m.c})</span>
+                      </label>
+                    ))}
                   </div>
-                </Questioned>
+                </div>
 
                 <div className="border-t border-zinc-100 pt-4">
                   <div className="mb-2 font-semibold text-zinc-700">顏色</div>
