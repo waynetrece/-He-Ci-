@@ -1,3 +1,8 @@
+"use client";
+
+import Link from "next/link";
+import { useCartSummary } from "@/lib/cart-store";
+
 function SearchIcon({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -108,15 +113,16 @@ export function MockupShell({
 }
 
 export function MockupSiteHeader() {
+  const { count, totalUnits } = useCartSummary();
   return (
     <header className="border-b border-zinc-200 bg-white">
       {/* Top utility bar */}
       <div className="border-b border-zinc-100 bg-zinc-50/60 px-6 py-1.5">
         <div className="mx-auto flex max-w-[1760px] items-center justify-between text-xs text-zinc-500">
-          <span>歡迎來到禾啟｜全台滿 NT$ 3,000 免運</span>
+          <span>歡迎來到禾啟｜宅配滿 NT$ 2,500 免運</span>
           <div className="flex items-center gap-4">
-            <a href="/modules/faq" className="hover:text-zinc-900">常見問題</a>
-            <a href="/modules/contact" className="hover:text-zinc-900">聯絡我們</a>
+            <Link href="/modules/faq" className="hover:text-zinc-900">常見問題</Link>
+            <Link href="/modules/contact" className="hover:text-zinc-900">聯絡我們</Link>
             <span className="border-l border-zinc-300 pl-4">中文 | English</span>
           </div>
         </div>
@@ -152,17 +158,24 @@ export function MockupSiteHeader() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-700 hover:bg-zinc-50">
+          <Link
+            href="/modules/cart"
+            className="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-700 hover:bg-zinc-50"
+            title={count > 0 ? `購物車有 ${count} 項 · ${totalUnits} 單位` : "購物車是空的"}
+          >
             <CartIcon />
             <span>購物車</span>
-            <span className="rounded-full bg-zinc-900 px-1.5 text-[10px] text-white">
-              0
+            <span className={`rounded-full px-1.5 text-[10px] ${count > 0 ? "bg-amber-600 text-white" : "bg-zinc-900 text-white"}`}>
+              {count}
             </span>
-          </button>
-          <button className="flex items-center gap-1.5 rounded-md bg-zinc-900 px-3 py-2 text-xs text-white">
+          </Link>
+          <Link
+            href="/modules/members/auth"
+            className="flex items-center gap-1.5 rounded-md bg-zinc-900 px-3 py-2 text-xs text-white"
+          >
             <UserIcon />
             <span>登入 / 註冊</span>
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -178,7 +191,7 @@ export function MockupSiteHeader() {
             { label: "Q&A", href: "/modules/faq" },
             { label: "聯絡我們", href: "/modules/contact" },
           ].map((n) => (
-            <a
+            <Link
               key={n.label}
               href={n.href}
               className={`relative py-3 text-sm transition-colors ${
@@ -191,7 +204,7 @@ export function MockupSiteHeader() {
               {n.active && (
                 <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-zinc-900" />
               )}
-            </a>
+            </Link>
           ))}
         </div>
       </nav>

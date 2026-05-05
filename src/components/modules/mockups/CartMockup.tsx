@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  removeFromCart,
+  setCart,
+  updateQuantity,
+  useCart,
+  type CartItem,
+} from "@/lib/cart-store";
+import {
   MockupShell,
   MockupSiteFooter,
   MockupSiteHeader,
@@ -28,62 +35,6 @@ import {
 // (自取常用於 B2B 大量 / 私版客製,公版未必開放)
 // 為避免擅自假設,公版購物車先只列宅配 + 超商。若 HJ 後續確認要加自取再開
 type ShipMode = "home" | "store";
-
-type CartItem = {
-  code: string;
-  name: string;
-  spec: string;
-  unitPrice: number;       // 單價(NT$ / 個)
-  memberPrice: number;     // 會員單價(NT$ / 個)
-  quantity: number;        // 客戶買幾「箱 / 條」
-  unit: string;            // "箱" / "條"
-  piecesPerUnit: number;   // 一箱/一條 = 幾個(影響線總價)
-  volumeRation: number;    // 才(每單位)
-  isBox: boolean;          // 是否「整箱」(影響超商可否走)
-  bg: string;
-};
-
-const INITIAL_ITEMS: CartItem[] = [
-  {
-    code: "PC-12-白",
-    name: "12oz 公版瓦楞紙杯(白)",
-    spec: "12oz / 360cc · 食品紙 + PE",
-    unitPrice: 2.4,
-    memberPrice: 2.0,
-    quantity: 2,
-    unit: "箱",
-    piecesPerUnit: 1000,
-    volumeRation: 1.2,
-    isBox: true,
-    bg: "bg-amber-100",
-  },
-  {
-    code: "PC-08-白",
-    name: "8oz 公版瓦楞紙杯(白)",
-    spec: "8oz / 240cc · 食品紙 + PE",
-    unitPrice: 1.8,
-    memberPrice: 1.5,
-    quantity: 5,
-    unit: "條",
-    piecesPerUnit: 50,
-    volumeRation: 0.3,
-    isBox: false,
-    bg: "bg-amber-100",
-  },
-  {
-    code: "LD-90-白",
-    name: "90mm 平蓋(加購)",
-    spec: "適配 8/12oz 杯",
-    unitPrice: 1.2,
-    memberPrice: 1.0,
-    quantity: 5,
-    unit: "條",
-    piecesPerUnit: 50,
-    volumeRation: 0.2,
-    isBox: false,
-    bg: "bg-zinc-100",
-  },
-];
 
 function calcVolume(items: CartItem[]) {
   return items.reduce((s, i) => s + i.quantity * i.volumeRation, 0);
@@ -121,9 +72,9 @@ export function CartMockup({
   annotations?: boolean;
   pageId?: string;
 }) {
-  const [items, setItems] = useState<CartItem[]>(INITIAL_ITEMS);
+  const items = useCart();
   const [ship, setShip] = useState<ShipMode>("home");
-  const [empty, setEmpty] = useState(false);
+  const empty = items.length === 0;
 
   const isLoggedIn = true; // 預設已登入(會員看會員價)
   const subtotal = items.reduce(
@@ -160,21 +111,26 @@ export function CartMockup({
       <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-3 text-xs">
           <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">預覽切換</span>
-          <span className="text-zinc-700">空車狀態:</span>
-          <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
-            <button
-              onClick={() => setEmpty(false)}
-              className={`rounded px-3 py-1 font-medium ${!empty ? "bg-zinc-900 text-white" : "text-zinc-600"}`}
-            >
-              有商品
-            </button>
-            <button
-              onClick={() => setEmpty(true)}
-              className={`rounded px-3 py-1 font-medium ${empty ? "bg-zinc-900 text-white" : "text-zinc-600"}`}
-            >
-              空車
-            </button>
-          </div>
+          <span className="text-zinc-700">購物車跨頁同步:</span>
+          <span className="text-zinc-600">商品詳情頁加購物車後 → 此頁與 header 數量會自動更新</span>
+          <button
+            onClick={() => setCart([])}
+            className="ml-auto rounded-md border border-zinc-300 bg-white px-3 py-1 text-zinc-700 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700"
+          >
+            重置:清空購物車
+          </button>
+          <button
+            onClick={() => {
+              setCart([
+                { code: "PC-12-白", name: "12oz 公版瓦楞紙杯(白)", spec: "12oz / 360cc · 食品紙 + PE", unitPrice: 2.4, memberPrice: 2.0, quantity: 2, unit: "箱", piecesPerUnit: 1000, volumeRation: 1.2, isBox: true, bg: "bg-amber-100" },
+                { code: "PC-08-白", name: "8oz 公版瓦楞紙杯(白)", spec: "8oz / 240cc · 食品紙 + PE", unitPrice: 1.8, memberPrice: 1.5, quantity: 5, unit: "條", piecesPerUnit: 50, volumeRation: 0.3, isBox: false, bg: "bg-amber-100" },
+                { code: "LD-90-白", name: "90mm 平蓋(加購)", spec: "適配 8/12oz 杯", unitPrice: 1.2, memberPrice: 1.0, quantity: 5, unit: "條", piecesPerUnit: 50, volumeRation: 0.2, isBox: false, bg: "bg-zinc-100" },
+              ]);
+            }}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-zinc-700 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700"
+          >
+            重置:載入範例
+          </button>
         </div>
       </div>
 
@@ -267,14 +223,14 @@ export function CartMockup({
                       <div className="flex flex-col items-end gap-2">
                         <div className="flex items-center rounded-md border border-zinc-300">
                           <button
-                            onClick={() => setItems(items.map((i) => i.code === it.code ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i))}
+                            onClick={() => updateQuantity(it.code, it.quantity - 1)}
                             className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100"
                           >
                             −
                           </button>
                           <span className="w-12 border-x border-zinc-300 py-1.5 text-center text-sm font-bold">{it.quantity}</span>
                           <button
-                            onClick={() => setItems(items.map((i) => i.code === it.code ? { ...i, quantity: i.quantity + 1 } : i))}
+                            onClick={() => updateQuantity(it.code, it.quantity + 1)}
                             className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100"
                           >
                             +
@@ -286,7 +242,7 @@ export function CartMockup({
                         <div className="text-base font-bold text-zinc-900">NT$ {linePrice.toLocaleString()}</div>
                         <div className="text-[10px] text-zinc-400">{piecesInLine.toLocaleString()} 個 × NT$ {pricePerPiece}</div>
                         <button
-                          onClick={() => setItems(items.filter((i) => i.code !== it.code))}
+                          onClick={() => removeFromCart(it.code)}
                           className="mt-1 text-xs text-rose-600 hover:underline"
                         >
                           移除
@@ -298,7 +254,7 @@ export function CartMockup({
 
                 <div className="mt-2 flex justify-between rounded-lg border border-dashed border-zinc-300 bg-white p-4 text-sm">
                   <Link href="/modules/products" className="text-amber-700 hover:underline">← 繼續購物</Link>
-                  <button onClick={() => setItems([])} className="text-zinc-500 hover:text-rose-600">清空購物車</button>
+                  <button onClick={() => setCart([])} className="text-zinc-500 hover:text-rose-600">清空購物車</button>
                 </div>
               </div>
 

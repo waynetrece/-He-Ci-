@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { addToCart } from "@/lib/cart-store";
 import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
@@ -149,8 +150,10 @@ export function ProductDetailMockup({
 }) {
   const [capacity, setCapacity] = useState("12oz");
   const [color, setColor] = useState("白");
-  const [qty, setQty] = useState(50);
+  const [unitMode, setUnitMode] = useState<"strip" | "box">("strip");
+  const [unitQty, setUnitQty] = useState(1); // 幾條 / 幾箱
   const [activeThumb, setActiveThumb] = useState(0);
+  const [addedFlash, setAddedFlash] = useState(false);
 
   const sku = SKU_BY_CAPACITY[capacity];
   const stockOverride = STOCK_OVERRIDE[`${capacity}_${color}`];
@@ -158,8 +161,32 @@ export function ProductDetailMockup({
   const inStock = stock > 0;
   const fullCode = `${sku.code}-${color}`;
   const specTable = SPEC_TABLE(capacity);
-  const totalPrice = (sku.base * qty).toFixed(0);
-  const memberTotal = (sku.member * qty).toFixed(0);
+
+  const piecesPerStrip = 50;
+  const piecesPerBox = 1000;
+  const piecesPerUnit = unitMode === "box" ? piecesPerBox : piecesPerStrip;
+  const totalPieces = unitQty * piecesPerUnit;
+  const totalPrice = (sku.base * totalPieces).toFixed(0);
+  const memberTotal = (sku.member * totalPieces).toFixed(0);
+
+  const handleAddToCart = () => {
+    if (!inStock) return;
+    addToCart({
+      code: `${fullCode}-${unitMode === "box" ? "B" : "S"}`,
+      name: `${capacity} ${PRODUCT.baseTitle}(${color})`,
+      spec: `${capacity} · 食品紙 + PE · ${unitMode === "box" ? "箱購" : "條購"}`,
+      unitPrice: sku.base,
+      memberPrice: sku.member,
+      quantity: unitQty,
+      unit: unitMode === "box" ? "箱" : "條",
+      piecesPerUnit,
+      volumeRation: unitMode === "box" ? 1.2 : 0.3,
+      isBox: unitMode === "box",
+      bg: "bg-amber-100",
+    });
+    setAddedFlash(true);
+    setTimeout(() => setAddedFlash(false), 2500);
+  };
 
   const wrapQ = (qs: QItem[], children: React.ReactNode) =>
     annotations ? (
@@ -350,44 +377,62 @@ export function ProductDetailMockup({
                 </div>
               </div>
               <div className="mt-3 border-t border-amber-200 pt-3 text-xs text-zinc-600">
-                共 <span className="font-bold text-zinc-900">{qty}</span> 入 → 一般合計 <span className="font-bold text-amber-700">NT$ {Number(totalPrice).toLocaleString()}</span> · 會員 <span className="font-bold text-emerald-700">NT$ {Number(memberTotal).toLocaleString()}</span>
+                共 <span className="font-bold text-zinc-900">{unitQty} {unitMode === "box" ? "箱" : "條"}</span>({totalPieces.toLocaleString()} 入)→
+                一般合計 <span className="font-bold text-amber-700">NT$ {Number(totalPrice).toLocaleString()}</span> ·
+                會員 <span className="font-bold text-emerald-700">NT$ {Number(memberTotal).toLocaleString()}</span>
               </div>
             </div>
 
-            {/* Quantity input — 連動總價 */}
+            {/* Quantity input — 條購 / 箱購切換 + 連動總價 */}
             <div className="rounded-xl border border-zinc-200 bg-white p-5">
-              <div className="mb-3 text-sm font-medium text-zinc-900">採購數量</div>
+              <div className="mb-3 flex items-center justify-between">
+                <div className="text-sm font-medium text-zinc-900">採購單位</div>
+                <div className="flex rounded-md border border-zinc-300 p-0.5 text-xs">
+                  <button
+                    onClick={() => { setUnitMode("strip"); setUnitQty(1); }}
+                    className={`rounded px-3 py-1 ${unitMode === "strip" ? "bg-amber-500 text-white font-bold" : "text-zinc-600"}`}
+                  >
+                    條購(50 入)
+                  </button>
+                  <button
+                    onClick={() => { setUnitMode("box"); setUnitQty(1); }}
+                    className={`rounded px-3 py-1 ${unitMode === "box" ? "bg-amber-500 text-white font-bold" : "text-zinc-600"}`}
+                  >
+                    箱購(1,000 入)
+                  </button>
+                </div>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center rounded-md border border-zinc-300 bg-white">
                   <button
-                    onClick={() => setQty(Math.max(50, qty - 50))}
+                    onClick={() => setUnitQty(Math.max(1, unitQty - 1))}
                     className="flex size-10 items-center justify-center text-zinc-600 hover:bg-zinc-50"
                   >
                     <MinusIcon />
                   </button>
                   <input
                     type="number"
-                    value={qty}
-                    onChange={(e) => setQty(Math.max(50, Number(e.target.value) || 50))}
+                    value={unitQty}
+                    onChange={(e) => setUnitQty(Math.max(1, Number(e.target.value) || 1))}
                     className="w-24 border-x border-zinc-300 px-3 py-2 text-center text-base font-bold text-zinc-900 focus:outline-none"
                   />
                   <button
-                    onClick={() => setQty(qty + 50)}
+                    onClick={() => setUnitQty(unitQty + 1)}
                     className="flex size-10 items-center justify-center text-zinc-600 hover:bg-zinc-50"
                   >
                     <PlusIcon />
                   </button>
                 </div>
-                <span className="text-sm text-zinc-500">入(50 入/條 · {sku.pack})</span>
+                <span className="text-sm text-zinc-500">{unitMode === "box" ? "箱" : "條"} · 共 {totalPieces.toLocaleString()} 入</span>
               </div>
               <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
-                {[50, 100, 500, 1000].map((n) => (
+                {[1, 2, 5, 10].map((n) => (
                   <button
                     key={n}
-                    onClick={() => setQty(n)}
+                    onClick={() => setUnitQty(n)}
                     className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-zinc-700 hover:border-amber-400 hover:bg-amber-50"
                   >
-                    {n} 入
+                    {n} {unitMode === "box" ? "箱" : "條"}
                   </button>
                 ))}
               </div>
@@ -395,15 +440,32 @@ export function ProductDetailMockup({
 
             {/* Action buttons */}
             <div className="space-y-2">
-              <Link
-                href="/modules/cart"
-                className={`flex w-full items-center justify-center gap-2 rounded-md px-4 py-3.5 text-base font-bold text-white shadow-sm ${
-                  inStock ? "bg-amber-600 hover:bg-amber-700" : "bg-zinc-400 cursor-not-allowed pointer-events-none"
+              <button
+                onClick={handleAddToCart}
+                disabled={!inStock}
+                className={`flex w-full items-center justify-center gap-2 rounded-md px-4 py-3.5 text-base font-bold text-white shadow-sm transition-colors ${
+                  !inStock
+                    ? "bg-zinc-400 cursor-not-allowed"
+                    : addedFlash
+                      ? "bg-emerald-600"
+                      : "bg-amber-600 hover:bg-amber-700"
                 }`}
               >
-                <PlusIcon />
-                {inStock ? `加入購物車 — NT$ ${Number(totalPrice).toLocaleString()}` : "缺貨中"}
-              </Link>
+                {addedFlash ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    已加入購物車 →
+                    <Link href="/modules/cart" className="underline">查看</Link>
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon />
+                    {inStock ? `加入購物車 — NT$ ${Number(totalPrice).toLocaleString()}` : "缺貨中"}
+                  </>
+                )}
+              </button>
 
               <Link
                 href="/modules/products/sample"
