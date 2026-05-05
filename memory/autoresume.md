@@ -5,29 +5,32 @@
 
 ## 一句話狀態
 
-目前主線已推進到 HJ 報價單草案整理；HEAD 是 `e58c587` 報價單 v8，`main` 目前 ahead origin 5 commits。`discussions/hj-quote-draft.md` 有本機未提交修訂，但尚未可交付，下一步要先清理編號與金額總計，再決定是否升成 v9。
+目前主線是 HJ 報價單草案整理；`discussions/hj-quote-draft.md` 已更新為草案 v10 工作稿，套馬亞既有報價單樣式並修正明細加總。v10 主案未稅 `$1,049,750`、含稅 `NT$ 1,102,238`，待 Wayne review 後才輸出正式客戶版。
 
 ## Git / 工作區
 
 - 分支：`main`
-- 遠端狀態：`main...origin/main [ahead 5]`
-- 最新 HEAD：`e58c587 docs(quote): v8 — 拿掉 FAQ(對齊 HJ 原始需求,FAQ 不在 1150422 列表內)`
-- 唯一未提交檔案：`discussions/hj-quote-draft.md`
+- 遠端狀態：`main...origin/main [ahead 6]`
+- 最新 HEAD：`4698925 docs(quote): v9 — 修正最新消息 = 行銷活動(HJ 原始需求只列行銷活動)`
+- 本機未提交檔案：`discussions/hj-quote-draft.md`、`memory/checkpoint.md`、`memory/autoresume.md`、`memory/claude-handoff.md`
 
 ## 目前報價單狀態
 
 - 主檔：`discussions/hj-quote-draft.md`
-- 目前 committed 版本：草案 v8
-- v8 重點：FAQ 已從主案移除；v8 金額為未稅 `$1,070,750`、含稅 `NT$ 1,124,288`。
-- 本機修訂方向：CMS 6 頁改 4 頁、最新消息併入行銷活動 / 部落格、設計小計改 `$161,500`。
-- 本機修訂問題：多個項目編號重複為 `13`，報價總計仍有舊設計小計 `$170,500`，金額需重算。
+- 目前工作稿：草案 v10
+- 設計區：`$161,500`
+- 程式設計與資料庫規劃：`$879,000`
+- 我們的服務：`$9,250`
+- 主案含稅：`NT$ 1,102,238`
+- 選配 A+B+C 全包後含稅：約 `NT$ 1,233,488`
+- v10 已修正：項目流水號、設計/程式小計、稅額、50/30/20 付款金額、樣品需登入、私版原始檔走 LINE。
 
 ## 下次安全起手式
 
 1. 先讀 `memory/checkpoint.md` 的 2026-05-05 區塊。
 2. 檢查 `git diff -- discussions/hj-quote-draft.md`。
-3. 先不要產出客戶版檔案；要先修正流水號與總金額。
-4. 若 Wayne 同意保留本機修訂方向，再把報價草案升成 v9。
+3. 請 Wayne 先 review v10 金額與模組拆法。
+4. Wayne 確認後，再輸出正式客戶版 Excel / Word / PDF 到 `exports/`。
 5. mockup 仍先不要主動改；目前主線是報價單 / scope / 金額收斂。
 
 ## LINE 客製詢價目前定論
@@ -53,4 +56,4 @@
 - 不要把 `discussions/advanced-features-memo.md` 給客戶或混進客戶問題。
 - 不要再用「第一版」這個詞給客戶；客戶版統一用「網站正式上線時」或具體問法。
 - 不要把 LINE 描述成「已接第三方客服系統」或「LINE 自動報價」。
-- 不要把目前本機 dirty 的報價草案當作可交付版。
+- 不要把 v10 工作稿直接當作可發送客戶版。

@@ -1,54 +1,45 @@
 # Claude Handoff - HJ Proposal
 
-## 2026-05-05 最新補充：報價單 v8 已提交，本機正在整理 v9 前修訂
+## 2026-05-05 最新補充：報價單 v10 工作稿已更新，待 Wayne review
 
 目前專案主線已從 API / 架構判讀推進到 HJ 報價單草案整理。
 
 ### Git / 工作區
 
 - 分支：`main`
-- 遠端狀態：`main...origin/main [ahead 5]`
-- 最新 HEAD：`e58c587 docs(quote): v8 — 拿掉 FAQ(對齊 HJ 原始需求,FAQ 不在 1150422 列表內)`
-- 目前唯一未提交檔案：`discussions/hj-quote-draft.md`
+- 遠端狀態：`main...origin/main [ahead 6]`
+- 最新 HEAD：`4698925 docs(quote): v9 — 修正最新消息 = 行銷活動(HJ 原始需求只列行銷活動)`
+- 目前未提交檔案：`discussions/hj-quote-draft.md`、`memory/checkpoint.md`、`memory/autoresume.md`、`memory/claude-handoff.md`
 
 ### 報價單目前基準
 
 - 主檔：`discussions/hj-quote-draft.md`
-- committed 版本：`status: 草案v8`、`draftedAt: 2026-05-05`
-- v8 已把 FAQ 從主案拿掉，對齊 HJ 原始需求表 `1150422`。
-- v8 committed 金額：
-  - 主案未稅：`$1,070,750`
-  - 營業稅 5%：`$53,538`
-  - 主案含稅：`NT$ 1,124,288`
-  - 主案 + 選配 A+B+C 含稅：約 `NT$ 1,255,413`
-
-### 目前本機未提交修訂
-
-`discussions/hj-quote-draft.md` 有本機修改，方向是再收斂報價範圍：
-
-- 形象 / CMS 內頁由 6 頁改 4 頁。
-- 最新消息管理併入「行銷活動 / 部落格管理」。
-- 設計小計改為 `$161,500`。
-- 首頁行銷區改成自動抓取最新部落格 / 活動公告。
-
-但這份修訂還不能交付或提交：
-
-- 多個項目流水號被改成重複的 `13`。
-- 報價總計仍殘留設計區 `$170,500`，與前面 `$161,500` 不一致。
-- 若保留這次修訂，需重算主案未稅、稅額、含稅、付款分期與選配合計。
+- 工作稿版本：`status: 草案v10`、`draftedAt: 2026-05-05`
+- v10 已套馬亞既有報價單樣式，並參考：
+  - `日日欣報價單20250924.xls`
+  - `富致科技報價單20240326.xls`
+- v10 金額：
+  - 設計區：`$161,500`
+  - 程式設計與資料庫規劃：`$879,000`
+  - 我們的服務：`$9,250`
+  - 主案未稅：`$1,049,750`
+  - 營業稅 5%：`$52,488`
+  - 主案含稅：`NT$ 1,102,238`
+  - 主案 + 選配 A+B+C 含稅：約 `NT$ 1,233,488`
+- v10 也修正樣品需登入、私版原始檔走 LINE、付款 50/30/20 金額。
 
 ### Claude / 下一位接手者不要做
 
-- 不要把目前 dirty 的 `hj-quote-draft.md` 視為可交付版。
-- 不要在金額未重新核算前輸出 Word / PDF。
+- 不要把 v10 工作稿直接視為可發送客戶版；仍待 Wayne review。
+- 不要在 Wayne 未確認前輸出正式 Word / PDF / Excel。
 - 不要主動回去改 cart / checkout / member / product / private quote mockup。
 - 不要把 FAQ 加回主案，除非 Wayne 明確指示。
 
 ### 下一步
 
-1. 先確認 Wayne 是否保留這次本機修訂方向。
-2. 若保留，清理 `hj-quote-draft.md` 的流水號與金額，升成 `草案v9`。
-3. 清理完成後，再決定是否輸出客戶版報價 Word / PDF。
+1. Wayne review `discussions/hj-quote-draft.md` v10。
+2. 若金額與模組拆法 OK，再輸出客戶版 Excel / Word / PDF 到 `exports/`。
+3. 若 Wayne 要再壓金額，優先討論選配、LINE 通知、ERP 串接深度、運費/材積功能邊界。
 
 ---
 
