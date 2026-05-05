@@ -2,231 +2,167 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
   MockupSiteFooter,
   MockupSiteHeader,
 } from "../MockupShell";
 
-/* ============== Q definitions ============== */
+// 32 題 review 已決議事項(直接反映在 mockup 上,不再列為待確認):
+// - 公版 / 私版 / 樣品 三條流程完全分開,不允許同車(A 包 Q-A9)
+// - 加購品 = 公版商品本身,促銷規則,扣自身庫存(A 包 Q-A5)
+// - 加購品運費 = 跟主商品同訂單算運費(B 包 Q-B9)
+// - 訪客可瀏覽 + 加購物車,結帳前需登入(會員需綁凌越客編)
+//
+// 運費規則(B 包,HJ 提供的運費圖):
+//   宅配:純箱購免運;條購/混購 ≥ NT$ 2,500 免運;< 2,500 依加總材積級距
+//     - 0.1–2 才 = NT$ 100
+//     - 2.1–3 才 = NT$ 120
+//     - 3.1–4 才 = NT$ 150
+//     - 4.1–5 才 = NT$ 180
+//     - 5.1–6 才 = NT$ 200
+//   超商:純箱不開放;條購 ≤ 1.5 才才可走,≥ 699 免運,< 699 = NT$ 65;箱+條不開放
+//   超商超規上限:45×30×30 cm + 5kg(同時檢查 1.5 才 + 5kg 取較嚴)
 
-const Q1 = {
-  no: "Q1",
-  question: "公版 + 私版混在同一張購物車結帳，HJ 後續處理上會有問題嗎？",
-  context:
-    "目前先以這樣示意：① 購物車可同時放公版商品與「已成交私版報價單」② 同一張購物車一起結帳、產生一張訂單編號 ③ 公版區、私版區分區呈現，私版規格 / 數量鎖定。\n\n想請 HJ 從業務面確認：\n• 公版（現貨即出）+ 私版（製作完才出）混單時，會不會造成出貨日 / 物流單 / ERP 開單上的麻煩？\n• 要維持「一張訂單、分批出貨」，還是結帳後在系統內自動拆成兩張訂單（公版單 / 私版單）？\n• 如果保留同單，運費要合計還是分計？\n• 是否乾脆規定「公版車與私版車分開結帳」？\n\n（類似食品業常溫 / 冷藏要分流的問題；HJ 怎麼處理目前公版現貨單 vs 客製訂單，讓我們對齊）",
-  clientRef: {
-    source: "前台 / 公版商品系列 + 私版商品系列 (1)(2)",
-    quote: "客人在網站上點選需求選項得到報價；複雜客製商品轉 LINE 客服報價",
-    note: "需求表沒指定購物車是否能混放公版 + 私版。本提案先以「同車、同單、分批出貨」呈現，避免客戶切換頁；但因兩種商品出貨時程與 ERP 處理可能不同，混單規則待 HJ 確認。",
-  },
-};
-
-const Q2 = {
-  no: "Q2",
-  question: "未登入訪客是否可以放購物車並結帳，還是必須先登入？",
-  context:
-    "目前先以這樣示意：① 訪客可瀏覽商品、加入購物車 ② 進結帳前強制登入 / 註冊 ③ 登入後購物車內容保留。想請 HJ 確認是否允許訪客結帳（綠界等服務支援）；若要做訪客結帳，需另定義發票 / 收件 / 客戶資料的最小集合。",
-  clientRef: {
-    source: "前台 / 官網 (3) + 後台 / 顧客管理 (1)",
-    quote: "註冊方式：LINE.Email（需驗證）；網站客人需與原 ERP 客戶編號相同",
-    note: "需求表寫了會員註冊與 ERP 對應，但未明說訪客結帳是否要做。",
-  },
-};
-
-const Q3 = {
-  no: "Q3",
-  question: "運費規則 — 是依重量、體積、區域、訂單金額？是否有滿額免運？",
-  context:
-    "目前先以這樣示意：① 預估運費 NT$ 150（依材積試算） ② 滿 NT$ 3,000 免運（合作客戶 A 級不另收運費）③ 自取免運。實際公式想請 HJ 確認：運費是依商品重量 / 材積 / 區域 / 物流商分別計算，還是統一公式？滿額免運門檻？合作客戶是否有特別條件？",
-  clientRef: {
-    source: "後台 / 公版商品管理 (1) + 後台 / 物流 (8)",
-    quote: "材積換算、運費規則；四大超商、多家宅配、自取",
-    note: "需求表寫了「材積換算、運費規則」但未具體；本提案先以材積為基礎示意。",
-  },
-};
-
-/* ============== Icons ============== */
-
-function MinusIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6" />
-      <path d="M10 11v6M14 11v6" />
-    </svg>
-  );
-}
-
-function ChevronLeft() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  );
-}
-
-function ChevronRight() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  );
-}
-
-function CartIcon() {
-  return (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="9" cy="21" r="1" />
-      <circle cx="20" cy="21" r="1" />
-      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-    </svg>
-  );
-}
-
-/* ============== Data ============== */
+type ShipMode = "home" | "store" | "pickup";
 
 type CartItem = {
-  id: string;
-  type: "public" | "private";
+  code: string;
   name: string;
   spec: string;
-  imageNote: string;
   unitPrice: number;
-  memberPrice?: number;
+  memberPrice: number;
   quantity: number;
-  // private only
-  quoteId?: string;
-  quoteValidUntil?: string;
-  quoteExpired?: boolean;
+  unit: string; // 條 / 箱
+  volumeRation: number; // 才(每單位)
+  isBox: boolean; // 是否「整箱」(影響超商可否走)
+  bg: string;
 };
 
-const ITEMS: CartItem[] = [
+const INITIAL_ITEMS: CartItem[] = [
   {
-    id: "P-001",
-    type: "public",
-    name: "12oz 公版瓦楞紙杯（白）",
-    spec: "白底 / 50 入 × 100 包",
-    imageNote: "商品圖",
-    unitPrice: 2.2,
-    memberPrice: 1.85,
-    quantity: 5000,
+    code: "PC-12-白",
+    name: "12oz 公版瓦楞紙杯(白)",
+    spec: "12oz / 360cc · 食品紙 + PE",
+    unitPrice: 2.4,
+    memberPrice: 2.0,
+    quantity: 2,
+    unit: "箱",
+    volumeRation: 1.2,
+    isBox: true,
+    bg: "bg-amber-100",
   },
   {
-    id: "P-002",
-    type: "public",
-    name: "牛皮紙便當盒（M）",
-    spec: "牛皮紙 / 50 入 × 40 盒",
-    imageNote: "商品圖",
-    unitPrice: 5.4,
-    memberPrice: 4.6,
-    quantity: 2000,
+    code: "PC-08-白",
+    name: "8oz 公版瓦楞紙杯(白)",
+    spec: "8oz / 240cc · 食品紙 + PE",
+    unitPrice: 1.8,
+    memberPrice: 1.5,
+    quantity: 5,
+    unit: "條",
+    volumeRation: 0.3,
+    isBox: false,
+    bg: "bg-amber-100",
   },
   {
-    id: "Q-20260418-014",
-    type: "private",
-    name: "客製禮盒（天地蓋）",
-    spec: "20×20×8 cm / 銅版紙 350g / 燙金 + 局部上光",
-    imageNote: "報價單",
-    unitPrice: 90,
-    quantity: 200,
-    quoteId: "Q-20260418-014",
-    quoteValidUntil: "2026/05/02",
-  },
-  {
-    id: "Q-20260410-009",
-    type: "private",
-    name: "客製腰封 × 10,000（已過期）",
-    spec: "銅版紙 150g / 全彩",
-    imageNote: "報價單",
-    unitPrice: 0.45,
-    quantity: 10000,
-    quoteId: "Q-20260410-009",
-    quoteValidUntil: "2026/04/17",
-    quoteExpired: true,
+    code: "LD-90-白",
+    name: "90mm 平蓋(加購)",
+    spec: "適配 8/12oz 杯",
+    unitPrice: 1.2,
+    memberPrice: 1.0,
+    quantity: 5,
+    unit: "條",
+    volumeRation: 0.2,
+    isBox: false,
+    bg: "bg-zinc-100",
   },
 ];
 
-/* ============== Component ============== */
+function calcVolume(items: CartItem[]) {
+  return items.reduce((s, i) => s + i.quantity * i.volumeRation, 0);
+}
 
-type ViewMode = "business" | "personal";
+function calcHomeShipping(subtotal: number, items: CartItem[]) {
+  const allBox = items.every((i) => i.isBox);
+  if (allBox) return { fee: 0, reason: "純箱購免運" };
+  if (subtotal >= 2500) return { fee: 0, reason: "金額 ≥ NT$ 2,500 免運" };
+  const volume = calcVolume(items);
+  if (volume <= 2) return { fee: 100, reason: `材積 ${volume.toFixed(1)} 才 (0.1–2 才)` };
+  if (volume <= 3) return { fee: 120, reason: `材積 ${volume.toFixed(1)} 才 (2.1–3 才)` };
+  if (volume <= 4) return { fee: 150, reason: `材積 ${volume.toFixed(1)} 才 (3.1–4 才)` };
+  if (volume <= 5) return { fee: 180, reason: `材積 ${volume.toFixed(1)} 才 (4.1–5 才)` };
+  if (volume <= 6) return { fee: 200, reason: `材積 ${volume.toFixed(1)} 才 (5.1–6 才)` };
+  return { fee: 250, reason: `材積 ${volume.toFixed(1)} 才 (>6 才超規,聯繫客服)` };
+}
+
+function canStore(items: CartItem[]) {
+  if (items.some((i) => i.isBox)) return { ok: false, reason: "含箱購商品,超商不開放(僅條購可走超商)" };
+  const volume = calcVolume(items);
+  if (volume > 1.5) return { ok: false, reason: `加總材積 ${volume.toFixed(1)} 才超過 1.5 才上限` };
+  return { ok: true, reason: `加總材積 ${volume.toFixed(1)} 才(≤ 1.5 才)` };
+}
+
+function calcStoreShipping(subtotal: number) {
+  if (subtotal >= 699) return { fee: 0, reason: "金額 ≥ NT$ 699 免運" };
+  return { fee: 65, reason: "未達 NT$ 699 免運門檻" };
+}
 
 export function CartMockup({
-  annotations = false,
-  pageId = "cart",
+  annotations: _annotations,
+  pageId: _pageId,
 }: {
   annotations?: boolean;
   pageId?: string;
 }) {
-  const [view, setView] = useState<ViewMode>("business");
+  const [items, setItems] = useState<CartItem[]>(INITIAL_ITEMS);
+  const [ship, setShip] = useState<ShipMode>("home");
   const [empty, setEmpty] = useState(false);
 
-  const subtotal = ITEMS.filter((i) => !i.quoteExpired).reduce((sum, i) => {
-    const price = view === "business" && i.memberPrice ? i.memberPrice : i.unitPrice;
-    return sum + price * i.quantity;
-  }, 0);
-  const shipping = subtotal >= 3000 ? 0 : 150;
-  const total = subtotal + shipping;
+  const isLoggedIn = true; // 預設已登入(會員看會員價)
+  const subtotal = items.reduce((s, i) => s + (isLoggedIn ? i.memberPrice : i.unitPrice) * i.quantity, 0);
+  const totalUnits = items.reduce((s, i) => s + i.quantity, 0);
+  const totalVolume = calcVolume(items);
+
+  const home = calcHomeShipping(subtotal, items);
+  const storeAvailability = canStore(items);
+  const store = calcStoreShipping(subtotal);
+
+  let shipFee = 0;
+  let shipReason = "";
+  if (ship === "home") {
+    shipFee = home.fee;
+    shipReason = home.reason;
+  } else if (ship === "store") {
+    shipFee = store.fee;
+    shipReason = store.reason;
+  } else {
+    shipFee = 0;
+    shipReason = "公司自取免運(新北五股,客戶下單不選日期,HJ 備貨完成後通知)";
+  }
+
+  const total = subtotal + shipFee;
+  const remainToFreeHome = ship === "home" && !items.every((i) => i.isBox) ? Math.max(0, 2500 - subtotal) : 0;
+  const remainToFreeStore = ship === "store" && storeAvailability.ok ? Math.max(0, 699 - subtotal) : 0;
 
   return (
-    <MockupShell url="https://hjhj.com.tw/cart">
+    <MockupShell url="https://hj.example.com/cart">
       <MockupSiteHeader />
 
       {/* Demo toggle */}
       <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-3 text-xs">
-          <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">
-            預覽
-          </span>
-          <span className="text-zinc-700">切換會員類型，確認價格 / 運費差異：</span>
-          <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
-            {(["personal", "business"] as ViewMode[]).map((v) => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                className={`rounded px-3 py-1 font-medium transition-colors ${
-                  view === v
-                    ? "bg-amber-700 text-white"
-                    : "text-zinc-600 hover:bg-zinc-50"
-                }`}
-              >
-                {v === "personal" ? "個人會員" : "企業客戶（合作 A 級）"}
-              </button>
-            ))}
-          </div>
-          <span className="ml-auto text-zinc-500">空車狀態：</span>
+          <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">預覽切換</span>
+          <span className="text-zinc-700">空車狀態:</span>
           <div className="flex gap-1 rounded-md bg-white p-1 shadow-sm border border-zinc-200">
             <button
               onClick={() => setEmpty(false)}
-              className={`rounded px-3 py-1 font-medium transition-colors ${
-                !empty ? "bg-zinc-900 text-white" : "text-zinc-600"
-              }`}
+              className={`rounded px-3 py-1 font-medium ${!empty ? "bg-zinc-900 text-white" : "text-zinc-600"}`}
             >
               有商品
             </button>
             <button
               onClick={() => setEmpty(true)}
-              className={`rounded px-3 py-1 font-medium transition-colors ${
-                empty ? "bg-zinc-900 text-white" : "text-zinc-600"
-              }`}
+              className={`rounded px-3 py-1 font-medium ${empty ? "bg-zinc-900 text-white" : "text-zinc-600"}`}
             >
               空車
             </button>
@@ -235,50 +171,48 @@ export function CartMockup({
       </div>
 
       {/* Breadcrumb */}
-      <section className="border-b border-zinc-200 bg-white px-6 py-3">
+      <div className="border-b border-zinc-100 bg-white px-6 py-3">
         <div className="mx-auto max-w-[1760px] text-xs text-zinc-500">
-          <Link href="/modules/products" className="hover:text-zinc-900">
-            公版商品
-          </Link>
+          <Link href="/modules/home" className="hover:text-zinc-900">首頁</Link>
           <span className="mx-2 text-zinc-300">/</span>
-          <span className="font-semibold text-zinc-900">購物車</span>
+          <Link href="/modules/products" className="hover:text-zinc-900">公版商品</Link>
+          <span className="mx-2 text-zinc-300">/</span>
+          <span className="text-zinc-900">購物車</span>
         </div>
-      </section>
+      </div>
 
       {empty ? (
         <section className="bg-zinc-50/40 px-6 py-20">
           <div className="mx-auto max-w-md text-center">
-            <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-zinc-100 text-zinc-400">
-              <CartIcon />
-            </div>
-            <h2 className="mt-4 text-xl font-bold text-zinc-900">購物車是空的</h2>
-            <p className="mt-2 text-sm text-zinc-600">
-              逛逛公版商品或申請私版報價，再回來這邊結帳。
-            </p>
+            <h2 className="text-xl font-bold text-zinc-900">購物車是空的</h2>
+            <p className="mt-2 text-sm text-zinc-600">逛逛公版商品再回來結帳。</p>
             <div className="mt-6 flex justify-center gap-2">
-              <Link
-                href="/modules/products"
-                className="rounded-md bg-amber-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-amber-800"
-              >
+              <Link href="/modules/products" className="rounded-md bg-amber-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-amber-700">
                 去逛公版商品
               </Link>
-              <Link
-                href="/modules/private-quote"
-                className="rounded-md border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-              >
-                私版即時報價
+              <Link href="/modules/private-quote" className="rounded-md border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
+                私版客製諮詢
               </Link>
             </div>
+            <p className="mt-6 text-xs text-zinc-500">
+              提醒:私版報價走獨立詢價單流程、樣品走獨立樣品申請,皆不會出現在此購物車。
+            </p>
           </div>
         </section>
       ) : (
         <>
-          {/* Hero */}
-          <section className="border-b border-zinc-200 bg-white px-6 py-5">
+          <section className="border-b border-zinc-200 bg-white px-6 py-6">
             <div className="mx-auto max-w-[1760px]">
-              <h1 className="text-2xl font-bold text-zinc-900">購物車</h1>
-              <p className="mt-1 text-sm text-zinc-500">
-                共 <span className="font-bold text-zinc-900">{ITEMS.length}</span> 項商品 ｜ 公版商品 + 私版報價結果
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <h1 className="text-2xl font-bold text-zinc-900">購物車</h1>
+                <div className="text-sm text-zinc-500">
+                  共 <span className="font-bold text-zinc-900">{items.length}</span> 項商品 ·
+                  <span className="ml-1">{totalUnits} {items[0]?.unit ?? "件"}</span> ·
+                  加總材積 <span className="font-bold text-zinc-900">{totalVolume.toFixed(1)} 才</span>
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-zinc-500">
+                此購物車僅放公版商品(含加購)。私版報價走獨立詢價單、樣品走獨立申請流程,不會與公版同車。
               </p>
             </div>
           </section>
@@ -286,111 +220,172 @@ export function CartMockup({
           <section className="bg-zinc-50/40 px-6 py-8">
             <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[1fr_400px]">
               {/* Items */}
-              <div className="space-y-6">
-                {/* 公版區 */}
-                <Questioned
-                  show={annotations}
-                  questions={[Q1]}
-                  pageId={pageId}
-                  position="top-right"
-                >
-                  <div>
-                    <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-zinc-900">
-                      <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-800">
-                        公版
-                      </span>
-                      可調整數量、可移除
-                    </h2>
-                    <div className="space-y-3">
-                      {ITEMS.filter((i) => i.type === "public").map((item) => (
-                        <CartItemCard key={item.id} item={item} view={view} />
-                      ))}
-                    </div>
-                  </div>
+              <div className="space-y-3">
+                {items.map((it) => {
+                  const linePrice = (isLoggedIn ? it.memberPrice : it.unitPrice) * it.quantity;
+                  return (
+                    <article key={it.code} className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-5">
+                      <div className={`size-20 shrink-0 rounded-md ${it.bg}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2">
+                          <div className="font-mono text-xs text-zinc-400">{it.code}</div>
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+                            {it.isBox ? "箱購" : "條購"} · {it.volumeRation} 才/{it.unit}
+                          </span>
+                        </div>
+                        <Link href="/modules/products/detail" className="mt-0.5 block text-base font-bold text-zinc-900 hover:text-amber-700">
+                          {it.name}
+                        </Link>
+                        <div className="text-xs text-zinc-500">{it.spec}</div>
+                        <div className="mt-2 flex items-baseline gap-2 text-xs">
+                          <span className="text-zinc-500">單價</span>
+                          {isLoggedIn ? (
+                            <>
+                              <span className="font-mono text-emerald-700 font-bold">NT$ {it.memberPrice}</span>
+                              <span className="text-zinc-400 line-through">NT$ {it.unitPrice}</span>
+                              <span className="rounded-full bg-emerald-100 px-1.5 text-[10px] text-emerald-700">會員</span>
+                            </>
+                          ) : (
+                            <span className="font-mono text-amber-700 font-bold">NT$ {it.unitPrice}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <div className="flex items-center rounded-md border border-zinc-300">
+                          <button
+                            onClick={() => setItems(items.map((i) => i.code === it.code ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i))}
+                            className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100"
+                          >
+                            −
+                          </button>
+                          <span className="w-12 border-x border-zinc-300 py-1.5 text-center text-sm font-bold">{it.quantity}</span>
+                          <button
+                            onClick={() => setItems(items.map((i) => i.code === it.code ? { ...i, quantity: i.quantity + 1 } : i))}
+                            className="px-2 py-1.5 text-zinc-500 hover:bg-zinc-100"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <span className="text-xs text-zinc-500">{it.unit}</span>
+                      </div>
+                      <div className="w-28 text-right">
+                        <div className="text-base font-bold text-zinc-900">NT$ {linePrice.toLocaleString()}</div>
+                        <button
+                          onClick={() => setItems(items.filter((i) => i.code !== it.code))}
+                          className="mt-1 text-xs text-rose-600 hover:underline"
+                        >
+                          移除
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
 
-                  {/* 私版區 */}
-                  <div className="mt-6">
-                    <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-zinc-900">
-                      <span className="rounded bg-indigo-100 px-2 py-0.5 text-xs font-bold text-indigo-800">
-                        私版
-                      </span>
-                      由報價單帶入，規格 / 數量鎖定，但可移出購物車
-                    </h2>
-                    <div className="space-y-3">
-                      {ITEMS.filter((i) => i.type === "private").map((item) => (
-                        <CartItemCard key={item.id} item={item} view={view} />
-                      ))}
-                    </div>
-                  </div>
-                </Questioned>
+                <div className="mt-2 flex justify-between rounded-lg border border-dashed border-zinc-300 bg-white p-4 text-sm">
+                  <Link href="/modules/products" className="text-amber-700 hover:underline">← 繼續購物</Link>
+                  <button onClick={() => setItems([])} className="text-zinc-500 hover:text-rose-600">清空購物車</button>
+                </div>
               </div>
 
               {/* Summary */}
-              <aside className="lg:sticky lg:top-4 lg:self-start">
-                <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                  <h2 className="text-base font-bold text-zinc-900">訂單摘要</h2>
-                  <div className="mt-4 space-y-2 border-b border-zinc-100 pb-4 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-zinc-600">小計（{ITEMS.filter((i) => !i.quoteExpired).length} 項）</span>
-                      <span className="font-mono text-zinc-900">NT$ {subtotal.toLocaleString()}</span>
-                    </div>
-                    <Questioned
-                      show={annotations}
-                      questions={[Q3]}
-                      pageId={pageId}
-                      position="top-right"
-                    >
-                      <div className="flex justify-between">
-                        <span className="text-zinc-600">
-                          預估運費{" "}
-                          <span className="text-[10px] text-zinc-400">（依材積試算）</span>
-                        </span>
-                        <span className={`font-mono ${shipping === 0 ? "text-emerald-700 font-bold" : "text-zinc-900"}`}>
-                          {shipping === 0 ? "免運" : `NT$ ${shipping}`}
-                        </span>
-                      </div>
-                    </Questioned>
-                    {view === "business" && (
-                      <div className="flex justify-between text-xs text-emerald-700">
-                        <span>已套用合作 A 級價</span>
-                        <span>—</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-between pt-4 text-base font-bold">
-                    <span className="text-zinc-900">合計</span>
-                    <span className="font-mono text-amber-800">NT$ {total.toLocaleString()}</span>
-                  </div>
-                  <Questioned
-                    show={annotations}
-                    questions={[Q2]}
-                    pageId={pageId}
-                    position="top-right"
-                  >
-                    <Link
-                      href="/modules/checkout"
-                      className="mt-5 flex w-full items-center justify-center gap-1.5 rounded-md bg-amber-700 px-4 py-3 text-sm font-bold text-white hover:bg-amber-800"
-                    >
-                      前往結帳
-                      <ChevronRight />
-                    </Link>
-                  </Questioned>
-                  <Link
-                    href="/modules/products"
-                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
-                  >
-                    <ChevronLeft />
-                    繼續購物
-                  </Link>
+              <aside className="self-start rounded-xl border border-zinc-200 bg-white p-6 sticky top-6">
+                <h3 className="text-base font-bold text-zinc-900">訂單摘要</h3>
 
-                  {/* Hints */}
-                  <div className="mt-4 space-y-1.5 rounded-md border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
-                    <div>· 滿 NT$ 3,000 免運（合作 A 級不另收）</div>
-                    <div>· 私版項目以報價單金額為準，不可改數量</div>
-                    <div>· 結帳後可選付款方式（信用卡 / ATM / 月結）</div>
+                {/* Shipping mode */}
+                <div className="mt-4">
+                  <div className="text-xs font-medium text-zinc-700">配送方式</div>
+                  <div className="mt-2 space-y-2">
+                    {([
+                      { id: "home" as const, name: "宅配", desc: "新航 / 嘉里 / 黑貓 / 新竹 / 大嘴鳥(業務後台勾選)" },
+                      { id: "store" as const, name: "超商取貨", desc: "7-11 / 全家 / 萊爾富 / OK", disabled: !storeAvailability.ok, disableReason: storeAvailability.reason },
+                      { id: "pickup" as const, name: "公司自取", desc: "新北五股(備貨完成後通知挑時間)" },
+                    ]).map((opt) => {
+                      const active = ship === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => !opt.disabled && setShip(opt.id)}
+                          disabled={opt.disabled}
+                          className={`w-full rounded-lg border-2 p-3 text-left transition-colors ${
+                            opt.disabled
+                              ? "border-zinc-200 bg-zinc-50 cursor-not-allowed opacity-60"
+                              : active
+                                ? "border-amber-500 bg-amber-50"
+                                : "border-zinc-200 hover:border-amber-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-bold text-zinc-900">{opt.name}</span>
+                            <div className={`size-4 rounded-full border-2 ${active ? "border-amber-500" : "border-zinc-300"}`}>
+                              {active && <div className="m-0.5 size-2 rounded-full bg-amber-500" />}
+                            </div>
+                          </div>
+                          <div className="mt-1 text-xs text-zinc-500">{opt.desc}</div>
+                          {opt.disabled && opt.disableReason && (
+                            <div className="mt-1 text-xs text-rose-600">⚠ {opt.disableReason}</div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
+
+                {/* Free shipping hint */}
+                {(remainToFreeHome > 0 || remainToFreeStore > 0) && (
+                  <div className="mt-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
+                    {ship === "home" && remainToFreeHome > 0 && (
+                      <>再買 NT$ <span className="font-bold">{remainToFreeHome.toLocaleString()}</span> 即可宅配免運(門檻 NT$ 2,500)</>
+                    )}
+                    {ship === "store" && remainToFreeStore > 0 && (
+                      <>再買 NT$ <span className="font-bold">{remainToFreeStore.toLocaleString()}</span> 即可超商免運(門檻 NT$ 699)</>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-5 space-y-2 border-t border-zinc-100 pt-4 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-600">商品小計</span>
+                    <span className="text-zinc-900">NT$ {subtotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-600">運費</span>
+                    <span className={shipFee === 0 ? "text-emerald-600 font-medium" : "text-zinc-900"}>
+                      {shipFee === 0 ? "免運" : `NT$ ${shipFee}`}
+                    </span>
+                  </div>
+                  <div className="text-xs text-zinc-500 italic">{shipReason}</div>
+                  <div className="my-2 h-px bg-zinc-100" />
+                  <div className="flex justify-between text-base font-bold">
+                    <span>應付總計(未稅)</span>
+                    <span className="text-amber-700">NT$ {total.toLocaleString()}</span>
+                  </div>
+                  <div className="text-[11px] text-zinc-500">稅額與發票於結帳頁設定</div>
+                </div>
+
+                <Link
+                  href="/modules/checkout"
+                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 py-3 text-sm font-bold text-white hover:bg-amber-700"
+                >
+                  前往結帳 →
+                </Link>
+                <p className="mt-2 text-center text-[11px] text-zinc-500">
+                  進結帳前需登入會員(綁凌越客編)
+                </p>
               </aside>
+            </div>
+          </section>
+
+          {/* Notice */}
+          <section className="bg-zinc-50/40 px-6 pb-12">
+            <div className="mx-auto max-w-[1760px] rounded-xl border border-zinc-200 bg-white p-5 text-xs text-zinc-600">
+              <div className="font-bold text-zinc-900 mb-2">運費規則(依 HJ 提供的運費圖)</div>
+              <ul className="space-y-1 list-disc list-inside leading-relaxed">
+                <li><strong>宅配</strong>:純箱購免運;條購/混購 ≥ NT$ 2,500 免運;未達門檻依加總材積級距(0.1–2 才 100 / 2.1–3 才 120 / 3.1–4 才 150 / 4.1–5 才 180 / 5.1–6 才 200)。</li>
+                <li><strong>超商取貨</strong>:純箱不開放;條購 ≤ 1.5 才才可走,≥ NT$ 699 免運,未達 65 元;箱+條混購不開放。</li>
+                <li><strong>公司自取</strong>:新北五股倉庫,備貨完成後 HJ 通知客戶挑時間,免運費。</li>
+                <li><strong>離島地區</strong>(澎湖/金門/馬祖/綠島/蘭嶼/小琉球/東引/烏坵):不允許直接結帳,結帳頁會提示聯繫客服。</li>
+                <li><strong>圖外特殊商品</strong>(超大、特殊包裝、易碎):走客服流程,不允許直接結帳。</li>
+              </ul>
             </div>
           </section>
         </>
@@ -398,101 +393,5 @@ export function CartMockup({
 
       <MockupSiteFooter />
     </MockupShell>
-  );
-}
-
-function CartItemCard({ item, view }: { item: CartItem; view: ViewMode }) {
-  const showMember = view === "business" && item.memberPrice && item.type === "public";
-  const price = showMember ? item.memberPrice! : item.unitPrice;
-  const lineTotal = price * item.quantity;
-  const isPrivate = item.type === "private";
-  const expired = item.quoteExpired;
-
-  return (
-    <article
-      className={`rounded-xl border bg-white p-5 shadow-sm ${
-        expired ? "border-rose-300 bg-rose-50/30" : "border-zinc-200"
-      }`}
-    >
-      <div className="flex flex-wrap gap-4">
-        <div className="flex size-20 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-xs text-zinc-300">
-          {item.imageNote}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <h3 className="text-base font-bold text-zinc-900">{item.name}</h3>
-          <p className="mt-0.5 text-xs text-zinc-500">{item.spec}</p>
-          {isPrivate && (
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <span className="font-mono text-indigo-700">{item.quoteId}</span>
-              <span className="text-zinc-300">·</span>
-              <span className={expired ? "text-rose-700 font-bold" : "text-zinc-600"}>
-                {expired ? "報價已過期" : `有效至 ${item.quoteValidUntil}`}
-              </span>
-              {expired && (
-                <Link
-                  href="/modules/members/quote-list"
-                  className="rounded-md bg-rose-600 px-2 py-0.5 text-[11px] font-bold text-white hover:bg-rose-700"
-                >
-                  重新詢價
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col items-end gap-2">
-          {/* Quantity */}
-          {isPrivate ? (
-            <div className="rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm">
-              <span className="text-zinc-500 text-xs">數量</span>{" "}
-              <span className="font-mono font-bold text-zinc-900">
-                {item.quantity.toLocaleString()}
-              </span>
-              <span className="ml-1 text-[10px] text-zinc-400">（鎖定）</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 rounded-md border border-zinc-200 bg-white">
-              <button className="flex size-8 items-center justify-center text-zinc-600 hover:bg-zinc-50">
-                <MinusIcon />
-              </button>
-              <span className="w-16 text-center font-mono text-sm font-bold">
-                {item.quantity.toLocaleString()}
-              </span>
-              <button className="flex size-8 items-center justify-center text-zinc-600 hover:bg-zinc-50">
-                <PlusIcon />
-              </button>
-            </div>
-          )}
-
-          {/* Price */}
-          <div className="text-right">
-            {showMember && (
-              <div className="text-[10px] text-zinc-400 line-through">
-                NT$ {item.unitPrice.toLocaleString()}
-              </div>
-            )}
-            <div className="text-xs text-zinc-500">
-              單價 NT$ <span className={`font-mono ${showMember ? "text-emerald-700 font-bold" : "text-zinc-900"}`}>
-                {price.toLocaleString()}
-              </span>
-            </div>
-            <div className="mt-1 font-mono text-base font-bold text-zinc-900">
-              NT$ {lineTotal.toLocaleString()}
-            </div>
-          </div>
-
-          <button className="flex items-center gap-1 text-xs text-zinc-500 hover:text-rose-700">
-            <TrashIcon />
-            移除
-          </button>
-          {isPrivate && !expired && (
-            <span className="text-[10px] text-zinc-400">
-              規格 / 數量鎖定，可移出
-            </span>
-          )}
-        </div>
-      </div>
-    </article>
   );
 }

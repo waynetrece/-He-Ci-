@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ClipboardIcon,
-  CommentToolbar,
-  CommentTrigger,
-} from "@/components/modules/CommentSystem";
+import { CommentToolbar } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { CartMockup } from "@/components/modules/mockups/CartMockup";
 import { CART_MOCKUPS } from "@/lib/cart-mockups";
@@ -15,44 +11,20 @@ const PAGE_ID = "cart";
 const PAGE_LABEL = "購物車與結帳 — 購物車";
 const ACTIVE_TAB = "cart";
 
-const QUESTIONS = [
-  {
-    no: "Q1",
-    question: "公版 + 私版混在同一張購物車結帳，HJ 後續處理上會有問題嗎？",
-    context:
-      "目前先以這樣示意：① 購物車可同時放公版商品與「已成交私版報價單」② 同一張購物車一起結帳、產生一張訂單編號 ③ 公版區、私版區分區呈現，私版規格 / 數量鎖定。想請 HJ 從業務面確認 4 子題：(a) 公版（現貨即出）+ 私版（製作完才出）混單時，會不會造成出貨日 / 物流單 / ERP 開單上的麻煩？(b) 要維持「一張訂單、分批出貨」，還是結帳後在系統內自動拆成兩張訂單（公版單 / 私版單）？(c) 如果保留同單，運費要合計還是分計？(d) 是否乾脆規定「公版車與私版車分開結帳」？（類似食品業常溫 / 冷藏要分流的問題）",
-    pinnedAt: "公版區 + 私版區（兩區並列）",
-    clientRef: {
-      source: "前台 / 公版商品系列 + 私版商品系列 (1)(2)",
-      quote: "客人在網站上點選需求選項得到報價；複雜客製商品轉 LINE 客服報價",
-      note: "需求表沒指定購物車是否能混放公版 + 私版。本提案先以「同車、同單、分批出貨」呈現，避免客戶切換頁；但因兩種商品出貨時程與 ERP 處理可能不同，混單規則待 HJ 確認。",
-    },
-  },
-  {
-    no: "Q2",
-    question: "未登入訪客是否可以放購物車並結帳，還是必須先登入？",
-    context:
-      "目前先以這樣示意：① 訪客可瀏覽商品、加入購物車 ② 進結帳前強制登入 / 註冊 ③ 登入後購物車內容保留。想請 HJ 確認是否允許訪客結帳；若要做訪客結帳，需另定義發票 / 收件 / 客戶資料的最小集合。",
-    pinnedAt: "訂單摘要『前往結帳』按鈕",
-    clientRef: {
-      source: "前台 / 官網 (3) + 後台 / 顧客管理 (1)",
-      quote: "註冊方式：LINE.Email（需驗證）；網站客人需與原 ERP 客戶編號相同",
-      note: "需求表寫了會員註冊與 ERP 對應，但未明說訪客結帳是否要做。",
-    },
-  },
-  {
-    no: "Q3",
-    question: "運費規則 — 是依重量、體積、區域、訂單金額？是否有滿額免運？",
-    context:
-      "目前先以這樣示意：① 預估運費 NT$ 150（依材積試算） ② 滿 NT$ 3,000 免運（合作客戶 A 級不另收運費）③ 自取免運。實際公式想請 HJ 確認。",
-    pinnedAt: "訂單摘要『預估運費』",
-    clientRef: {
-      source: "後台 / 公版商品管理 (1) + 後台 / 物流 (8)",
-      quote: "材積換算、運費規則；四大超商、多家宅配、自取",
-      note: "需求表寫了「材積換算、運費規則」但未具體；本提案先以材積為基礎示意。",
-    },
-  },
-];
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 公版 / 私版 / 樣品 三條流程完全分開,不允許同車(A 包 Q-A9)
+// - 加購品 = 公版商品本身 + 促銷規則(A 包 Q-A5)
+// - 加購品運費 = 跟主商品同訂單算運費(B 包 Q-B9)
+// - 訂單狀態 6 個:待付款/已付款/備貨中/已出貨/已完成/已取消(B 包 Q-B2)
+// - 物流商選擇 = 客戶付款完成後業務後台勾選(B 包 Q-B11)
+// - 物流追蹤 = HJ 不串 API,系統依物流商產生查詢頁連結模板(B 包 Q-B3)
+//
+// 運費規則(B 包,HJ 提供的運費圖):
+//   宅配:純箱免運;條購/混購 ≥ NT$ 2,500 免運;未達依加總材積級距
+//     - 0.1–2 才 = 100 / 2.1–3 = 120 / 3.1–4 = 150 / 4.1–5 = 180 / 5.1–6 = 200
+//   超商:純箱不開放;條購 ≤ 1.5 才才可走,≥ 699 免運,未達 65;箱+條不開放
+//   超商上限:同時檢查 1.5 才 + 5kg(取較嚴)
+//   自取:1 個倉庫(新北五股),客戶下單不選日期,HJ 通知後客戶挑
 
 export default function CartPage() {
   const [annotations, setAnnotations] = useState(true);
@@ -69,9 +41,7 @@ export default function CartPage() {
       {/* Mockup tabs */}
       <section className="border-b-2 border-zinc-400 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-2">
-          <span className="mr-2 text-sm font-medium text-amber-900">
-            購物車與結帳 預覽：
-          </span>
+          <span className="mr-2 text-sm font-medium text-amber-900">購物車與結帳 預覽:</span>
           {CART_MOCKUPS.map((m) => {
             const active = m.id === ACTIVE_TAB;
             const cls = `rounded-full border-2 px-4 py-1.5 text-sm font-medium transition-colors ${
@@ -84,19 +54,13 @@ export default function CartPage() {
             const content = (
               <>
                 {m.name}
-                {!m.ready && (
-                  <span className="ml-1 text-[10px] opacity-60">（製作中）</span>
-                )}
+                {!m.ready && <span className="ml-1 text-[10px] opacity-60">(製作中)</span>}
               </>
             );
             return m.ready && !active ? (
-              <Link key={m.id} href={m.href} className={cls}>
-                {content}
-              </Link>
+              <Link key={m.id} href={m.href} className={cls}>{content}</Link>
             ) : (
-              <button key={m.id} disabled={!m.ready} className={cls}>
-                {content}
-              </button>
+              <button key={m.id} disabled={!m.ready} className={cls}>{content}</button>
             );
           })}
         </div>
@@ -108,81 +72,34 @@ export default function CartPage() {
         </div>
       </section>
 
-      <section className="border-t-2 border-zinc-400 bg-amber-50/40 px-6 py-16">
+      {/* Resolution summary */}
+      <section className="border-t-2 border-zinc-400 bg-emerald-50/40 px-6 py-12">
         <div className="mx-auto max-w-[1760px]">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold tracking-tight text-amber-900">
-              本頁待確認的項目（共 {QUESTIONS.length} 題）
-            </h2>
-            <p className="mt-3 max-w-3xl text-base text-zinc-700">
-              以下 {QUESTIONS.length} 題都已用紅圈
-              <span className="mx-1 inline-flex items-center gap-1 rounded-full border-2 border-rose-600 bg-rose-500 py-0.5 pl-1 pr-2 text-xs font-bold text-white align-middle">
-                <span className="flex size-4 items-center justify-center rounded-full bg-white text-[10px] font-black text-rose-600">
-                  ?
+          <h2 className="text-2xl font-bold tracking-tight text-emerald-900">本頁需求已全部對齊</h2>
+          <p className="mt-2 max-w-3xl text-sm text-zinc-700">
+            32 題客戶需求 review 已完成,購物車運費規則、配送方式、訂單狀態相關決議全部直接反映在上方 mockup。
+          </p>
+          <ul className="mt-5 grid max-w-4xl grid-cols-1 gap-2 text-sm text-zinc-700 lg:grid-cols-2">
+            {[
+              "公版 / 私版 / 樣品 三條流程完全分開,不允許同車",
+              "加購品 = 公版商品本身,加購是促銷規則,跟主商品同訂單算運費",
+              "宅配:純箱免運 / 混購 ≥ NT$ 2,500 免運 / 未達依材積級距",
+              "宅配級距:0.1–2 才 100、2.1–3 才 120、3.1–4 才 150、4.1–5 才 180、5.1–6 才 200",
+              "超商:純箱不開放 / 條購 ≤ 1.5 才 / ≥ NT$ 699 免運",
+              "公司自取:新北五股倉,備貨完成後通知客戶挑時間",
+              "離島 / 圖外特殊商品:不允許直接結帳,提示客服",
+              "物流商選擇 = 客戶付款完成後業務後台勾選",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 </span>
-                Q
-              </span>
-              標註於上方畫面對應的元件上，您可以直接點畫面上的紅圈留言；下方為對照表。
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {QUESTIONS.map((q) => (
-              <article
-                key={q.no}
-                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
-              >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
-                  {q.no}
-                </span>
-                <div className="flex-1">
-                  <h3 className="text-base font-bold leading-snug text-zinc-900">
-                    {q.question}
-                  </h3>
-                  {q.context && (
-                    <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
-                      {q.context}
-                    </p>
-                  )}
-                  {q.pinnedAt && (
-                    <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">
-                      <span aria-hidden>↑</span>
-                      已標註於：{q.pinnedAt}
-                    </p>
-                  )}
-                  {q.clientRef && (
-                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
-                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
-                          <ClipboardIcon /> 您的需求表
-                        </span>
-                        <span className="text-sky-300">·</span>
-                        <span className="font-medium text-sky-700">
-                          {q.clientRef.source}
-                        </span>
-                      </div>
-                      <div className="text-sm leading-relaxed text-zinc-800">
-                        「{q.clientRef.quote}」
-                      </div>
-                      {q.clientRef.note && (
-                        <div className="mt-1 text-xs text-zinc-500">
-                          {q.clientRef.note}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="shrink-0">
-                  <CommentTrigger
-                    pageId={PAGE_ID}
-                    elementId={`question-${q.no}`}
-                    elementLabel={`${q.no}：${q.question}`}
-                    variant="icon"
-                  />
-                </div>
-              </article>
+                <span>{t}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
