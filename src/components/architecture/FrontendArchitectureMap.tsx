@@ -11,30 +11,27 @@ type Item = {
 };
 
 const CONTENT: Item[] = [
-  { label: "首頁" },
-  { label: "關於我們" },
+  { label: "首頁", href: "/modules/home" },
+  { label: "關於我們", href: "/modules/about" },
   {
     label: "行銷動態",
     sub: "4 子頁",
-    children: ["活動訊息", "公告通知", "常見問題（FAQ）", "企劃提案"],
+    href: "/modules/news",
+    children: ["最新消息列表", "消息詳情頁", "常見問題（FAQ）", "政策條款"],
   },
 ];
 
 const COMMERCE: Item[] = [
   {
     label: "公版商品系列",
-    sub: "8 大類 / 49 子類",
+    sub: "8 大類 / 49 子類 + 4 子頁",
     star: true,
     href: "/modules/products",
     children: [
-      "植纖容器類 (4)",
-      "牛皮紙容器類 (4)",
-      "紙製／塑膠容器類 (7)",
-      "紙杯／膠杯／外帶週邊類 (10)",
-      "紙袋／淋膜袋／塑膠袋類 (7)",
-      "印刷紙品類 (8)",
-      "餐具／餐廚用品類 (4)",
-      "清潔紙品／用品類 (5)",
+      "分類入口頁",
+      "分類列表（篩選）→ /products/category",
+      "商品詳情（規格 + 加購）→ /products/detail",
+      "樣品申請流程 → /products/sample",
     ],
   },
   {
@@ -59,12 +56,19 @@ const COMMERCE: Item[] = [
 ];
 
 const SERVICE: Item[] = [
-  { label: "聯絡我們" },
+  { label: "聯絡我們", href: "/modules/contact" },
+  { label: "全站搜尋", href: "/modules/search" },
   {
     label: "會員中心",
-    sub: "7 子頁",
+    sub: "9 子頁",
     href: "/modules/members",
-    children: ["註冊/登入", "會員首頁", "歷史訂單", "訂單詳情", "詢價紀錄", "樣品紀錄", "帳號設定"],
+    children: ["登入 / 註冊", "忘記密碼", "會員儀表板", "歷史訂單", "訂單詳情", "詢價紀錄", "樣品紀錄", "個人資料", "收件地址簿"],
+  },
+  {
+    label: "結帳流程",
+    sub: "4 子頁",
+    href: "/modules/cart",
+    children: ["購物車", "填寫資料", "付款方式", "付款結果"],
   },
 ];
 
