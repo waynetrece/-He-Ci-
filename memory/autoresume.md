@@ -1,38 +1,34 @@
 # Autoresume - HJ Proposal
 
-> 更新時間：2026-05-01
+> 更新時間：2026-05-05
 > 用途：下次新視窗快速接續目前最新狀態。
 
 ## 一句話狀態
 
-HJ 窗口已回覆確認問題，並提供凌越 ERP API 文件；`最佳拍檔API.pdf` 207 頁已完整重讀並與 Claude 的 API 索引規則對齊。mockup 仍先不要動，下一步以 `discussions/hj-maya-to-hj-confirmation-items.md`、`discussions/hj-maya-to-lingyue-api-confirmation-items.md`、`discussions/hj-api-207-full-read-reanalysis.md` 為主檔，等 Wayne 提供 Claude 分析後再做差異核對。
+目前主線已推進到 HJ 報價單草案整理；HEAD 是 `e58c587` 報價單 v8，`main` 目前 ahead origin 5 commits。`discussions/hj-quote-draft.md` 有本機未提交修訂，但尚未可交付，下一步要先清理編號與金額總計，再決定是否升成 v9。
 
-## 最新 commit
+## Git / 工作區
 
-- 工作區目前新增 2026-05-01 API 207 頁重讀、HJ/凌越分流問題、金物流材積判斷文件，尚待 Wayne review 後再決定是否提交。
-- `c7706e6 docs(line): 記錄客製詢價 LINE 決策`
-- `a0ed40c docs(line): LINE 整合可行性調研 — Messaging API 取代已停用的 Notify`
-- `6c8386d docs(progress): 記錄 HJ 客戶問題已送窗口`
-- `ae6865b docs(client-questions): 新增 HJ 窗口確認 Word 檔`
-- `91d9809 docs(client-questions): 移除第一版用語`
-- `3173df5 docs(client-questions): 整理 HJ 客戶確認問題版`
+- 分支：`main`
+- 遠端狀態：`main...origin/main [ahead 5]`
+- 最新 HEAD：`e58c587 docs(quote): v8 — 拿掉 FAQ(對齊 HJ 原始需求,FAQ 不在 1150422 列表內)`
+- 唯一未提交檔案：`discussions/hj-quote-draft.md`
 
-## 目前已送窗口的檔案
+## 目前報價單狀態
 
-- Word：`exports/HJ-網站需求確認問題清單.docx`
-- Repo Markdown：`discussions/hj-client-confirmation-questions.md`
-- Obsidian Markdown：`1-Projects/禾啟HJ-餐飲包材電商/13-提供客戶確認問題清單.md`
-- Obsidian Word：`1-Projects/禾啟HJ-餐飲包材電商/HJ-網站需求確認問題清單.docx`
+- 主檔：`discussions/hj-quote-draft.md`
+- 目前 committed 版本：草案 v8
+- v8 重點：FAQ 已從主案移除；v8 金額為未稅 `$1,070,750`、含稅 `NT$ 1,124,288`。
+- 本機修訂方向：CMS 6 頁改 4 頁、最新消息併入行銷活動 / 部落格、設計小計改 `$161,500`。
+- 本機修訂問題：多個項目編號重複為 `13`，報價總計仍有舊設計小計 `$170,500`，金額需重算。
 
-## 目前不再只是等待
+## 下次安全起手式
 
-- 窗口已回覆確認問題清單。
-- 凌越 API 文件已收到。
-- 凌越 API 207 頁已重讀並整理成共同索引與問題分流。
-- 金物流 / 材積判斷已確認：不硬推給凌越；凌越只問資料欄位與物流單號回寫，配送可行性由 HJ 規則 + 馬亞網站邏輯 + 金物流規範判斷。
-- API 文件確認方向已收斂：重點是判斷「文件是否清楚到馬亞可直接對接」，以及缺哪些 endpoint、帳密、公司代號、可用 `idakd`、必填欄位、XML 範例、測試資料與欄位對照；不要把 SEO、商品文案、網站上下架這類網站功能拿去問凌越。
-- 下一步等 Wayne 提供 Claude API 分析後，再做差異核對。
-- 仍不直接進 mockup；先確認客戶規則、馬亞技術方案、凌越 API 補件。
+1. 先讀 `memory/checkpoint.md` 的 2026-05-05 區塊。
+2. 檢查 `git diff -- discussions/hj-quote-draft.md`。
+3. 先不要產出客戶版檔案；要先修正流水號與總金額。
+4. 若 Wayne 同意保留本機修訂方向，再把報價草案升成 v9。
+5. mockup 仍先不要主動改；目前主線是報價單 / scope / 金額收斂。
 
 ## LINE 客製詢價目前定論
 
@@ -46,14 +42,8 @@ HJ 窗口已回覆確認問題，並提供凌越 ERP API 文件；`最佳拍檔A
 
 1. `memory/checkpoint.md`
 2. `memory/claude-handoff.md`
-3. `discussions/codex-handoff.md`
-4. `discussions/lyserp-api-reference-index.md`
-5. `discussions/hj-api-207-full-read-reanalysis.md`
-6. `discussions/hj-maya-to-hj-confirmation-items.md`
-7. `discussions/hj-maya-to-lingyue-api-confirmation-items.md`
-8. `discussions/hj-ecpay-logistics-volume-judgement.md`
-9. 舊版初稿可參考：`discussions/hj-window-reply-api-architecture-review.md`、`discussions/hj-followup-questions-customer-maya-lingyue.md`
-10. 如果接 LINE 題：`discussions/line-integration-research.md`
+3. `discussions/hj-quote-draft.md`
+4. 如果需要回看 API / scope 判斷：`discussions/codex-handoff.md`、`discussions/lyserp-api-reference-index.md`、`discussions/hj-api-207-full-read-reanalysis.md`
 
 ## 下次接手不要做
 
@@ -63,17 +53,4 @@ HJ 窗口已回覆確認問題，並提供凌越 ERP API 文件；`最佳拍檔A
 - 不要把 `discussions/advanced-features-memo.md` 給客戶或混進客戶問題。
 - 不要再用「第一版」這個詞給客戶；客戶版統一用「網站正式上線時」或具體問法。
 - 不要把 LINE 描述成「已接第三方客服系統」或「LINE 自動報價」。
-
-## 下次安全起手式
-
-如果 Wayne 要繼續：
-
-1. 先 review `hj-window-reply-api-architecture-review.md`。
-2. 再 review `hj-followup-questions-customer-maya-lingyue.md`。
-3. 目前新版主檔是 `hj-api-207-full-read-reanalysis.md`、`hj-maya-to-hj-confirmation-items.md`、`hj-maya-to-lingyue-api-confirmation-items.md`。
-4. 若 Wayne 提供 Claude 的 API 分析，先依 `discussions/codex-handoff.md` 規則核對，衝突或補充直接改 `lyserp-api-reference-index.md` 並追加 handoff 紀錄。
-5. 等架構與 API 問題收斂後，再決定 mockup 調整範圍。
-
-如果 Wayne 只是說「繼續」：
-
-> 目前窗口回覆與凌越 API 文件已整理成架構/API 判讀草稿；下一步應先審 `discussions/hj-window-reply-api-architecture-review.md` 與 `discussions/hj-followup-questions-customer-maya-lingyue.md`，不要先改 mockup。
+- 不要把目前本機 dirty 的報價草案當作可交付版。
