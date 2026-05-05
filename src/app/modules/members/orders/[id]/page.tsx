@@ -1,12 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { use, useState } from "react";
-import {
-  ClipboardIcon,
-  CommentToolbar,
-  CommentTrigger,
-} from "@/components/modules/CommentSystem";
+import { useState } from "react";
+import { CommentToolbar } from "@/components/modules/CommentSystem";
 import { ModuleFooterNav } from "@/components/modules/ModuleFooterNav";
 import { MemberOrderDetailMockup } from "@/components/modules/mockups/MemberOrderDetailMockup";
 import { MEMBER_MOCKUPS } from "@/lib/members-mockups";
@@ -15,64 +11,19 @@ const PAGE_ID = "members-order-detail";
 const PAGE_LABEL = "會員系統 — 訂單詳情";
 const ACTIVE_TAB = "order-detail";
 
-const QUESTIONS = [
-  {
-    no: "Q1",
-    question: "訂單狀態與配送狀態是否分兩條進度列？我們提供以下預設方案，想請 HJ 確認名稱、順序、是否與 ERP / 物流同步：",
-    context:
-      "預設方案：● 訂單狀態：待確認 → 已成立 → 備貨中 → 已出貨 → 已完成；例外：已取消 / 退換貨處理中  ● 配送狀態：未出貨 → 已交物流 → 運送中 → 已送達；例外：配送異常。請確認名稱與順序，以及是否要與凌越 ERP / 物流公司即時同步。",
-    pinnedAt: "上方雙進度列區塊『訂單狀態』",
-    clientRef: {
-      source: "前台 / 會員 (2) + 後台 / 訂單管理 (3)",
-      quote: "訂單配送狀態；訂單出貨狀態",
-      note: "需求表寫到「狀態」但未指定具體名稱、順序、與 ERP/物流的同步邏輯。",
-    },
-  },
-  {
-    no: "Q2",
-    question: "「再訂一次」遇到公版商品 → 加購物車；遇到私版／客製商品 → 帶入規格重新詢價，這樣分流可以嗎？",
-    context:
-      "目前先以這樣示意：① 公版商品（如 12oz 紙杯）按下「再訂一次」直接加入購物車 ② 私版／客製商品（如客製腰封）按下「再訂一次」會帶入上次規格到「我的詢價紀錄」並提示客戶重新確認，因為價格與規格可能變動。",
-    pinnedAt: "商品明細第 1 張卡『再訂一次』按鈕",
-    clientRef: {
-      source: "前台 / 會員 (1) + 私版商品系列 (1)(2)",
-      quote: "查詢歷史訂單，可再購買一次按鈕",
-      note: "需求表寫了「可再購買一次按鈕」，但未細分公版／私版商品的處理方式。",
-    },
-  },
-  {
-    no: "Q3",
-    question: "不同訂單狀態下，會員可以取消訂單或申請退換貨嗎？例如：備貨前可取消、出貨後只能申請退換貨、送達後幾天內可申請？",
-    context:
-      "目前先以這樣示意（畫面下方對照表）：① 待確認 → 可線上自助取消 ② 已成立 → 可線上自助取消 ③ 備貨中 → 不建議直接取消，可送出取消申請由業務審核 ④ 已出貨 → 不可取消，只能申請退換貨 ⑤ 已送達 → 在 X 天內可申請退換貨（天數想請 HJ 確認）⑥ 已完成 / 已關閉 → 不開放線上退換貨，只保留客服聯繫。想請 HJ 確認各狀態的可申請條件與「送達後可申請天數」。",
-    pinnedAt: "「取消 / 退換貨可申請條件」對照表",
-    clientRef: {
-      source: "後台 / 訂單管理 (7)",
-      quote: "退換貨",
-      note: "需求表只寫「退換貨」，未指定不同狀態下能做什麼。本提案先以一般線上流程規劃；訂單通知管道（Email / LINE / 站內訊息）為另題（見會員設定頁 Q1 LINE 整體規劃）。",
-    },
-  },
-  {
-    no: "Q4",
-    question: "會員看到的歷史訂單，是只包含新網站成立後的訂單，還是要匯入 / 同步 ERP 既有歷史訂單？",
-    context:
-      "客戶可能期待「過去在 HJ 下過的訂單也能查」。如果要匯入，需確認資料範圍（過去 N 年？所有訂單？）、欄位是否完整、是否能執行「再訂一次」。",
-    pinnedAt: "底部『訂單來源』提示",
-    clientRef: {
-      source: "後台 / 顧客管理 (1)",
-      quote: "API 串接：網站客人需與原 ERP 客戶編號相同",
-      note: "需求表只寫了客戶編號要對應，未指定歷史訂單是否要匯入。",
-    },
-  },
-];
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 訂單狀態 6 個 + 已退款 = 7 個(B 包 / E 包)
+// - 訂單與配送狀態合一(B 包 Q-B2)
+// - 已出貨 7 天系統自動轉「已完成」(B 包)
+// - 物流追蹤 = 系統依物流商產生查詢頁連結模板(B 包 Q-B3)
+// - 退換貨走客服(LINE / 電話)— 不開放線上自助(E 包 Q-E2)
+// - 信用卡退款 → 客服在後台呼叫綠界退刷 API(default 自動)
+// - 匯款退款 → 客服記錄,通知會計手動退回
+// - 凌越同步 = 訂單付款完成才進凌越;取消改狀態為已取消(E 包)
+// - 凌越歷史訂單 default 近 2 年(C 包 Q-C3)
 
-export default function MembersOrderDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function MembersOrderDetailPage() {
   const [annotations, setAnnotations] = useState(true);
-  const { id } = use(params);
 
   return (
     <main className="min-h-dvh bg-zinc-50 text-zinc-900">
@@ -83,12 +34,9 @@ export default function MembersOrderDetailPage({
         setAnnotations={setAnnotations}
       />
 
-      {/* Mockup tabs */}
       <section className="border-b-2 border-zinc-400 bg-amber-50/60 px-6 py-3">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-2">
-          <span className="mr-2 text-sm font-medium text-amber-900">
-            會員系統 預覽：
-          </span>
+          <span className="mr-2 text-sm font-medium text-amber-900">會員系統 預覽:</span>
           {MEMBER_MOCKUPS.map((m) => {
             const active = m.id === ACTIVE_TAB;
             const cls = `rounded-full border-2 px-4 py-1.5 text-sm font-medium transition-colors ${
@@ -101,117 +49,58 @@ export default function MembersOrderDetailPage({
             const content = (
               <>
                 {m.name}
-                {!m.ready && (
-                  <span className="ml-1 text-[10px] opacity-60">（製作中）</span>
-                )}
+                {!m.ready && <span className="ml-1 text-[10px] opacity-60">(製作中)</span>}
               </>
             );
             return m.ready && !active ? (
-              <Link key={m.id} href={m.href} className={cls}>
-                {content}
-              </Link>
+              <Link key={m.id} href={m.href} className={cls}>{content}</Link>
             ) : (
-              <button key={m.id} disabled={!m.ready} className={cls}>
-                {content}
-              </button>
+              <button key={m.id} disabled={!m.ready} className={cls}>{content}</button>
             );
           })}
         </div>
       </section>
 
-      {/* Mockup */}
       <section className="bg-zinc-200/70 px-6 py-10">
         <div className="mx-auto max-w-[1760px]">
-          <MemberOrderDetailMockup
-            annotations={annotations}
-            pageId={PAGE_ID}
-            orderId={id}
-          />
+          <MemberOrderDetailMockup annotations={annotations} pageId={PAGE_ID} />
         </div>
       </section>
 
-      {/* Confirmation section */}
-      <section className="border-t-2 border-zinc-400 bg-amber-50/40 px-6 py-16">
+      {/* Resolution summary */}
+      <section className="border-t-2 border-zinc-400 bg-emerald-50/40 px-6 py-12">
         <div className="mx-auto max-w-[1760px]">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold tracking-tight text-amber-900">
-              本頁待確認的項目（共 {QUESTIONS.length} 題）
-            </h2>
-            <p className="mt-3 max-w-3xl text-base text-zinc-700">
-              以下 {QUESTIONS.length} 題都已用紅圈
-              <span className="mx-1 inline-flex items-center gap-1 rounded-full border-2 border-rose-600 bg-rose-500 py-0.5 pl-1 pr-2 text-xs font-bold text-white align-middle">
-                <span className="flex size-4 items-center justify-center rounded-full bg-white text-[10px] font-black text-rose-600">
-                  ?
+          <h2 className="text-2xl font-bold tracking-tight text-emerald-900">本頁需求已全部對齊</h2>
+          <p className="mt-2 max-w-3xl text-sm text-zinc-700">
+            32 題客戶需求 review 已完成,訂單詳情邏輯 + 退換貨流程全部反映在 mockup 上。
+          </p>
+          <ul className="mt-5 grid max-w-4xl grid-cols-1 gap-2 text-sm text-zinc-700 lg:grid-cols-2">
+            {[
+              "訂單狀態 7 個時間軸:待付款→已付款→備貨中→已出貨→已完成 + 已取消 / 已退款",
+              "已出貨 → 物流商 + 單號 + 「查詢運送狀態」連物流官網",
+              "已出貨 7 天系統自動轉「已完成」(不串 API,無法判定送達)",
+              "退換貨統一走客服(LINE / 電話),不開放線上自助",
+              "信用卡退款 → 客服後台呼叫綠界退刷 API",
+              "匯款退款 → 客服記錄通知會計手動",
+              "凌越同步:付款完成才進;取消改狀態為已取消",
+              "依不同訂單狀態顯示對應動作按鈕",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 </span>
-                Q
-              </span>
-              標註於上方畫面對應的元件上，您可以直接點畫面上的紅圈留言；下方為對照表，方便整體檢視。
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {QUESTIONS.map((q) => (
-              <article
-                key={q.no}
-                className="relative flex gap-4 rounded-lg border border-rose-300 bg-white p-5"
-              >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500 font-mono text-sm font-bold text-white">
-                  {q.no}
-                </span>
-                <div className="flex-1">
-                  <h3 className="text-base font-bold leading-snug text-zinc-900">
-                    {q.question}
-                  </h3>
-                  {q.context && (
-                    <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
-                      {q.context}
-                    </p>
-                  )}
-                  {q.pinnedAt && (
-                    <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">
-                      <span aria-hidden>↑</span>
-                      已標註於：{q.pinnedAt}
-                    </p>
-                  )}
-                  {q.clientRef && (
-                    <div className="mt-3 rounded-md border border-sky-200 bg-sky-50/70 px-3 py-2.5">
-                      <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                        <span className="inline-flex items-center gap-1 font-bold text-sky-800">
-                          <ClipboardIcon /> 您的需求表
-                        </span>
-                        <span className="text-sky-300">·</span>
-                        <span className="font-medium text-sky-700">
-                          {q.clientRef.source}
-                        </span>
-                      </div>
-                      <div className="text-sm leading-relaxed text-zinc-800">
-                        「{q.clientRef.quote}」
-                      </div>
-                      {q.clientRef.note && (
-                        <div className="mt-1 text-xs text-zinc-500">
-                          {q.clientRef.note}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="shrink-0">
-                  <CommentTrigger
-                    pageId={PAGE_ID}
-                    elementId={`question-${q.no}`}
-                    elementLabel={`${q.no}：${q.question}`}
-                    variant="icon"
-                  />
-                </div>
-              </article>
+                <span>{t}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       <ModuleFooterNav
-        prev={{ title: "會員首頁", href: "/modules/members" }}
-        next={{ title: "訂單系統", href: "/modules/orders" }}
+        prev={{ title: "訂單列表", href: "/modules/members/orders" }}
+        next={{ title: "詢價單列表", href: "/modules/members/quote-list" }}
       />
     </main>
   );

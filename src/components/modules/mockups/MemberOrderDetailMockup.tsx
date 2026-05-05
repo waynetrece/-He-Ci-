@@ -2,576 +2,385 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Questioned } from "../CommentSystem";
 import {
   MockupShell,
   MockupSiteFooter,
   MockupSiteHeader,
 } from "../MockupShell";
 
-/* ============== Q definitions ============== */
+// 32 題 review 已決議事項(直接反映在 mockup 上,本頁無待確認問題):
+// - 訂單狀態 6 個 + 已退款 = 7 個(B 包 / E 包)
+// - 配送狀態與訂單狀態合一(B 包 Q-B2)— 不分兩條進度列
+// - 物流追蹤連結 = 系統依物流商產生查詢頁連結模板(B 包 Q-B3)
+// - 已出貨後 7 天系統自動轉「已完成」(B 包)
+// - 退換貨走客服(LINE / 電話)— 不開放線上自助申請(E 包 Q-E2)
+// - 信用卡退款 → 客服在後台呼叫綠界退刷 API(default 自動)
+// - 匯款退款 → 客服記錄,通知會計手動退回
+// - 凌越同步:訂單付款完成才進凌越;取消改狀態為「已取消」(E 包 Q-E14)
+// - 凌越歷史訂單 default 近 2 年(C 包 Q-C3)
 
-const Q1 = {
-  no: "Q1",
-  question: "訂單狀態與配送狀態是否分兩條進度列？我們提供以下預設方案，想請 HJ 確認名稱、順序、是否與 ERP / 物流同步：",
-  context:
-    "預設方案：\n● 訂單狀態：待確認 → 已成立 → 備貨中 → 已出貨 → 已完成；例外：已取消 / 退換貨處理中\n● 配送狀態：未出貨 → 已交物流 → 運送中 → 已送達；例外：配送異常\n\n請確認名稱與順序，以及是否要與凌越 ERP / 物流公司即時同步。",
-  clientRef: {
-    source: "前台 / 會員 (2) + 後台 / 訂單管理 (3)",
-    quote: "訂單配送狀態；訂單出貨狀態",
-    note: "需求表寫到「狀態」但未指定具體名稱、順序、與 ERP/物流的同步邏輯。",
-  },
+type OrderStatus = "unpaid" | "paid" | "preparing" | "shipped" | "completed" | "cancelled" | "refunded";
+
+const STATUS_META: Record<OrderStatus, { label: string; cls: string; dot: string }> = {
+  unpaid: { label: "待付款", cls: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
+  paid: { label: "已付款", cls: "bg-sky-100 text-sky-800", dot: "bg-sky-500" },
+  preparing: { label: "備貨中", cls: "bg-violet-100 text-violet-800", dot: "bg-violet-500" },
+  shipped: { label: "已出貨", cls: "bg-emerald-100 text-emerald-800", dot: "bg-emerald-500" },
+  completed: { label: "已完成", cls: "bg-zinc-200 text-zinc-700", dot: "bg-zinc-500" },
+  cancelled: { label: "已取消", cls: "bg-rose-100 text-rose-700", dot: "bg-rose-500" },
+  refunded: { label: "已退款", cls: "bg-indigo-100 text-indigo-700", dot: "bg-indigo-500" },
 };
 
-const Q2 = {
-  no: "Q2",
-  question: "「再訂一次」遇到公版商品 → 加購物車；遇到私版／客製商品 → 帶入規格重新詢價，這樣分流可以嗎？",
-  context:
-    "目前先以這樣示意：① 公版商品（如 12oz 紙杯）按下「再訂一次」直接加入購物車 ② 私版／客製商品（如客製腰封）按下「再訂一次」會帶入上次規格到「我的詢價紀錄」並提示客戶重新確認，因為價格與規格可能變動。",
-  clientRef: {
-    source: "前台 / 會員 (1) + 私版商品系列 (1)(2)",
-    quote: "查詢歷史訂單，可再購買一次按鈕",
-    note: "需求表寫了「可再購買一次按鈕」，但未細分公版／私版商品的處理方式。",
-  },
+// 標準時間軸節點(已取消 / 已退款 是分支,單獨顯示)
+const TIMELINE_STATUSES: OrderStatus[] = ["unpaid", "paid", "preparing", "shipped", "completed"];
+
+const ORDER = {
+  id: "HJ-2026-0505-0042",
+  date: "2026/05/05 14:32",
+  type: "公版" as const,
+  source: "site" as const,
+  paymentMethod: "credit" as "credit" | "transfer" | "cod",
+  paidAt: "2026/05/05 14:32",
+  shippingMethod: "home" as "home" | "store",
+  shippingCarrier: "黑貓宅配",
+  shippingTracking: "T20260505009842",
+  shippedAt: "2026/05/06 11:20",
+  estimatedDelivery: "2026/05/07–05/08",
+  recipient: "陳老闆",
+  phone: "0912-345-678",
+  address: "新北市五股區五權路 10 號 3 樓",
+  invoice: "三聯式 / 統編 12345678 / 禾啟股份有限公司",
+  items: [
+    { code: "PC-12-白", name: "12oz 公版瓦楞紙杯(白)", spec: "12oz / 360cc", qty: 2, unit: "箱", piecesPerUnit: 1000, unitPrice: 2.0, bg: "bg-amber-100" },
+    { code: "PC-08-白", name: "8oz 公版瓦楞紙杯(白)", spec: "8oz / 240cc", qty: 5, unit: "條", piecesPerUnit: 50, unitPrice: 1.5, bg: "bg-amber-100" },
+    { code: "LD-90-白", name: "90mm 平蓋(加購)", spec: "適配 8/12oz 杯", qty: 5, unit: "條", piecesPerUnit: 50, unitPrice: 1.0, bg: "bg-zinc-100" },
+  ],
+  subtotal: 4625,
+  shipFee: 0,
+  tax: 231,
+  total: 4856,
+  syncedToLyserp: true,
+  syncTime: "2026/05/05 14:32:18",
 };
-
-const Q3 = {
-  no: "Q3",
-  question: "不同訂單狀態下，會員可以取消訂單或申請退換貨嗎？例如：備貨前可取消、出貨後只能申請退換貨、送達後幾天內可申請？",
-  context:
-    "目前先以這樣示意（下方對照表）：① 待確認 → 可線上自助取消 ② 已成立 → 可線上自助取消 ③ 備貨中 → 不建議直接取消，可送出取消申請由業務審核 ④ 已出貨 → 不可取消，只能申請退換貨 ⑤ 已送達 → 在 X 天內可申請退換貨（天數想請 HJ 確認）⑥ 已完成 / 已關閉 → 不開放線上退換貨，只保留客服聯繫。想請 HJ 確認各狀態的可申請條件與「送達後可申請天數」。",
-  clientRef: {
-    source: "後台 / 訂單管理 (7)",
-    quote: "退換貨",
-    note: "需求表只寫「退換貨」，未指定不同狀態下能做什麼。本提案先以一般線上流程規劃；訂單通知管道（Email / LINE / 站內訊息）為另題（見會員設定頁 Q1 LINE 整體規劃）。",
-  },
-};
-
-const RETURN_RULES: { status: string; cls: string; action: string; tone: "ok" | "warn" | "block" }[] = [
-  { status: "待確認", cls: "bg-zinc-100 text-zinc-700", action: "可線上自助取消", tone: "ok" },
-  { status: "已成立", cls: "bg-sky-100 text-sky-800", action: "可線上自助取消", tone: "ok" },
-  { status: "備貨中", cls: "bg-amber-100 text-amber-800", action: "送出取消申請，由業務審核", tone: "warn" },
-  { status: "已出貨", cls: "bg-emerald-100 text-emerald-800", action: "不可取消，可申請退換貨", tone: "warn" },
-  { status: "已送達", cls: "bg-emerald-100 text-emerald-800", action: "送達後 X 天內可申請退換貨（天數待 HJ 確認）", tone: "warn" },
-  { status: "已完成 / 已關閉", cls: "bg-zinc-100 text-zinc-700", action: "不開放線上退換貨，請聯繫客服", tone: "block" },
-];
-
-const Q4 = {
-  no: "Q4",
-  question: "會員看到的歷史訂單，是只包含新網站成立後的訂單，還是要匯入 / 同步 ERP 既有歷史訂單？",
-  context:
-    "客戶可能期待「過去在 HJ 下過的訂單也能查」。如果要匯入，需確認資料範圍（過去 N 年？所有訂單？）、欄位是否完整、是否能執行「再訂一次」。",
-  clientRef: {
-    source: "後台 / 顧客管理 (1)",
-    quote: "API 串接：網站客人需與原 ERP 客戶編號相同",
-    note: "需求表只寫了客戶編號要對應，未指定歷史訂單是否要匯入。",
-  },
-};
-
-/* ============== Icons ============== */
-
-function ChevronRight() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  );
-}
-
-function CheckCircle({ className = "" }: { className?: string }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm5.707 9.707-7 7a1 1 0 0 1-1.414 0l-3-3a1 1 0 1 1 1.414-1.414L10 14.586l6.293-6.293a1 1 0 1 1 1.414 1.414z" />
-    </svg>
-  );
-}
-
-function CircleEmpty({ className = "" }: { className?: string }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-    </svg>
-  );
-}
-
-function CircleActive({ className = "" }: { className?: string }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="4" fill="white" />
-    </svg>
-  );
-}
-
-function TruckIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="3" width="15" height="13" />
-      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-      <circle cx="5.5" cy="18.5" r="2.5" />
-      <circle cx="18.5" cy="18.5" r="2.5" />
-    </svg>
-  );
-}
-
-function RepeatIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="17 1 21 5 17 9" />
-      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-      <polyline points="7 23 3 19 7 15" />
-      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-    </svg>
-  );
-}
-
-function PackageIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16.5 9.4l-9-5.19" />
-      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-    </svg>
-  );
-}
-
-/* ============== Data ============== */
-
-const ORDER_STATUS_FLOW = [
-  { key: "pending", label: "待確認" },
-  { key: "confirmed", label: "已成立" },
-  { key: "preparing", label: "備貨中" },
-  { key: "shipped", label: "已出貨" },
-  { key: "completed", label: "已完成" },
-];
-
-const DELIVERY_STATUS_FLOW = [
-  { key: "not-shipped", label: "未出貨" },
-  { key: "handed-over", label: "已交物流" },
-  { key: "in-transit", label: "運送中" },
-  { key: "delivered", label: "已送達" },
-];
-
-// 當前訂單狀態（demo 用：已出貨）
-const CURRENT_ORDER_STAGE = 3; // shipped
-const CURRENT_DELIVERY_STAGE = 2; // in-transit
-
-const ORDER_ITEMS = [
-  {
-    type: "stock" as const,
-    code: "PC-12-001",
-    name: "12oz 公版瓦楞紙杯",
-    spec: "白色 / 100% 食品級紙材",
-    qty: 5000,
-    unitPrice: 1.5,
-  },
-  {
-    type: "custom" as const,
-    code: "PC-CUS-LOGO",
-    name: "12oz 客製印 LOGO 紙杯",
-    spec: "雙面 / 全彩印刷 / 客戶 LOGO",
-    qty: 3000,
-    unitPrice: 1.85,
-    note: "上次規格已存，再訂一次需重新確認",
-  },
-];
-
-/* ============== Component ============== */
 
 export function MemberOrderDetailMockup({
-  annotations = false,
-  pageId = "members-order-detail",
-  orderId = "HJ-20260427-001",
+  annotations: _annotations,
+  pageId: _pageId,
 }: {
   annotations?: boolean;
   pageId?: string;
-  orderId?: string;
 }) {
-  const [reorderModal, setReorderModal] = useState<{
-    open: boolean;
-    type: "stock" | "custom" | null;
-  }>({ open: false, type: null });
+  const [demoStatus, setDemoStatus] = useState<OrderStatus>("shipped");
+  const [refundOpen, setRefundOpen] = useState(false);
 
-  const subtotal = ORDER_ITEMS.reduce((s, i) => s + i.qty * i.unitPrice, 0);
-  const shipping = 200;
-  const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + shipping + tax;
+  const meta = STATUS_META[demoStatus];
+  const isOnTimeline = TIMELINE_STATUSES.includes(demoStatus);
+  const currentStepIndex = TIMELINE_STATUSES.indexOf(demoStatus);
+
+  // 不同狀態的可用動作
+  const actions: { label: string; href?: string; onClick?: () => void; primary?: boolean; danger?: boolean }[] = [];
+  if (demoStatus === "unpaid") {
+    actions.push({ label: "完成付款", href: "/modules/checkout/payment", primary: true });
+    actions.push({ label: "取消訂單", danger: true });
+  } else if (demoStatus === "paid" || demoStatus === "preparing") {
+    actions.push({ label: "申請取消(客服處理)", onClick: () => setRefundOpen(true), danger: true });
+  } else if (demoStatus === "shipped") {
+    actions.push({ label: "查詢運送狀態", primary: true });
+    actions.push({ label: "申請退換貨(客服處理)", onClick: () => setRefundOpen(true) });
+  } else if (demoStatus === "completed") {
+    if (ORDER.type === "公版") {
+      actions.push({ label: "再訂一次", href: "/modules/cart", primary: true });
+    }
+    actions.push({ label: "申請退換貨(客服處理)", onClick: () => setRefundOpen(true) });
+  }
 
   return (
-    <MockupShell url={`https://hjhj.com.tw/members/orders/${orderId}`}>
+    <MockupShell url={`https://hj.example.com/member/orders/${ORDER.id}`}>
       <MockupSiteHeader />
 
-      {/* Breadcrumb */}
-      <section className="border-b border-zinc-200 bg-white px-6 py-3">
-        <div className="mx-auto max-w-[1760px] text-xs text-zinc-500">
-          <Link href="/modules/members" className="hover:text-zinc-900">
-            會員首頁
-          </Link>
-          <span className="mx-2 text-zinc-300">/</span>
-          <Link href="/modules/members/orders" className="hover:text-zinc-900">
-            歷史訂單
-          </Link>
-          <span className="mx-2 text-zinc-300">/</span>
-          <span className="font-mono font-semibold text-zinc-900">
-            {orderId}
-          </span>
+      {/* Demo state toggle */}
+      <div className="border-b-2 border-dashed border-amber-300 bg-amber-50/60 px-6 py-3">
+        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full bg-amber-700 px-2 py-0.5 font-bold text-white">預覽切換</span>
+          <span className="text-zinc-700">訂單狀態:</span>
+          {(Object.entries(STATUS_META) as [OrderStatus, typeof STATUS_META[OrderStatus]][]).map(([key, m]) => (
+            <button
+              key={key}
+              onClick={() => setDemoStatus(key)}
+              className={`rounded-full px-2.5 py-0.5 ${demoStatus === key ? `${m.cls} font-bold ring-2 ring-amber-400` : `${m.cls} hover:opacity-80`}`}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* Order header */}
-      <section className="border-b border-zinc-200 bg-white px-6 py-6">
-        <div className="mx-auto max-w-[1760px]">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="font-mono text-xl font-bold text-zinc-900">
-                  {orderId}
-                </h1>
-                <span className="rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-800">
-                  已出貨 · 運送中
-                </span>
-              </div>
-              <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-zinc-600">
-                <span>下單日期：2026/04/27 14:32</span>
-                <span>應送達：2026/04/29</span>
-                <span>會員：禾啟餐飲（合作客戶 A 級）</span>
+      <div className="bg-zinc-50 px-6 py-8">
+        <div className="mx-auto max-w-[1760px] grid grid-cols-4 gap-6">
+          {/* Sidebar */}
+          <aside className="rounded-xl border border-zinc-200 bg-white p-5 self-start">
+            <div className="mb-4 flex items-center gap-3 border-b border-zinc-100 pb-4">
+              <div className="flex size-10 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-700">陳</div>
+              <div>
+                <div className="text-sm font-bold text-zinc-900">陳老闆</div>
+                <div className="text-xs text-zinc-500">北部直客 · VIP</div>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setReorderModal({ open: true, type: "stock" })}
-                className="flex items-center gap-1.5 rounded-md bg-amber-700 px-4 py-2 text-sm font-bold text-white hover:bg-amber-800"
-              >
-                <RepeatIcon />
-                再訂一次
-              </button>
-              <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
-                退換貨
-              </button>
-              <button className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50">
-                <TruckIcon />
-                追蹤物流
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Two timelines side by side */}
-      <section className="bg-zinc-50/40 px-6 py-8">
-        <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-2">
-          {/* Order status timeline */}
-          <Questioned
-            show={annotations}
-            questions={[Q1]}
-            pageId={pageId}
-            position="top-right"
-          >
-            <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <PackageIcon />
-                <h2 className="text-base font-bold text-zinc-900">訂單狀態</h2>
-              </div>
-              <Timeline flow={ORDER_STATUS_FLOW} currentIdx={CURRENT_ORDER_STAGE} />
-              <p className="mt-4 text-xs text-zinc-500">
-                目前訂單已出貨，預計 2026/04/29 送達。
-              </p>
-            </div>
-          </Questioned>
-
-          {/* Delivery status timeline */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <div className="mb-4 flex items-center gap-2">
-              <TruckIcon />
-              <h2 className="text-base font-bold text-zinc-900">配送狀態</h2>
-              <span className="ml-auto rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs text-zinc-600 font-mono">
-                黑貓 880123456789
-              </span>
-            </div>
-            <Timeline
-              flow={DELIVERY_STATUS_FLOW}
-              currentIdx={CURRENT_DELIVERY_STAGE}
-            />
-            <p className="mt-4 text-xs text-zinc-500">
-              貨物已從新北市配送中心出發，預計於 2026/04/29 上午送達您的指定地址。
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 退換貨可申請條件 */}
-      <section className="border-t border-zinc-200 bg-white px-6 py-8">
-        <div className="mx-auto max-w-[1760px]">
-          <Questioned
-            show={annotations}
-            questions={[Q3]}
-            pageId={pageId}
-            position="top-right"
-          >
-            <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-5">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-bold text-zinc-900">取消 / 退換貨可申請條件</h2>
-                <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[11px] font-bold text-amber-900">
-                  待 HJ 確認天數與權責
-                </span>
-              </div>
-              <p className="mb-3 text-xs text-zinc-600">
-                以下為本提案先示意的條件對照。實際邊界（特別是「送達後可申請天數」、「備貨中能否取消」的審核權責）想請 HJ 確認。
-              </p>
-              <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
-                <table className="w-full text-sm">
-                  <thead className="bg-zinc-50 text-xs text-zinc-500">
-                    <tr>
-                      <th className="px-4 py-2.5 text-left font-medium">訂單狀態</th>
-                      <th className="px-4 py-2.5 text-left font-medium">會員可以做什麼</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-100">
-                    {RETURN_RULES.map((r) => (
-                      <tr key={r.status}>
-                        <td className="px-4 py-2.5">
-                          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${r.cls}`}>
-                            {r.status}
-                          </span>
-                        </td>
-                        <td className={`px-4 py-2.5 text-sm ${
-                          r.tone === "ok"
-                            ? "text-emerald-700"
-                            : r.tone === "warn"
-                              ? "text-amber-800"
-                              : "text-zinc-500"
-                        }`}>
-                          {r.action}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </Questioned>
-        </div>
-      </section>
-
-      {/* Items + summary */}
-      <section className="bg-white px-6 py-8">
-        <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[1fr_400px]">
-          {/* Items */}
-          <div>
-            <h2 className="mb-3 text-base font-bold text-zinc-900">商品明細</h2>
-            <div className="space-y-3">
-              {ORDER_ITEMS.map((item) => (
-                <article
-                  key={item.code}
-                  className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm"
-                >
-                  <div className="flex gap-4">
-                    <div className="flex size-20 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-300 text-xs">
-                      商品圖
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                                item.type === "stock"
-                                  ? "bg-emerald-100 text-emerald-800"
-                                  : "bg-indigo-100 text-indigo-800"
-                              }`}
-                            >
-                              {item.type === "stock" ? "公版" : "私版客製"}
-                            </span>
-                            <span className="font-mono text-xs text-zinc-400">
-                              {item.code}
-                            </span>
-                          </div>
-                          <h3 className="mt-1 text-base font-bold text-zinc-900">
-                            {item.name}
-                          </h3>
-                          <p className="mt-0.5 text-sm text-zinc-500">
-                            {item.spec}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-zinc-500">
-                            單價 NT$ {item.unitPrice.toFixed(2)} × {item.qty.toLocaleString()}
-                          </div>
-                          <div className="mt-0.5 font-mono text-base font-bold text-zinc-900">
-                            NT$ {(item.qty * item.unitPrice).toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-3">
-                        {item === ORDER_ITEMS[0] ? (
-                          <Questioned
-                            show={annotations}
-                            questions={[Q2]}
-                            pageId={pageId}
-                            position="top-right"
-                          >
-                            <button
-                              onClick={() =>
-                                setReorderModal({ open: true, type: item.type })
-                              }
-                              className="flex items-center gap-1.5 rounded-md bg-emerald-50 border border-emerald-300 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-100"
-                            >
-                              <RepeatIcon />
-                              再訂一次（加入購物車）
-                            </button>
-                          </Questioned>
-                        ) : (
-                          <div className="flex flex-wrap items-center gap-2">
-                            <button
-                              onClick={() =>
-                                setReorderModal({ open: true, type: item.type })
-                              }
-                              className="flex items-center gap-1.5 rounded-md bg-indigo-50 border border-indigo-300 px-3 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100"
-                            >
-                              <RepeatIcon />
-                              沿用規格再詢價
-                            </button>
-                            {item.note && (
-                              <span className="text-xs text-zinc-500">
-                                ※ {item.note}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </article>
+            <nav className="space-y-1 text-sm">
+              {[
+                { l: "會員儀表板", h: "/modules/members" },
+                { l: "訂單列表", h: "/modules/members/orders", active: true },
+                { l: "詢價單", h: "/modules/members/quote-list" },
+                { l: "樣品申請", h: "/modules/members/samples" },
+                { l: "收件地址簿", h: "/modules/members/addresses" },
+                { l: "個人資料", h: "/modules/members/settings" },
+              ].map((n) => (
+                <Link key={n.l} href={n.h} className={`block rounded px-3 py-2 ${n.active ? "bg-amber-50 font-medium text-amber-700" : "text-zinc-700 hover:bg-zinc-50"}`}>
+                  {n.l}
+                </Link>
               ))}
-            </div>
+            </nav>
+          </aside>
 
-            {/* Address */}
-            <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-              <h3 className="mb-2 text-sm font-bold text-zinc-900">收件資訊</h3>
-              <div className="text-sm text-zinc-700 leading-relaxed">
-                <div>禾啟餐飲（總店）</div>
-                <div>陳先生 0912-345-678</div>
-                <div className="text-zinc-600">
-                  新北市五股區五權五路 10 號
+          {/* Body */}
+          <div className="col-span-3 space-y-5">
+            {/* Header */}
+            <section className="rounded-xl border border-zinc-200 bg-white p-6">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <Link href="/modules/members/orders" className="text-xs text-zinc-500 hover:text-amber-700">
+                  ← 返回訂單列表
+                </Link>
+                <div className="flex items-center gap-2 text-xs text-zinc-500">
+                  下單時間 <span className="font-mono text-zinc-700">{ORDER.date}</span>
                 </div>
               </div>
-            </div>
-
-            {/* Origin source note */}
-            <Questioned
-              show={annotations}
-              questions={[Q4]}
-              pageId={pageId}
-              position="top-left"
-            >
-              <div className="mt-4 rounded-md bg-zinc-50/60 px-4 py-3 text-xs text-zinc-500">
-                訂單來源：HJ 網站系統 · 此筆訂單可對應 ERP 訂單編號 <span className="font-mono">ERP-2604-031</span>
+              <div className="mt-3 flex flex-wrap items-baseline gap-3">
+                <h1 className="font-mono text-2xl font-bold text-zinc-900">{ORDER.id}</h1>
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${meta.cls}`}>
+                  <span className={`size-2 rounded-full ${meta.dot}`} />
+                  {meta.label}
+                </span>
+                <span className={`rounded-full border px-2 py-0.5 text-xs ${ORDER.type === "公版" ? "border-amber-300 text-amber-700" : "border-violet-300 text-violet-700"}`}>
+                  {ORDER.type}
+                </span>
               </div>
-            </Questioned>
-          </div>
 
-          {/* Amount summary (sticky) */}
-          <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-              <h3 className="mb-3 text-sm font-bold text-zinc-900 uppercase tracking-wider">
-                金額明細
-              </h3>
-              <ul className="space-y-2 text-sm">
-                <li className="flex justify-between">
-                  <span className="text-zinc-600">商品小計</span>
-                  <span className="font-mono">
-                    NT$ {subtotal.toLocaleString()}
-                  </span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-zinc-600">運費</span>
-                  <span className="font-mono">
-                    NT$ {shipping.toLocaleString()}
-                  </span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-zinc-600">營業稅 (5%)</span>
-                  <span className="font-mono">NT$ {tax.toLocaleString()}</span>
-                </li>
-                <li className="flex justify-between border-t border-zinc-200 pt-2">
-                  <span className="font-bold text-zinc-900">總計</span>
-                  <span className="font-mono text-lg font-bold text-zinc-900">
-                    NT$ {total.toLocaleString()}
-                  </span>
-                </li>
-              </ul>
-
-              <div className="mt-4 rounded-md bg-amber-50/60 p-3 text-xs text-amber-900">
-                ※ 此價格已套用「合作客戶 A 級」合約價
-              </div>
-            </div>
-
-            <Link
-              href="/modules/members/orders"
-              className="flex items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-            >
-              <ChevronRight />
-              返回歷史訂單
-            </Link>
-          </aside>
-        </div>
-      </section>
-
-      {/* Reorder modal */}
-      {reorderModal.open && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
-          onClick={() => setReorderModal({ open: false, type: null })}
-        >
-          <div
-            className="w-full max-w-md rounded-xl bg-white shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-6 py-5 text-center">
-              {reorderModal.type === "stock" ? (
-                <>
-                  <CheckCircle className="mx-auto size-12 text-emerald-600" />
-                  <h3 className="mt-3 text-lg font-bold text-zinc-900">
-                    已加入購物車
-                  </h3>
-                  <p className="mt-1.5 text-sm text-zinc-600">
-                    12oz 公版瓦楞紙杯 × 5,000 已加入購物車。
-                  </p>
-                  <p className="mt-3 text-xs text-zinc-400">
-                    （Demo 用 — 購物車模組製作中，實際會跳到結帳頁）
-                  </p>
-                </>
-              ) : (
-                <>
-                  <RepeatIcon />
-                  <h3 className="mt-3 text-lg font-bold text-zinc-900">
-                    已帶入上次規格
-                  </h3>
-                  <p className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
-                    客製商品價格與規格可能變動，請至「我的詢價紀錄」確認規格後送出，HJ 客服將回覆您新的報價。
-                  </p>
-                </>
+              {/* Action buttons */}
+              {actions.length > 0 && (
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {actions.map((a, i) => (
+                    a.href ? (
+                      <Link
+                        key={i}
+                        href={a.href}
+                        className={`rounded-md px-5 py-2 text-sm font-medium ${
+                          a.primary ? "bg-amber-600 text-white hover:bg-amber-700"
+                            : a.danger ? "border border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                            : "border border-zinc-300 bg-white text-zinc-700 hover:border-amber-400"
+                        }`}
+                      >
+                        {a.label}
+                      </Link>
+                    ) : (
+                      <button
+                        key={i}
+                        onClick={a.onClick}
+                        className={`rounded-md px-5 py-2 text-sm font-medium ${
+                          a.primary ? "bg-amber-600 text-white hover:bg-amber-700"
+                            : a.danger ? "border border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                            : "border border-zinc-300 bg-white text-zinc-700 hover:border-amber-400"
+                        }`}
+                      >
+                        {a.label}
+                      </button>
+                    )
+                  ))}
+                </div>
               )}
-              <div className="mt-5 flex justify-center gap-2">
-                {reorderModal.type === "custom" && (
-                  <Link
-                    href="/modules/members/quote-list"
-                    onClick={() => setReorderModal({ open: false, type: null })}
-                    className="rounded-md bg-indigo-600 px-5 py-2 text-sm font-bold text-white hover:bg-indigo-700"
-                  >
-                    前往詢價紀錄
-                  </Link>
-                )}
-                <button
-                  onClick={() =>
-                    setReorderModal({ open: false, type: null })
-                  }
-                  className="rounded-md border border-zinc-300 bg-white px-5 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+            </section>
+
+            {/* Status Timeline */}
+            <section className="rounded-xl border border-zinc-200 bg-white p-6">
+              <h2 className="text-base font-bold text-zinc-900">訂單狀態</h2>
+              {isOnTimeline ? (
+                <div className="mt-5 flex items-start justify-between">
+                  {TIMELINE_STATUSES.map((s, i) => {
+                    const m = STATUS_META[s];
+                    const done = i < currentStepIndex;
+                    const current = i === currentStepIndex;
+                    return (
+                      <div key={s} className="flex flex-1 flex-col items-center">
+                        <div className="flex w-full items-center">
+                          {i > 0 && <div className={`h-1 flex-1 ${done || current ? "bg-amber-400" : "bg-zinc-200"}`} />}
+                          <div className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
+                            done ? "bg-emerald-500 text-white"
+                              : current ? `${m.dot} ring-4 ring-amber-200 text-white`
+                              : "bg-zinc-200 text-zinc-500"
+                          }`}>
+                            {done ? "✓" : i + 1}
+                          </div>
+                          {i < TIMELINE_STATUSES.length - 1 && <div className={`h-1 flex-1 ${done ? "bg-amber-400" : "bg-zinc-200"}`} />}
+                        </div>
+                        <div className={`mt-2 text-xs ${current ? "font-bold text-amber-700" : done ? "text-emerald-700" : "text-zinc-500"}`}>
+                          {m.label}
+                        </div>
+                        {current && demoStatus === "shipped" && (
+                          <div className="mt-1 text-[10px] text-zinc-500">{ORDER.shippedAt} 出貨</div>
+                        )}
+                        {current && demoStatus === "paid" && (
+                          <div className="mt-1 text-[10px] text-zinc-500">{ORDER.paidAt} 付款完成</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-3 rounded-lg bg-zinc-50 p-4 text-sm text-zinc-700">
+                  此訂單已 <strong>{meta.label}</strong>,不在標準出貨時間軸上。
+                  {demoStatus === "cancelled" && "(已通知凌越改狀態為已取消)"}
+                  {demoStatus === "refunded" && "(信用卡已透過綠界退刷,款項 3–7 工作天退回)"}
+                </div>
+              )}
+            </section>
+
+            {/* Shipping tracking (only when shipped) */}
+            {demoStatus === "shipped" && (
+              <section className="rounded-xl border-2 border-emerald-300 bg-emerald-50/60 p-6">
+                <h2 className="text-base font-bold text-emerald-900">物流資訊</h2>
+                <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                  <dt className="text-zinc-600">物流商</dt>
+                  <dd className="text-zinc-900">{ORDER.shippingCarrier}</dd>
+                  <dt className="text-zinc-600">物流單號</dt>
+                  <dd className="font-mono text-zinc-900">{ORDER.shippingTracking}</dd>
+                  <dt className="text-zinc-600">出貨時間</dt>
+                  <dd className="text-zinc-900">{ORDER.shippedAt}</dd>
+                  <dt className="text-zinc-600">預計送達</dt>
+                  <dd className="text-zinc-900">{ORDER.estimatedDelivery}</dd>
+                </dl>
+                <a
+                  href="https://www.hct.com.tw"
+                  target="_blank"
+                  rel="noopener"
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
                 >
-                  關閉
-                </button>
+                  查詢運送狀態 →
+                </a>
+                <p className="mt-2 text-xs text-emerald-800">
+                  系統依物流商產生查詢連結模板,點擊會跳轉到物流商官網。HJ 不串物流 API,以連結方式提供查詢。
+                </p>
+                <p className="mt-1 text-xs text-zinc-500">
+                  已出貨 7 天後系統會自動將訂單轉為「已完成」(因不串 API 無法判定真實送達時間)。
+                </p>
+              </section>
+            )}
+
+            {/* Items */}
+            <section className="rounded-xl border border-zinc-200 bg-white p-6">
+              <h2 className="text-base font-bold text-zinc-900">商品明細</h2>
+              <div className="mt-4 divide-y divide-zinc-100">
+                {ORDER.items.map((it) => {
+                  const lineTotal = it.unitPrice * it.qty * it.piecesPerUnit;
+                  return (
+                    <div key={it.code} className="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
+                      <div className={`size-16 shrink-0 rounded ${it.bg}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-mono text-xs text-zinc-400">{it.code}</div>
+                        <Link href="/modules/products/detail" className="block text-sm font-bold text-zinc-900 hover:text-amber-700">
+                          {it.name}
+                        </Link>
+                        <div className="text-xs text-zinc-500">{it.spec} · {it.piecesPerUnit} 入/{it.unit}</div>
+                      </div>
+                      <div className="text-sm text-zinc-700">
+                        {it.qty} {it.unit}
+                        <span className="ml-2 text-xs text-zinc-400">× NT$ {it.unitPrice}</span>
+                      </div>
+                      <div className="w-24 text-right text-sm font-bold text-zinc-900">
+                        NT$ {lineTotal.toLocaleString()}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+              <dl className="mt-4 space-y-1.5 border-t border-zinc-100 pt-4 text-sm">
+                <div className="flex justify-between"><dt className="text-zinc-600">商品小計</dt><dd>NT$ {ORDER.subtotal.toLocaleString()}</dd></div>
+                <div className="flex justify-between"><dt className="text-zinc-600">運費(宅配 / 純箱免運)</dt><dd className="text-emerald-600 font-medium">免運</dd></div>
+                <div className="flex justify-between"><dt className="text-zinc-600">稅金(5%)</dt><dd>NT$ {ORDER.tax.toLocaleString()}</dd></div>
+                <div className="my-2 h-px bg-zinc-100" />
+                <div className="flex justify-between text-base font-bold"><dt>總計</dt><dd className="text-amber-700">NT$ {ORDER.total.toLocaleString()}</dd></div>
+              </dl>
+            </section>
+
+            {/* Recipient + Payment + Invoice */}
+            <div className="grid grid-cols-2 gap-5">
+              <section className="rounded-xl border border-zinc-200 bg-white p-6">
+                <h2 className="text-sm font-bold text-zinc-900">收件資訊</h2>
+                <dl className="mt-3 space-y-1.5 text-sm">
+                  <div className="flex"><dt className="w-20 text-zinc-500">收件人</dt><dd>{ORDER.recipient}</dd></div>
+                  <div className="flex"><dt className="w-20 text-zinc-500">電話</dt><dd>{ORDER.phone}</dd></div>
+                  <div className="flex"><dt className="w-20 text-zinc-500">配送方式</dt><dd>{ORDER.shippingMethod === "home" ? "宅配" : "超商取貨"}</dd></div>
+                  <div className="flex"><dt className="w-20 text-zinc-500">地址</dt><dd className="flex-1">{ORDER.address}</dd></div>
+                </dl>
+              </section>
+
+              <section className="rounded-xl border border-zinc-200 bg-white p-6">
+                <h2 className="text-sm font-bold text-zinc-900">付款 + 發票</h2>
+                <dl className="mt-3 space-y-1.5 text-sm">
+                  <div className="flex"><dt className="w-20 text-zinc-500">付款方式</dt><dd>{ORDER.paymentMethod === "credit" ? "信用卡(綠界)" : ORDER.paymentMethod === "transfer" ? "一般匯款" : "貨到付款"}</dd></div>
+                  <div className="flex"><dt className="w-20 text-zinc-500">付款時間</dt><dd>{ORDER.paidAt}</dd></div>
+                  <div className="flex"><dt className="w-20 text-zinc-500">發票</dt><dd className="flex-1">{ORDER.invoice}</dd></div>
+                  <div className="flex"><dt className="w-20 text-zinc-500">凌越同步</dt><dd>
+                    {ORDER.syncedToLyserp ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                        ✓ 已同步 {ORDER.syncTime}
+                      </span>
+                    ) : (
+                      <span className="text-zinc-500">未同步</span>
+                    )}
+                  </dd></div>
+                </dl>
+              </section>
+            </div>
+
+            {/* Customer service */}
+            <section className="rounded-xl border border-zinc-200 bg-zinc-50 p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-sm font-bold text-zinc-900">需要協助?</div>
+                  <p className="mt-0.5 text-xs text-zinc-600">取消訂單、退換貨、發票問題等請聯繫客服(LINE / 電話)。</p>
+                </div>
+                <div className="flex gap-2">
+                  <button className="rounded-md bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-700">LINE 客服</button>
+                  <a href="tel:0222993456" className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-xs font-medium text-zinc-700 hover:border-amber-400">02-2299-3456</a>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      {/* Refund modal */}
+      {refundOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6" onClick={() => setRefundOpen(false)}>
+          <div className="max-w-lg rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-zinc-900">退換貨流程說明</h3>
+            <div className="mt-4 space-y-3 text-sm text-zinc-700">
+              <p>退換貨需透過客服處理(無法線上自助申請),請點擊下方按鈕聯繫客服,並提供:</p>
+              <ul className="list-disc pl-5 space-y-1 text-zinc-600 text-xs">
+                <li>訂單編號:<span className="font-mono font-bold text-zinc-900">{ORDER.id}</span></li>
+                <li>退換貨原因(瑕疵 / 數量錯 / 不適用等)</li>
+                <li>瑕疵照片(若有)</li>
+              </ul>
+              <div className="rounded-lg bg-zinc-50 p-3 text-xs text-zinc-700">
+                <div className="font-bold mb-1">退款方式(由客服在後台處理)</div>
+                <ul className="space-y-0.5">
+                  <li>• 信用卡 → 透過綠界退刷,3–7 工作天退回</li>
+                  <li>• 匯款 → 通知會計手動退回,5–10 工作天</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <button onClick={() => setRefundOpen(false)} className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700">取消</button>
+              <button className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">LINE 聯繫客服 →</button>
             </div>
           </div>
         </div>
@@ -579,61 +388,5 @@ export function MemberOrderDetailMockup({
 
       <MockupSiteFooter />
     </MockupShell>
-  );
-}
-
-/* ============== Timeline component ============== */
-
-function Timeline({
-  flow,
-  currentIdx,
-}: {
-  flow: { key: string; label: string }[];
-  currentIdx: number;
-}) {
-  return (
-    <ol className="space-y-3">
-      {flow.map((step, i) => {
-        const done = i < currentIdx;
-        const active = i === currentIdx;
-        return (
-          <li key={step.key} className="flex items-center gap-3">
-            <span
-              className={`flex shrink-0 ${
-                done
-                  ? "text-emerald-600"
-                  : active
-                    ? "text-amber-600"
-                    : "text-zinc-300"
-              }`}
-            >
-              {done ? <CheckCircle /> : active ? <CircleActive /> : <CircleEmpty />}
-            </span>
-            <div className="flex-1">
-              <div
-                className={`font-medium ${
-                  done
-                    ? "text-zinc-700"
-                    : active
-                      ? "text-amber-900 font-bold"
-                      : "text-zinc-400"
-                }`}
-              >
-                {step.label}
-              </div>
-              {(done || active) && (
-                <div className="text-xs text-zinc-500">
-                  {i === 0 && "2026/04/27 14:32"}
-                  {i === 1 && "2026/04/27 15:18"}
-                  {i === 2 && "2026/04/28 09:45"}
-                  {i === 3 && "2026/04/28 16:30"}
-                  {i === 4 && active ? "預計 2026/04/29" : ""}
-                </div>
-              )}
-            </div>
-          </li>
-        );
-      })}
-    </ol>
   );
 }
